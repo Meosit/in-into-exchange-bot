@@ -18,7 +18,12 @@ data class EvaluatedExpression(
     val involvedCurrencies: List<Currency>
 )
 
-
+/**
+ * Evaluates the provided [Expression] with multiple currencies support.
+ * @param apiBaseCurrency base [Currency] of the Exchange Rate API used for the evaluation,
+ *                        used as default in case no other currencies supplied
+ * @param exchangeToApiBase function which exchanges the sum from provided [Currency] to [apiBaseCurrency]
+ */
 @ExperimentalUnsignedTypes
 class ExpressionEvaluator(
     private val apiBaseCurrency: Currency,

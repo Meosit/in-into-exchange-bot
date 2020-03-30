@@ -22,45 +22,25 @@ class CurrenciedMathParsers(
         if (it.type == tokenDict.invalidCurrencyToken) {
             throw InvalidCurrencyFoundException(it)
         }
-        currencyAliasMatcher.matchToCode(it.text)
+        currencyAliasMatcher.match(it.text)
     }
 
     private val currenciedTerm: Parser<Expression> =
-        (currency and mathParsers.divMulChain map { (curr, expr) ->
-            CurrenciedExpression(
-                expr,
-                curr
-            )
-        }) or
-                (mathParsers.divMulChain and currency map { (expr, curr) ->
-                    CurrenciedExpression(
-                        expr,
-                        curr
-                    )
-                }) or
-                (skip(tokenDict.minus) and parser(this::currenciedTerm) map {
-                    Negate(
-                        it
-                    )
-                }) or
+        (currency and mathParsers.divMulChain map { (c, e) -> CurrenciedExpression(e, c) }) or
+                (mathParsers.divMulChain and currency map { (e, c) -> CurrenciedExpression(e, c) }) or
+                (skip(tokenDict.minus) and parser(this::currenciedTerm) map { Negate(it) }) or
                 (skip(tokenDict.leftPar) and parser(this::currenciedSubSumChain) and skip(tokenDict.rightPar))
 
     // division and multiplication can be performed only with simple numbers to avoid confusion
     private val currenciedDivMulChain: Parser<Expression> =
         (currenciedTerm and oneOrMore((tokenDict.divide or tokenDict.multiply) and mathParsers.term) map { (initial, operands) ->
             operands.fold(initial) { a, (op, b) ->
-                if (op.type == tokenDict.multiply) Multiply(
-                    a,
-                    b
-                ) else Divide(a, b)
+                if (op.type == tokenDict.multiply) Multiply(a, b) else Divide(a, b)
             }
         }) or currenciedTerm
 
     val currenciedSubSumChain: Parser<Expression> =
         leftAssociative(currenciedDivMulChain, tokenDict.plus or tokenDict.minus use { type }) { a, op, b ->
-            if (op == tokenDict.plus) Add(
-                a,
-                b
-            ) else Subtract(a, b)
+            if (op == tokenDict.plus) Add(a, b) else Subtract(a, b)
         }
 }

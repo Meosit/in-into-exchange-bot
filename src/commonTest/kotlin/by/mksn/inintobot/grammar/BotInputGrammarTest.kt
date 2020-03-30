@@ -1,10 +1,11 @@
 package by.mksn.inintobot.grammar
 
-import by.mksn.inintobot.currency.Currency
-import by.mksn.inintobot.currency.CurrencyAliasMatcher
 import by.mksn.inintobot.expression.*
+import by.mksn.inintobot.test.asConst
+import by.mksn.inintobot.test.testCurrencyAliasMatcher
+import by.mksn.inintobot.test.toCurrency
+import by.mksn.inintobot.util.toFiniteBigDecimal
 import com.github.h0tk3y.betterParse.grammar.parseToEnd
-import com.ionspin.kotlin.bignum.decimal.toBigDecimal
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
@@ -13,46 +14,12 @@ import kotlin.test.assertTrue
 @ExperimentalUnsignedTypes
 class BotInputGrammarTest {
 
-    // @formatter:off
-    private val currencies = setOf(
-        Currency(
-            code = "BYN",
-            emoji = "🇧🇾",
-            aliases = setOf("BYN", "BYR", "bel", "by", "br", "b", "бун", "бунов", "буны", "буна", "бунах", "бур", "бел", "бр", "б")
-        ),
-        Currency(
-            code = "USD",
-            emoji = "🇺🇸",
-            aliases = setOf("USD", "us", "dollar", "dollars", "u", "d", "$", "бакс", "баксы", "баксов", "бакса", "баксах", "доллар", "доллары", "долларов", "доллара", "долларах", "долл", "дол", "д", "юсд")
-        ),
-        Currency(
-            code = "EUR",
-            emoji = "🇪🇺",
-            aliases = setOf("EUR", "euro", "eu", "e", "€", "евро", "евр", "еур", "е")
-        ),
-        Currency(
-            code = "UAH",
-            emoji = "🇺🇦",
-            aliases = setOf("UAH", "grn", "gr", "ua", "₴", "гривн", "гривна", "гривни", "гривны", "гривня", "гривен", "гривень", "гривнях", "грн", "гр", "г")
-        )
-    )
-    // @formatter:on
-
-    private val currencyAliasMatcher = CurrencyAliasMatcher(currencies)
-    private val grammar = BotInputGrammar(TokenNames.DEFAULT, currencyAliasMatcher)
-
-    @Suppress("PrivatePropertyName")
-    private val Int.Const
-        get() = Const(this.toBigDecimal())
-
-    @Suppress("PrivatePropertyName")
-    private val Double.Const
-        get() = Const(this.toBigDecimal())
+    private val grammar = BotInputGrammar(TokenNames.DEFAULT, testCurrencyAliasMatcher)
 
     @Test
     fun single_value() {
         val input = "1"
-        val expectedExpr = 1.Const
+        val expectedExpr = 1.asConst
 
         val (actualExpr, additionalCurrencies) = grammar.parseToEnd(input)
 
@@ -61,9 +28,9 @@ class BotInputGrammarTest {
     }
 
     @Test
-    fun simple_expression_1() {
+    fun simple_add_expression() {
         val input = "1 + 1"
-        val expectedExpr = Add(1.Const, 1.Const)
+        val expectedExpr = Add(1.asConst, 1.asConst)
 
         val (actualExpr, additionalCurrencies) = grammar.parseToEnd(input)
 
@@ -72,9 +39,9 @@ class BotInputGrammarTest {
     }
 
     @Test
-    fun simple_expression_2() {
+    fun simple_multiply_expression() {
         val input = "1 * 1"
-        val expectedExpr = Multiply(1.Const, 1.Const)
+        val expectedExpr = Multiply(1.asConst, 1.asConst)
 
         val (actualExpr, additionalCurrencies) = grammar.parseToEnd(input)
 
@@ -83,14 +50,9 @@ class BotInputGrammarTest {
     }
 
     @Test
-    fun simple_expression_3() {
+    fun simple_expression_with_priority() {
         val input = "1 * 1 + 2"
-        val expectedExpr = Add(
-            Multiply(
-                1.Const,
-                1.Const
-            ), 2.Const
-        )
+        val expectedExpr = Add(Multiply(1.asConst, 1.asConst), 2.asConst)
 
         val (actualExpr, additionalCurrencies) = grammar.parseToEnd(input)
 
@@ -99,14 +61,20 @@ class BotInputGrammarTest {
     }
 
     @Test
-    fun expression_with_brackets_1() {
+    fun simple_expression_with_zeroless_decimals() {
+        val input = "1 * 1.11 + .33 - ,23"
+        val expectedExpr = Subtract(Add(Multiply(1.asConst, 1.11.asConst), 0.33.asConst), 0.23.asConst)
+
+        val (actualExpr, additionalCurrencies) = grammar.parseToEnd(input)
+
+        assertTrue(additionalCurrencies.isEmpty())
+        assertEquals(expectedExpr, actualExpr)
+    }
+
+    @Test
+    fun expression_with_brackets() {
         val input = "(1 * 1) / (7 - 2)"
-        val expectedExpr = Divide(
-            Multiply(
-                1.Const,
-                1.Const
-            ), Subtract(7.Const, 2.Const)
-        )
+        val expectedExpr = Divide(Multiply(1.asConst, 1.asConst), Subtract(7.asConst, 2.asConst))
 
         val (actualExpr, additionalCurrencies) = grammar.parseToEnd(input)
 
@@ -115,19 +83,11 @@ class BotInputGrammarTest {
     }
 
     @Test
-    fun expression_with_brackets_2() {
+    fun expression_with_nested_brackets() {
         val input = "(1 + (2 - 1)) * ((7 - 2) / 2)"
         val expectedExpr = Multiply(
-            Add(
-                1.Const,
-                Subtract(2.Const, 1.Const)
-            ),
-            Divide(
-                Subtract(
-                    7.Const,
-                    2.Const
-                ), 2.Const
-            )
+            Add(1.asConst, Subtract(2.asConst, 1.asConst)),
+            Divide(Subtract(7.asConst, 2.asConst), 2.asConst)
         )
 
         val (actualExpr, additionalCurrencies) = grammar.parseToEnd(input)
@@ -139,8 +99,7 @@ class BotInputGrammarTest {
     @Test
     fun value_with_different_currency() {
         val input = "1 гривна"
-        val currency = currencyAliasMatcher.matchToCode("UAH")
-        val expectedExpr = CurrenciedExpression(1.Const, currency)
+        val expectedExpr = CurrenciedExpression(1.asConst, "UAH".toCurrency())
 
         val (actualExpr, additionalCurrencies) = grammar.parseToEnd(input)
 
@@ -151,12 +110,167 @@ class BotInputGrammarTest {
     @Test
     fun simple_expression_with_different_currency() {
         val input = "1 + 1 гривна"
-        val currency = currencyAliasMatcher.matchToCode("UAH")
+        val expectedExpr = CurrenciedExpression(Add(1.asConst, 1.asConst), "UAH".toCurrency())
+
+        val (actualExpr, additionalCurrencies) = grammar.parseToEnd(input)
+
+        assertTrue(additionalCurrencies.isEmpty())
+        assertEquals(expectedExpr, actualExpr)
+    }
+
+    @Test
+    fun multiple_currencies_wrong_layout() {
+        val input = "1.583 ljkkfh + 1,417 ,ey"
+        val expectedExpr = Add(
+            CurrenciedExpression(1.583.asConst, "USD".toCurrency()),
+            CurrenciedExpression(1.417.asConst, "BYN".toCurrency())
+        )
+
+        val (actualExpr, additionalCurrencies) = grammar.parseToEnd(input)
+
+        assertTrue(additionalCurrencies.isEmpty())
+        assertEquals(expectedExpr, actualExpr)
+    }
+
+    @Test
+    fun additional_currencies() {
+        val input = "10 euro into бр in dollars"
+        val expectedAdditionalCurrencies = setOf(
+            "BYN".toCurrency(),
+            "USD".toCurrency()
+        )
+        val expectedExpr = CurrenciedExpression(10.asConst, "EUR".toCurrency())
+
+        val (actualExpr, additionalCurrencies) = grammar.parseToEnd(input)
+
+        assertEquals(expectedExpr, actualExpr)
+
+        assertEquals(expectedAdditionalCurrencies.size, additionalCurrencies.size)
+        expectedAdditionalCurrencies.zip(additionalCurrencies).forEachIndexed { index, (expected, actual) ->
+            assertEquals(expected, actual, "Unmatched currencies at index $index")
+        }
+    }
+
+    @Test
+    fun comma_alias_currency() {
+        val input = "2, + 3 euro"
+        val expectedExpr = Add(
+            CurrenciedExpression(2.asConst, "BYN".toCurrency()),
+            CurrenciedExpression(3.asConst, "EUR".toCurrency())
+        )
+
+        val (actualExpr, additionalCurrencies) = grammar.parseToEnd(input)
+
+        assertTrue(additionalCurrencies.isEmpty())
+        assertEquals(expectedExpr, actualExpr)
+    }
+
+    @Test
+    fun kilo_suffix() {
+        val input = "10k"
+        val expectedExpr = ConstWithSuffixes(10.toFiniteBigDecimal(), 1, SuffixType.KILO)
+
+        val (actualExpr, additionalCurrencies) = grammar.parseToEnd(input)
+
+        assertTrue(additionalCurrencies.isEmpty())
+        assertEquals(expectedExpr, actualExpr)
+    }
+
+    @Test
+    fun kilo_suffixes_with_spaces() {
+        val input = "10 kk k"
+        val expectedExpr = ConstWithSuffixes(10.toFiniteBigDecimal(), 3, SuffixType.KILO)
+
+        val (actualExpr, additionalCurrencies) = grammar.parseToEnd(input)
+
+        assertTrue(additionalCurrencies.isEmpty())
+        assertEquals(expectedExpr, actualExpr)
+    }
+
+    @Test
+    fun mega_suffixes() {
+        val input = "10Mmm"
+        val expectedExpr = ConstWithSuffixes(10.toFiniteBigDecimal(), 3, SuffixType.MEGA)
+
+        val (actualExpr, additionalCurrencies) = grammar.parseToEnd(input)
+
+        assertTrue(additionalCurrencies.isEmpty())
+        assertEquals(expectedExpr, actualExpr)
+    }
+
+    @Test
+    fun suffixes_with_alias_without_spaces() {
+        val input = "10kkbyn"
         val expectedExpr = CurrenciedExpression(
-            Add(
-                1.Const,
-                1.Const
-            ), currency
+            ConstWithSuffixes(10.toFiniteBigDecimal(), 2, SuffixType.KILO),
+            "BYN".toCurrency()
+        )
+
+        val (actualExpr, additionalCurrencies) = grammar.parseToEnd(input)
+
+        assertTrue(additionalCurrencies.isEmpty())
+        assertEquals(expectedExpr, actualExpr)
+    }
+
+    @Test
+    fun suffixes_with_alias_starting_from_same_letter_without_spaces() {
+        val input = "10kkkz"
+        val expectedExpr = CurrenciedExpression(
+            ConstWithSuffixes(10.toFiniteBigDecimal(), 2, SuffixType.KILO),
+            "KZT".toCurrency()
+        )
+
+        val (actualExpr, additionalCurrencies) = grammar.parseToEnd(input)
+
+        assertTrue(additionalCurrencies.isEmpty())
+        assertEquals(expectedExpr, actualExpr)
+    }
+
+    @Test
+    fun suffixes_with_alias_starting_from_same_letter_with_spaces() {
+        val input = "10k k kz"
+        val expectedExpr = CurrenciedExpression(
+            ConstWithSuffixes(10.toFiniteBigDecimal(), 2, SuffixType.KILO),
+            "KZT".toCurrency()
+        )
+
+        val (actualExpr, additionalCurrencies) = grammar.parseToEnd(input)
+
+        assertTrue(additionalCurrencies.isEmpty())
+        assertEquals(expectedExpr, actualExpr)
+    }
+
+    @Test
+    fun prefix_currency_notation() {
+        val input = "$10"
+        val expectedExpr = CurrenciedExpression(10.asConst, "USD".toCurrency())
+
+        val (actualExpr, additionalCurrencies) = grammar.parseToEnd(input)
+
+        assertTrue(additionalCurrencies.isEmpty())
+        assertEquals(expectedExpr, actualExpr)
+    }
+
+    @Test
+    fun multi_currency_expression_with_prefix_currency_notation() {
+        val input = "$10 + и33"
+        val expectedExpr = Add(
+            CurrenciedExpression(10.asConst, "USD".toCurrency()),
+            CurrenciedExpression(33.asConst, "BYN".toCurrency())
+        )
+
+        val (actualExpr, additionalCurrencies) = grammar.parseToEnd(input)
+
+        assertTrue(additionalCurrencies.isEmpty())
+        assertEquals(expectedExpr, actualExpr)
+    }
+
+    @Test
+    fun multi_currency_expression_with_prefix_and_postfix_currency_notation() {
+        val input = "$10 + 33 eur"
+        val expectedExpr = Add(
+            CurrenciedExpression(10.asConst, "USD".toCurrency()),
+            CurrenciedExpression(33.asConst, "EUR".toCurrency())
         )
 
         val (actualExpr, additionalCurrencies) = grammar.parseToEnd(input)

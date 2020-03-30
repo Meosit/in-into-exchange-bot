@@ -1,23 +1,30 @@
 package by.mksn.inintobot.currency
 
 /**
- * Class which encapsulates alias matching logic handling of 'wrong keyboard layout' issue
+ * Class which encapsulates alias matching logic with handling of 'wrong keyboard layout' issue.
+ *
+ * In case of alias collisions the original alias has a top priority over the 'switched' ones in
+ * the same order as the source list.
  */
 @ExperimentalStdlibApi
-class CurrencyAliasMatcher(availableCurrencies: Set<Currency>) {
+class CurrencyAliasMatcher(availableCurrencies: List<Currency>) {
 
     private val currencyAliases: Map<String, Currency> = sequence {
-        availableCurrencies.forEach { currency ->
+        // have to reverse as the `toMap` method takes last key collision over the first
+        availableCurrencies.asReversed().forEach { currency ->
             currency.aliases.forEach { alias ->
-                yield(alias.toLowerCase() to currency)
-                if (alias.length > 1) {
-                    yield(alias.switchKeyboardEnglishToRussian().toLowerCase() to currency)
-                    yield(alias.switchKeyboardRussianToEnglish().toLowerCase() to currency)
-                    yield(alias.toUpperCase().switchKeyboardEnglishToRussian().toLowerCase() to currency)
-                    yield(alias.toUpperCase().switchKeyboardRussianToEnglish().toLowerCase() to currency)
-                }
+                yield(alias.switchKeyboardEnglishToRussian().toLowerCase() to currency)
+                yield(alias.switchKeyboardRussianToEnglish().toLowerCase() to currency)
+                yield(alias.toUpperCase().switchKeyboardEnglishToRussian().toLowerCase() to currency)
+                yield(alias.toUpperCase().switchKeyboardRussianToEnglish().toLowerCase() to currency)
             }
         }
+        // the original name is a top priority
+        availableCurrencies.asReversed().forEach { currency ->
+            currency.aliases.forEach { alias -> yield(alias.toLowerCase() to currency) }
+        }
+        // the code is also an alias
+        availableCurrencies.asReversed().forEach { yield(it.code.toLowerCase() to it) }
     }.toMap()
 
     /**
@@ -34,7 +41,7 @@ class CurrencyAliasMatcher(availableCurrencies: Set<Currency>) {
      * Returns the corresponding [Currency] of the provided alias
      * @throws IllegalArgumentException in case of unknown alias
      */
-    fun matchToCode(alias: String): Currency =
+    fun match(alias: String): Currency =
         currencyAliases[alias.toLowerCase()] ?: throw IllegalArgumentException("Invalid alias '$alias'")
 
     /**
@@ -79,6 +86,11 @@ class CurrencyAliasMatcher(availableCurrencies: Set<Currency>) {
             """йцукенгшщзхъфывапролджэячсмитьбюёЙЦУКЕНГШЩЗХЪФЫВАПРОЛДЖЭЯЧСМИТЬБЮЁ"""
         private const val KEYBOARD_LETTERS_IN_ENGLISH =
             """qwertyuiop[]asdfghjkl;'zxcvbnm,.`QWERTYUIOP{}ASDFGHJKL:"ZXCVBNM<>~"""
+
+        /**
+         * Set of characters
+         */
+        private const val NON_LETTER_CHARS = "[];',.`{}:<>~"
 
         /**
          * Lookbehind regex statement which prevents capturing of two consequent aliases without spaces in-between them

@@ -18,7 +18,7 @@ import com.github.h0tk3y.betterParse.parser.Parser
 
 data class BotInput(
     val expression: Expression,
-    val additionalCurrencies: List<Currency>
+    val additionalCurrencies: Set<Currency>
 )
 
 @ExperimentalStdlibApi
@@ -33,31 +33,23 @@ class BotInputGrammar(
     private val mathParsers = SimpleMathParsers(tokenDict)
     private val currParsers = CurrenciedMathParsers(tokenDict, mathParsers, aliasMatcher)
 
-    private val keyPrefix =
-        skip(tokenDict.plus or tokenDict.exclamation or tokenDict.ampersand or tokenDict.inIntoUnion)
+    private val keyPrefix = skip(tokenDict.exclamation or tokenDict.ampersand or tokenDict.inIntoUnion)
     private val currencyKey = skip(tokenDict.whitespace) and (keyPrefix and currParsers.currency) map { it }
     private val additionalCurrenciesChain by zeroOrMore(currencyKey)
 
     private val onlyCurrencyExpressionParser by currParsers.currency map {
-        CurrenciedExpression(
-            Const(
-                1.toFiniteBigDecimal()
-            ), it
-        )
+        CurrenciedExpression(Const(1.toFiniteBigDecimal()), it)
     }
 
     private val singleCurrencyExpressionParser by mathParsers.subSumChain and optional(currParsers.currency) map { (expr, currency) ->
-        if (currency == null) expr else CurrenciedExpression(
-            expr,
-            currency
-        )
+        if (currency == null) expr else CurrenciedExpression(expr, currency)
     }
 
     private val multiCurrencyExpressionParser by currParsers.currenciedSubSumChain
     private val allValidExpressionParsers by multiCurrencyExpressionParser or singleCurrencyExpressionParser or onlyCurrencyExpressionParser
 
     private val botInputParser by allValidExpressionParsers and additionalCurrenciesChain map { (expr, keys) ->
-        BotInput(expr, keys)
+        BotInput(expr, keys.toSet())
     }
 
     override val tokens = tokenDict.allTokens

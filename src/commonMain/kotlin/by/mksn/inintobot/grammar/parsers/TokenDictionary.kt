@@ -16,7 +16,8 @@ import com.github.h0tk3y.betterParse.lexer.Token
 @ExperimentalStdlibApi
 class TokenDictionary(tokenNames: TokenNames, allCurrenciesRegex: Regex) {
 
-    val number = token(tokenNames.number, "(\\d\\s*)+[.,](\\s*\\d)+|(\\d\\s*)*\\d") // greedy whitespace occupation
+    // greedy whitespace occupation and optional integer part
+    val number = token(tokenNames.number, "((\\d\\s*)+)?[.,](\\s*\\d)+|(\\d\\s*)*\\d")
     val currency = token(tokenNames.currency, allCurrenciesRegex)
 
     // metric suffix must be placed after currency in the token list to support aliases which starts with the one of the suffixes

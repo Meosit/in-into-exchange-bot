@@ -21,6 +21,9 @@ data class TokenNames(
     val nativeConversionUnion: String
 ) {
     companion object {
+        /**
+         * Default [TokenNames] in English
+         */
         val DEFAULT = TokenNames(
             number = "number",
             kilo = "kilo suffix",
