@@ -4,6 +4,7 @@ import by.mksn.inintobot.currency.Currency
 import by.mksn.inintobot.currency.CurrencyAliasMatcher
 import by.mksn.inintobot.expression.Const
 import by.mksn.inintobot.util.toFiniteBigDecimal
+import kotlin.test.assertEquals
 
 
 // @formatter:off
@@ -50,3 +51,28 @@ val Int.asConst
 @ExperimentalUnsignedTypes
 val Double.asConst
     get() = Const(this.toFiniteBigDecimal())
+
+
+@ExperimentalUnsignedTypes
+val String.asConst
+    get() = Const(this.toFiniteBigDecimal())
+
+
+fun <E, C : Iterable<E>> assertEqualsOrdered(expected: C, actual: C) {
+    val expectedSeq = expected.asSequence()
+    val actualSeq = actual.asSequence()
+    assertEquals(expectedSeq.count(), actualSeq.count(), "Given collections have different size!")
+    expectedSeq.zip(actualSeq).forEachIndexed { index, (expected, actual) ->
+        assertEquals(expected, actual, "Elements at index $index are not same!")
+    }
+}
+
+fun <E, C : Iterable<E>> assertEqualsUnordered(expected: C, actual: C) {
+    assertEquals(expected.asSequence().count(), actual.asSequence().count(), "Given collections have different size!")
+    expected.forEachIndexed { index, expectedElem ->
+        assertEquals(
+            expectedElem, actual.find { expected == it },
+            "Expected element at index $index not found in actual collection!"
+        )
+    }
+}

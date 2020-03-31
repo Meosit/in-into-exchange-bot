@@ -12,7 +12,7 @@ import kotlin.test.assertTrue
 
 @ExperimentalStdlibApi
 @ExperimentalUnsignedTypes
-class BotInputGrammarTest {
+class BotInputGrammarPositiveTest {
 
     private val grammar = BotInputGrammar(TokenNames.DEFAULT, testCurrencyAliasMatcher)
 

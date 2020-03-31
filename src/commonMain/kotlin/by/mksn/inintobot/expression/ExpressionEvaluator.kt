@@ -5,19 +5,6 @@ import by.mksn.inintobot.util.format
 import by.mksn.inintobot.util.toStr
 import com.ionspin.kotlin.bignum.decimal.BigDecimal
 
-enum class ExpressionType {
-    ONE_UNIT, SINGLE_VALUE, SINGLE_CURRENCY_EXPR, MULTI_CURRENCY_EXPR
-}
-
-@ExperimentalUnsignedTypes
-data class EvaluatedExpression(
-    val result: BigDecimal,
-    val type: ExpressionType,
-    val stringRepr: String,
-    val baseCurrency: Currency,
-    val involvedCurrencies: List<Currency>
-)
-
 /**
  * Evaluates the provided [Expression] with multiple currencies support.
  * @param apiBaseCurrency base [Currency] of the Exchange Rate API used for the evaluation,
@@ -105,27 +92,44 @@ class ExpressionEvaluator(
             is Const -> expr.number.toStr()
             is ConstWithSuffixes -> expr.evalNumber().toStr()
             is Negate -> "-${stringRepr(expr.e)}"
-            is Add -> (if (expr.e2 is Negate) "%s + (%s)" else "%s + %s")
-                .format(stringRepr(expr.e1), stringRepr(expr.e2))
-            is Subtract -> (if (expr.e2 is Negate) "%s - (%s)" else "%s - %s")
-                .format(stringRepr(expr.e1), stringRepr(expr.e2))
-            is Multiply -> "${valueFormatWithParsRespect(expr.e1)}*${valueFormatWithParsRespect(expr.e2)}"
-                .format(stringRepr(expr.e1), stringRepr(expr.e2))
-            is Divide -> "${valueFormatWithParsRespect(expr.e1)}/${if (expr.e2 is Const) "%s" else "(%s)"}"
-                .format(stringRepr(expr.e1), stringRepr(expr.e2))
+            is Add -> when (expr.e2) {
+                is Negate -> "${stringRepr(expr.e1)} + (${stringRepr(expr.e2)})"
+                else -> "${stringRepr(expr.e1)} + ${stringRepr(expr.e2)}"
+            }
+            is Subtract -> when (expr.e2) {
+                is Negate -> "${stringRepr(expr.e1)} - (${stringRepr(expr.e2)})"
+                else -> "${stringRepr(expr.e1)} - ${stringRepr(expr.e2)}"
+            }
+            is Multiply -> when (expr.e1) {
+                is CurrenciedExpression -> stringRepr(CurrenciedExpression(Multiply(expr.e1.e, expr.e2), expr.e1.currency))
+                else -> "${valueFormatWithParsRespect(expr.e1)}*${valueFormatWithParsRespect(expr.e2)}"
+                    .format(stringRepr(expr.e1), stringRepr(expr.e2))
+            }
+            is Divide -> when (expr.e1) {
+                is CurrenciedExpression -> stringRepr(CurrenciedExpression(Divide(expr.e1.e, expr.e2), expr.e1.currency))
+                else -> "${valueFormatWithParsRespect(expr.e1)}/${if (expr.e2 is Const) "%s" else "(%s)"}"
+                    .format(stringRepr(expr.e1), stringRepr(expr.e2))
+            }
             is CurrenciedExpression -> when (expressionType) {
-                ExpressionType.ONE_UNIT -> "1 ${expr.currency.code}"
+                ExpressionType.ONE_UNIT -> "1"
                 ExpressionType.SINGLE_VALUE, ExpressionType.SINGLE_CURRENCY_EXPR -> stringRepr(expr.e)
-                ExpressionType.MULTI_CURRENCY_EXPR -> if (expr.e is Add || expr.e is Subtract)
-                    "(${stringRepr(expr.e)}) ${expr.currency.code}" else "${stringRepr(expr.e)} ${expr.currency.code}"
+                ExpressionType.MULTI_CURRENCY_EXPR -> when (expr.e) {
+                    is Add, is Subtract -> "(${stringRepr(expr.e)}) ${expr.currency.code}"
+                    else -> "${stringRepr(expr.e)} ${expr.currency.code}"
+                }
             }
         }
 
         return stringRepr(rootExpr)
     }
 
+    /**
+     * Calculates the given [rootExpr] into [EvaluatedExpression] with
+     * [apiBaseCurrency] used as the default one in case no other [Currency] supplied
+     */
     fun evaluate(rootExpr: Expression): EvaluatedExpression {
         val (type, base, involved) = captureCurrencyMetadata(rootExpr)
+
         fun eval(expr: Expression): BigDecimal = when (expr) {
             is Const -> expr.number
             is ConstWithSuffixes -> expr.evalNumber()
@@ -134,10 +138,9 @@ class ExpressionEvaluator(
             is Subtract -> eval(expr.e1) - eval(expr.e2)
             is Multiply -> eval(expr.e1) * eval(expr.e2)
             is Divide -> eval(expr.e1) / eval(expr.e2)
-            is CurrenciedExpression -> if (type == ExpressionType.MULTI_CURRENCY_EXPR) {
-                exchangeToApiBase(eval(expr.e), expr.currency)
-            } else {
-                eval(expr.e)
+            is CurrenciedExpression -> when (type) {
+                ExpressionType.MULTI_CURRENCY_EXPR -> exchangeToApiBase(eval(expr.e), expr.currency)
+                else -> eval(expr.e)
             }
         }
 

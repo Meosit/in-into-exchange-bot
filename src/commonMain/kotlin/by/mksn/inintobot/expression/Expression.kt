@@ -18,9 +18,6 @@ data class CurrenciedExpression(val e: Expression, val currency: Currency) : Exp
 @ExperimentalUnsignedTypes
 data class Const(val number: BigDecimal) : Expression()
 
-//@ExperimentalUnsignedTypes
-//data class MetricSuffix(val e: Expression, val suffixType: SuffixType): Expression()
-
 @ExperimentalUnsignedTypes
 data class ConstWithSuffixes(val number: BigDecimal, val suffixCount: Int, val suffixType: SuffixType) : Expression()
 
