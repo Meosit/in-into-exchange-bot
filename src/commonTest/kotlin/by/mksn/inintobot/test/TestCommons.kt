@@ -4,9 +4,13 @@ import by.mksn.inintobot.currency.Currency
 import by.mksn.inintobot.currency.CurrencyAliasMatcher
 import by.mksn.inintobot.expression.Const
 import by.mksn.inintobot.util.toFiniteBigDecimal
+import com.ionspin.kotlin.bignum.decimal.BigDecimal
 import kotlin.test.assertEquals
 
 
+/**
+ * A list of [Currency] objects to be used in tests
+ */
 // @formatter:off
 val testCurrencies = listOf(
     Currency(
@@ -37,27 +41,63 @@ val testCurrencies = listOf(
 )
 // @formatter:on
 
+/**
+ * A matcher based on the [testCurrencies]
+ */
 @ExperimentalStdlibApi
 val testCurrencyAliasMatcher = CurrencyAliasMatcher(testCurrencies)
 
+/**
+ * A short way of receiving a [Currency] from [testCurrencies] list.
+ */
 @ExperimentalStdlibApi
 fun String.toCurrency() = testCurrencyAliasMatcher.match(this)
 
+/**
+ * A short way of defining a [Const] expression from literal
+ */
 @ExperimentalUnsignedTypes
 val Int.asConst
-    get() = Const(this.toFiniteBigDecimal())
+    get() = Const(toFiniteBigDecimal())
 
-
+/**
+ * A short way of defining a [Const] expression from literal
+ */
 @ExperimentalUnsignedTypes
 val Double.asConst
-    get() = Const(this.toFiniteBigDecimal())
+    get() = Const(toFiniteBigDecimal())
 
-
+/**
+ * A short way of defining a [Const] expression from literal
+ */
 @ExperimentalUnsignedTypes
 val String.asConst
-    get() = Const(this.toFiniteBigDecimal())
+    get() = Const(toFiniteBigDecimal())
 
+/**
+ * A short way of defining a [BigDecimal] from literal
+ */
+@ExperimentalUnsignedTypes
+val Double.bigDecimal: BigDecimal
+    get() = toFiniteBigDecimal()
 
+/**
+ * A short way of defining a [BigDecimal] from literal
+ */
+@ExperimentalUnsignedTypes
+val Int.bigDecimal: BigDecimal
+    get() = toFiniteBigDecimal()
+
+/**
+ * A short way of defining a [BigDecimal] from literal
+ */
+@ExperimentalUnsignedTypes
+val String.bigDecimal: BigDecimal
+    get() = toFiniteBigDecimal()
+
+/**
+ * Asserts two [Iterable]s in the strict order
+ */
 fun <E, C : Iterable<E>> assertEqualsOrdered(expected: C, actual: C) {
     val expectedSeq = expected.asSequence()
     val actualSeq = actual.asSequence()
@@ -67,6 +107,9 @@ fun <E, C : Iterable<E>> assertEqualsOrdered(expected: C, actual: C) {
     }
 }
 
+/**
+ * Asserts two [Iterable]s without specific order using [expected] as a base one
+ */
 fun <E, C : Iterable<E>> assertEqualsUnordered(expected: C, actual: C) {
     assertEquals(expected.asSequence().count(), actual.asSequence().count(), "Given collections have different size!")
     expected.forEachIndexed { index, expectedElem ->

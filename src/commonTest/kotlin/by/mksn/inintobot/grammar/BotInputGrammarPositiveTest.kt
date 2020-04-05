@@ -2,9 +2,9 @@ package by.mksn.inintobot.grammar
 
 import by.mksn.inintobot.expression.*
 import by.mksn.inintobot.test.asConst
+import by.mksn.inintobot.test.bigDecimal
 import by.mksn.inintobot.test.testCurrencyAliasMatcher
 import by.mksn.inintobot.test.toCurrency
-import by.mksn.inintobot.util.toFiniteBigDecimal
 import com.github.h0tk3y.betterParse.grammar.parseToEnd
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -168,7 +168,7 @@ class BotInputGrammarPositiveTest {
     @Test
     fun kilo_suffix() {
         val input = "10k"
-        val expectedExpr = ConstWithSuffixes(10.toFiniteBigDecimal(), 1, SuffixType.KILO)
+        val expectedExpr = ConstWithSuffixes(10.bigDecimal, 1, SuffixType.KILO)
 
         val (actualExpr, additionalCurrencies) = grammar.parseToEnd(input)
 
@@ -179,7 +179,7 @@ class BotInputGrammarPositiveTest {
     @Test
     fun kilo_suffixes_with_spaces() {
         val input = "10 kk k"
-        val expectedExpr = ConstWithSuffixes(10.toFiniteBigDecimal(), 3, SuffixType.KILO)
+        val expectedExpr = ConstWithSuffixes(10.bigDecimal, 3, SuffixType.KILO)
 
         val (actualExpr, additionalCurrencies) = grammar.parseToEnd(input)
 
@@ -190,7 +190,7 @@ class BotInputGrammarPositiveTest {
     @Test
     fun mega_suffixes() {
         val input = "10Mmm"
-        val expectedExpr = ConstWithSuffixes(10.toFiniteBigDecimal(), 3, SuffixType.MEGA)
+        val expectedExpr = ConstWithSuffixes(10.bigDecimal, 3, SuffixType.MEGA)
 
         val (actualExpr, additionalCurrencies) = grammar.parseToEnd(input)
 
@@ -202,7 +202,7 @@ class BotInputGrammarPositiveTest {
     fun suffixes_with_alias_without_spaces() {
         val input = "10kkbyn"
         val expectedExpr = CurrenciedExpression(
-            ConstWithSuffixes(10.toFiniteBigDecimal(), 2, SuffixType.KILO),
+            ConstWithSuffixes(10.bigDecimal, 2, SuffixType.KILO),
             "BYN".toCurrency()
         )
 
@@ -216,7 +216,7 @@ class BotInputGrammarPositiveTest {
     fun suffixes_with_alias_starting_from_same_letter_without_spaces() {
         val input = "10kkkz"
         val expectedExpr = CurrenciedExpression(
-            ConstWithSuffixes(10.toFiniteBigDecimal(), 2, SuffixType.KILO),
+            ConstWithSuffixes(10.bigDecimal, 2, SuffixType.KILO),
             "KZT".toCurrency()
         )
 
@@ -230,7 +230,7 @@ class BotInputGrammarPositiveTest {
     fun suffixes_with_alias_starting_from_same_letter_with_spaces() {
         val input = "10k k kz"
         val expectedExpr = CurrenciedExpression(
-            ConstWithSuffixes(10.toFiniteBigDecimal(), 2, SuffixType.KILO),
+            ConstWithSuffixes(10.bigDecimal, 2, SuffixType.KILO),
             "KZT".toCurrency()
         )
 

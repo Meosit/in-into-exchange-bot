@@ -1,9 +1,6 @@
 package by.mksn.inintobot.expression
 
-import by.mksn.inintobot.test.asConst
-import by.mksn.inintobot.test.assertEqualsOrdered
-import by.mksn.inintobot.test.testCurrencies
-import by.mksn.inintobot.test.toCurrency
+import by.mksn.inintobot.test.*
 import by.mksn.inintobot.util.toFiniteBigDecimal
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -17,15 +14,6 @@ class ExpressionEvaluatorTest {
         apiBaseCurrency = apiBaseCurrency,
         exchangeToApiBase = { value, _ -> value }
     )
-
-    private val Double.bigDecimal
-        get() = toFiniteBigDecimal()
-
-    private val Int.bigDecimal
-        get() = toFiniteBigDecimal()
-
-    private val String.bigDecimal
-        get() = toFiniteBigDecimal()
 
     @Test
     fun just_const() {

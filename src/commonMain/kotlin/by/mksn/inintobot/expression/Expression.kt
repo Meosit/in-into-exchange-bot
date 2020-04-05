@@ -1,14 +1,14 @@
 package by.mksn.inintobot.expression
 
 import by.mksn.inintobot.currency.Currency
+import by.mksn.inintobot.util.toFiniteBigDecimal
 import by.mksn.inintobot.util.toStr
 import com.ionspin.kotlin.bignum.decimal.BigDecimal
-import com.ionspin.kotlin.bignum.decimal.toBigDecimal
 
 @ExperimentalUnsignedTypes
 enum class SuffixType(val factor: BigDecimal) {
-    KILO(1_000.toBigDecimal()),
-    MEGA(1_000_000.toBigDecimal())
+    KILO(1_000.toFiniteBigDecimal()),
+    MEGA(1_000_000.toFiniteBigDecimal())
 }
 
 sealed class Expression
