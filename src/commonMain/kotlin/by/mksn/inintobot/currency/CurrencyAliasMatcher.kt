@@ -88,11 +88,6 @@ class CurrencyAliasMatcher(availableCurrencies: List<Currency>) {
             """qwertyuiop[]asdfghjkl;'zxcvbnm,.`QWERTYUIOP{}ASDFGHJKL:"ZXCVBNM<>~"""
 
         /**
-         * Set of characters
-         */
-        private const val NON_LETTER_CHARS = "[];',.`{}:<>~"
-
-        /**
          * Lookbehind regex statement which prevents capturing of two consequent aliases without spaces in-between them
          */
         private const val BROAD_ALIAS_LOOKBEHIND = "(?<![a-zA-Zа-яА-Я\\[\\];'\".,:<>~&&[^kKкКmMмМ]])"

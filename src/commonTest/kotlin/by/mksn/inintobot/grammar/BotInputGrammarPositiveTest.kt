@@ -61,6 +61,17 @@ class BotInputGrammarPositiveTest {
     }
 
     @Test
+    fun simple_multiline_expression() {
+        val input = "1\n*\n1   \n+ 2"
+        val expectedExpr = Add(Multiply(1.asConst, 1.asConst), 2.asConst)
+
+        val (actualExpr, additionalCurrencies) = grammar.parseToEnd(input)
+
+        assertTrue(additionalCurrencies.isEmpty())
+        assertEquals(expectedExpr, actualExpr)
+    }
+
+    @Test
     fun simple_expression_with_zeroless_decimals() {
         val input = "1 * 1.11 + .33 - ,23"
         val expectedExpr = Subtract(Add(Multiply(1.asConst, 1.11.asConst), 0.33.asConst), 0.23.asConst)

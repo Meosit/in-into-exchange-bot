@@ -13,7 +13,9 @@ import by.mksn.inintobot.grammar.parsers.TokenDictionary
 import by.mksn.inintobot.util.toFiniteBigDecimal
 import com.github.h0tk3y.betterParse.combinators.*
 import com.github.h0tk3y.betterParse.grammar.Grammar
+import com.github.h0tk3y.betterParse.lexer.DefaultTokenizer
 import com.github.h0tk3y.betterParse.lexer.TokenMatch
+import com.github.h0tk3y.betterParse.lexer.Tokenizer
 import com.github.h0tk3y.betterParse.parser.Parser
 
 data class BotInput(
@@ -53,6 +55,9 @@ class BotInputGrammar(
     }
 
     override val tokens = tokenDict.allTokens
+
+    override val tokenizer: Tokenizer by lazy { SingleLineTokenizer(DefaultTokenizer(tokens)) }
+
     override val rootParser = object : Parser<BotInput> {
         override fun tryParse(tokens: Sequence<TokenMatch>) =
             try {
