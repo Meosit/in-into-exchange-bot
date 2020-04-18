@@ -1,11 +1,9 @@
 package by.mksn.inintobot.grammar
 
 
-import by.mksn.inintobot.currency.Currency
 import by.mksn.inintobot.currency.CurrencyAliasMatcher
 import by.mksn.inintobot.expression.Const
 import by.mksn.inintobot.expression.CurrenciedExpression
-import by.mksn.inintobot.expression.Expression
 import by.mksn.inintobot.grammar.parsers.CurrenciedMathParsers
 import by.mksn.inintobot.grammar.parsers.InvalidCurrencyFoundException
 import by.mksn.inintobot.grammar.parsers.SimpleMathParsers
@@ -16,22 +14,18 @@ import com.github.h0tk3y.betterParse.grammar.Grammar
 import com.github.h0tk3y.betterParse.lexer.DefaultTokenizer
 import com.github.h0tk3y.betterParse.lexer.TokenMatch
 import com.github.h0tk3y.betterParse.lexer.Tokenizer
+import com.github.h0tk3y.betterParse.parser.AlternativesFailure
+import com.github.h0tk3y.betterParse.parser.ErrorResult
 import com.github.h0tk3y.betterParse.parser.Parser
-
-data class BotInput(
-    val expression: Expression,
-    val additionalCurrencies: Set<Currency>
-)
 
 @ExperimentalStdlibApi
 @Suppress("PrivatePropertyName")
 @ExperimentalUnsignedTypes
 class BotInputGrammar(
-    tokenNames: TokenNames,
     aliasMatcher: CurrencyAliasMatcher
 ) : Grammar<BotInput>() {
 
-    private val tokenDict = TokenDictionary(tokenNames, aliasMatcher.allAliasesRegex)
+    private val tokenDict = TokenDictionary(aliasMatcher.allAliasesRegex)
     private val mathParsers = SimpleMathParsers(tokenDict)
     private val currParsers = CurrenciedMathParsers(tokenDict, mathParsers, aliasMatcher)
 
@@ -61,7 +55,16 @@ class BotInputGrammar(
     override val rootParser = object : Parser<BotInput> {
         override fun tryParse(tokens: Sequence<TokenMatch>) =
             try {
-                botInputParser.tryParse(tokens)
+                when (val result = botInputParser.tryParse(tokens)) {
+                    is AlternativesFailure -> {
+                        fun find(errors: List<ErrorResult>): ErrorResult {
+                            val error = errors.last()
+                            return if (error !is AlternativesFailure) error else find(error.errors)
+                        }
+                        find(result.errors)
+                    }
+                    else -> result
+                }
             } catch (e: InvalidCurrencyFoundException) {
                 e.toErrorResult()
             }

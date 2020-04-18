@@ -14,7 +14,7 @@ import kotlin.test.assertTrue
 @ExperimentalUnsignedTypes
 class BotInputGrammarPositiveTest {
 
-    private val grammar = BotInputGrammar(TokenNames.DEFAULT, testCurrencyAliasMatcher)
+    private val grammar = BotInputGrammar(testCurrencyAliasMatcher)
 
     @Test
     fun single_value() {

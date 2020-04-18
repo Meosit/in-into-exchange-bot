@@ -9,7 +9,7 @@ import com.ionspin.kotlin.bignum.decimal.BigDecimal
 enum class ExpressionType {
     /**
      * The expression is exactly one unit (1) of the provided currency,
-     * basically this means that rate for this specific currency requested
+     * basically this means that rate for this specific currency was requested
      */
     ONE_UNIT,
 
