@@ -56,6 +56,7 @@ class BotInputGrammar(
         override fun tryParse(tokens: Sequence<TokenMatch>) =
             try {
                 when (val result = botInputParser.tryParse(tokens)) {
+                    // unwrap and keep the last added error as most adequate
                     is AlternativesFailure -> {
                         fun find(errors: List<ErrorResult>): ErrorResult {
                             val error = errors.last()

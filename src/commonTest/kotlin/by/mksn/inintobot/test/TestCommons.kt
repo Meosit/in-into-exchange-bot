@@ -5,6 +5,9 @@ import by.mksn.inintobot.currency.CurrencyAliasMatcher
 import by.mksn.inintobot.expression.Const
 import by.mksn.inintobot.util.toFiniteBigDecimal
 import com.ionspin.kotlin.bignum.decimal.BigDecimal
+import kotlinx.coroutines.CoroutineScope
+import kotlin.coroutines.CoroutineContext
+import kotlin.coroutines.EmptyCoroutineContext
 import kotlin.test.assertEquals
 
 
@@ -119,3 +122,8 @@ fun <E, C : Iterable<E>> assertEqualsUnordered(expected: C, actual: C) {
         )
     }
 }
+
+expect fun <T> runTestBlocking(
+    context: CoroutineContext = EmptyCoroutineContext,
+    block: suspend CoroutineScope.() -> T
+): T

@@ -24,7 +24,7 @@ enum class ExpressionType {
     SINGLE_CURRENCY_EXPR,
 
     /**
-     * The expression contains math operators and all operands have their own currency, e.g. `"10 EUR + 12 USD - 1 BYN"`
+     * The expression contains math operators and each operand has it's own currency, e.g. `"10 EUR + 12 USD - 1 BYN"`
      */
     MULTI_CURRENCY_EXPR
 }
