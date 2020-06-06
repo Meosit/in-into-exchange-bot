@@ -1,6 +1,6 @@
 package by.mksn.inintobot.currency.fetch
 
-import by.mksn.inintobot.app.ApiConfig
+import by.mksn.inintobot.config.ApiConfig
 import by.mksn.inintobot.currency.Currency
 import by.mksn.inintobot.util.toFiniteBigDecimal
 import com.ionspin.kotlin.bignum.decimal.BigDecimal

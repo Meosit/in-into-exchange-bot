@@ -1,6 +1,6 @@
 package by.mksn.inintobot.currency.fetch
 
-import by.mksn.inintobot.app.ApiConfig
+import by.mksn.inintobot.config.ApiConfig
 import by.mksn.inintobot.test.runTestBlocking
 import by.mksn.inintobot.test.testCurrencies
 import by.mksn.inintobot.util.toFiniteBigDecimal
