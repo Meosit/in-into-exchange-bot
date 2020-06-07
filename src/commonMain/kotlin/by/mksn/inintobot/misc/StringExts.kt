@@ -1,4 +1,4 @@
-package by.mksn.inintobot.util
+package by.mksn.inintobot.misc
 
 /**
  * A very basic string formatting which supports only `%s` substitution

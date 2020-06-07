@@ -1,12 +1,12 @@
-package by.mksn.inintobot.currency.fetch
+package by.mksn.inintobot.api.fetch
 
-import by.mksn.inintobot.util.BigDecimalSerializer
+import by.mksn.inintobot.misc.BigDecimalSerializer
 import com.ionspin.kotlin.bignum.decimal.BigDecimal
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
-import kotlinx.serialization.UnstableDefault
 import kotlinx.serialization.builtins.list
+import kotlinx.serialization.json.Json
 
 @Serializable
 @ExperimentalUnsignedTypes
@@ -21,9 +21,8 @@ data class NbrbReponseEntry(
     val rate: BigDecimal
 )
 
-@UnstableDefault
 @ExperimentalUnsignedTypes
-class NbrbCurrencyFetcher : ApiCurrencyFetcher<List<NbrbReponseEntry>>() {
+class NbrbRateFetcher(json: Json) : ApiRateFetcher<List<NbrbReponseEntry>>(json) {
     override val serializer: KSerializer<List<NbrbReponseEntry>> = NbrbReponseEntry.serializer().list
 
     override suspend fun parseResponse(response: List<NbrbReponseEntry>) =

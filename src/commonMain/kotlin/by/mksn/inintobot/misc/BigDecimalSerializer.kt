@@ -1,4 +1,4 @@
-package by.mksn.inintobot.util
+package by.mksn.inintobot.misc
 
 import com.ionspin.kotlin.bignum.decimal.BigDecimal
 import kotlinx.serialization.*

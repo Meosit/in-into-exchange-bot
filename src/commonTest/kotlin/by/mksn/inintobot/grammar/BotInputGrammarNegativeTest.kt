@@ -1,5 +1,6 @@
 package by.mksn.inintobot.grammar
 
+import by.mksn.inintobot.test.testApiAliasMatcher
 import by.mksn.inintobot.test.testCurrencyAliasMatcher
 import com.github.h0tk3y.betterParse.grammar.tryParseToEnd
 import com.github.h0tk3y.betterParse.parser.MismatchedToken
@@ -13,7 +14,7 @@ import kotlin.test.assertTrue
 @ExperimentalStdlibApi
 class BotInputGrammarNegativeTest {
 
-    private val grammar = BotInputGrammar(testCurrencyAliasMatcher)
+    private val grammar = BotInputGrammar(testCurrencyAliasMatcher, testApiAliasMatcher)
 
     @Test
     fun kilo_suffix_in_the_middle_of_number() {
@@ -162,5 +163,27 @@ class BotInputGrammarNegativeTest {
         assertTrue(result is NoMatchingToken)
         assertEquals(1, result.tokenMismatch.column)
         assertEquals("adfs", result.tokenMismatch.text)
+    }
+
+    @Test
+    fun invalid_api_name() {
+        val input = "10 euro IIIII"
+
+        val result = grammar.tryParseToEnd(input)
+        println(result)
+        assertTrue(result is NoMatchingToken)
+        assertEquals(9, result.tokenMismatch.column)
+        assertEquals("IIIII", result.tokenMismatch.text)
+    }
+
+    @Test
+    fun currency_instead_of_api() {
+        val input = "10 euro kzt !usd"
+
+        val result = grammar.tryParseToEnd(input)
+        println(result)
+        assertTrue(result is UnparsedRemainder)
+        assertEquals(9, result.startsWith.column)
+        assertEquals("kzt", result.startsWith.text)
     }
 }

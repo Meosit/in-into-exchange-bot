@@ -1,9 +1,9 @@
 package by.mksn.inintobot.test
-
+import by.mksn.inintobot.api.RateApi
 import by.mksn.inintobot.currency.Currency
-import by.mksn.inintobot.currency.CurrencyAliasMatcher
 import by.mksn.inintobot.expression.Const
-import by.mksn.inintobot.util.toFiniteBigDecimal
+import by.mksn.inintobot.misc.AliasMatcher
+import by.mksn.inintobot.misc.toFiniteBigDecimal
 import com.ionspin.kotlin.bignum.decimal.BigDecimal
 import kotlinx.coroutines.CoroutineScope
 import kotlin.coroutines.CoroutineContext
@@ -42,19 +42,44 @@ val testCurrencies = listOf(
         aliases = setOf("KZT", "kz", "tenge", "тенге", "тенги", "тенг", "тнг")
     )
 )
+
+val testApis = listOf(
+    RateApi(
+        name = "NBRB",
+        aliases = setOf("NBRB", "rb", "b", "нбрб", "рб", "б"),
+        base = "BYN",
+        url = "http://www.nbrb.by/API/ExRates/Rates?Periodicity=0"
+    ),
+    RateApi(
+        name = "NBU",
+        aliases = setOf("NBU", "u", "нбу", "у"),
+        base = "UAH",
+        url = "https://bank.gov.ua/NBUStatService/v1/statdirectory/exchange?json"
+    )
+)
 // @formatter:on
 
 /**
  * A matcher based on the [testCurrencies]
  */
+
 @ExperimentalStdlibApi
-val testCurrencyAliasMatcher = CurrencyAliasMatcher(testCurrencies)
+val testCurrencyAliasMatcher = AliasMatcher(testCurrencies)
 
 /**
  * A short way of receiving a [Currency] from [testCurrencies] list.
  */
 @ExperimentalStdlibApi
 fun String.toCurrency() = testCurrencyAliasMatcher.match(this)
+
+@ExperimentalStdlibApi
+val testApiAliasMatcher = AliasMatcher(testApis)
+
+/**
+ * A short way of receiving a [RateApi] from [testApis] list.
+ */
+@ExperimentalStdlibApi
+fun String.toRateApi() = testApiAliasMatcher.match(this)
 
 /**
  * A short way of defining a [Const] expression from literal
@@ -104,7 +129,10 @@ val String.bigDecimal: BigDecimal
 fun <E, C : Iterable<E>> assertEqualsOrdered(expected: C, actual: C) {
     val expectedSeq = expected.asSequence()
     val actualSeq = actual.asSequence()
-    assertEquals(expectedSeq.count(), actualSeq.count(), "Given collections have different size!")
+    assertEquals(
+        expectedSeq.count(), actualSeq.count(),
+        "Given collections have different size, expected ${expectedSeq.count()}, got ${actualSeq.count()}"
+    )
     expectedSeq.zip(actualSeq).forEachIndexed { index, (expected, actual) ->
         assertEquals(expected, actual, "Elements at index $index are not same!")
     }
@@ -114,10 +142,13 @@ fun <E, C : Iterable<E>> assertEqualsOrdered(expected: C, actual: C) {
  * Asserts two [Iterable]s without specific order using [expected] as a base one
  */
 fun <E, C : Iterable<E>> assertEqualsUnordered(expected: C, actual: C) {
-    assertEquals(expected.asSequence().count(), actual.asSequence().count(), "Given collections have different size!")
+    assertEquals(
+        expected.count(), actual.count(),
+        "Given collections have different size, expected ${expected.count()}, got ${actual.count()}"
+    )
     expected.forEachIndexed { index, expectedElem ->
         assertEquals(
-            expectedElem, actual.find { expected == it },
+            expectedElem, actual.find { expectedElem == it },
             "Expected element at index $index not found in actual collection!"
         )
     }

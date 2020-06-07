@@ -1,22 +1,24 @@
-package by.mksn.inintobot.currency.fetch
+package by.mksn.inintobot.api.fetch
 
-import by.mksn.inintobot.config.ApiConfig
+import by.mksn.inintobot.api.RateApi
+import by.mksn.inintobot.misc.toFiniteBigDecimal
+import by.mksn.inintobot.test.assertEqualsUnordered
 import by.mksn.inintobot.test.runTestBlocking
 import by.mksn.inintobot.test.testCurrencies
-import by.mksn.inintobot.util.toFiniteBigDecimal
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.mock.MockEngine
 import io.ktor.client.engine.mock.respond
 import io.ktor.http.*
 import kotlinx.serialization.UnstableDefault
+import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.JsonConfiguration
 import kotlin.test.BeforeTest
 import kotlin.test.Test
-import kotlin.test.assertEquals
 
 @UnstableDefault
 @ExperimentalUnsignedTypes
 @ExperimentalStdlibApi
-class RatesMapCurrencyFetcherTest {
+class RatesMapRateFetcherTest {
 
     private val Url.hostWithPortIfRequired: String get() = if (port == protocol.defaultPort) host else hostWithPort
     private val Url.fullUrl: String get() = "${protocol.name}://$hostWithPortIfRequired$fullPath"
@@ -74,8 +76,9 @@ class RatesMapCurrencyFetcherTest {
 
     @Test
     fun successful_fetch_and_parse() {
-        val fetcher = RatesMapCurrencyFetcher()
-        val apiConfig = ApiConfig("Fixer", "USD", testUrl)
+        val json = Json(JsonConfiguration(ignoreUnknownKeys = true))
+        val fetcher = RatesMapRateFetcher(json)
+        val apiConfig = RateApi("Fixer", setOf(), "USD", testUrl)
         val actualRates = runTestBlocking { fetcher.fetch(httpClient, testCurrencies, apiConfig) }
         val expectedRates = mapOf(
             testCurrencies.first { it.code == "UAH" } to "26.591049".toFiniteBigDecimal(),
@@ -84,7 +87,7 @@ class RatesMapCurrencyFetcherTest {
             testCurrencies.first { it.code == "KZT" } to "399.629195".toFiniteBigDecimal(),
             testCurrencies.first { it.code == "BYN" } to "2.382028".toFiniteBigDecimal()
         )
-        assertEquals(expectedRates, actualRates)
+        assertEqualsUnordered(expectedRates.entries, actualRates.entries)
     }
 
 }

@@ -1,14 +1,16 @@
 package by.mksn.inintobot.grammar
 
 
-import by.mksn.inintobot.currency.CurrencyAliasMatcher
+import by.mksn.inintobot.api.RateApi
+import by.mksn.inintobot.currency.Currency
 import by.mksn.inintobot.expression.Const
 import by.mksn.inintobot.expression.CurrenciedExpression
 import by.mksn.inintobot.grammar.parsers.CurrenciedMathParsers
-import by.mksn.inintobot.grammar.parsers.InvalidCurrencyFoundException
+import by.mksn.inintobot.grammar.parsers.InvalidTextFoundException
 import by.mksn.inintobot.grammar.parsers.SimpleMathParsers
 import by.mksn.inintobot.grammar.parsers.TokenDictionary
-import by.mksn.inintobot.util.toFiniteBigDecimal
+import by.mksn.inintobot.misc.AliasMatcher
+import by.mksn.inintobot.misc.toFiniteBigDecimal
 import com.github.h0tk3y.betterParse.combinators.*
 import com.github.h0tk3y.betterParse.grammar.Grammar
 import com.github.h0tk3y.betterParse.lexer.DefaultTokenizer
@@ -19,19 +21,27 @@ import com.github.h0tk3y.betterParse.parser.ErrorResult
 import com.github.h0tk3y.betterParse.parser.Parser
 
 @ExperimentalStdlibApi
-@Suppress("PrivatePropertyName")
 @ExperimentalUnsignedTypes
 class BotInputGrammar(
-    aliasMatcher: CurrencyAliasMatcher
+    currencyAliasMatcher: AliasMatcher<Currency>,
+    rateApiAliasMatcher: AliasMatcher<RateApi>
 ) : Grammar<BotInput>() {
 
-    private val tokenDict = TokenDictionary(aliasMatcher.allAliasesRegex)
+    private val tokenDict = TokenDictionary(currencyAliasMatcher.allAliasesRegex, rateApiAliasMatcher.allAliasesRegex)
     private val mathParsers = SimpleMathParsers(tokenDict)
-    private val currParsers = CurrenciedMathParsers(tokenDict, mathParsers, aliasMatcher)
+    private val currParsers = CurrenciedMathParsers(tokenDict, mathParsers, currencyAliasMatcher)
 
-    private val keyPrefix = skip(tokenDict.exclamation or tokenDict.ampersand or tokenDict.inIntoUnion)
-    private val currencyKey = skip(tokenDict.whitespace) and (keyPrefix and currParsers.currency) map { it }
+    private val currencyKeyPrefix = skip(tokenDict.exclamation or tokenDict.ampersand or tokenDict.inIntoUnion)
+    private val currencyKey = skip(tokenDict.whitespace) and (currencyKeyPrefix and currParsers.currency) map { it }
     private val additionalCurrenciesChain by zeroOrMore(currencyKey)
+
+    private val rateApiParser: Parser<RateApi> = tokenDict.api or tokenDict.invalidTextToken map {
+        if (it.type == tokenDict.invalidTextToken) {
+            throw InvalidTextFoundException(it)
+        }
+        rateApiAliasMatcher.match(it.text)
+    }
+    private val apiConfig = optional(skip(tokenDict.whitespace) and rateApiParser map { it })
 
     private val onlyCurrencyExpressionParser by currParsers.currency map {
         CurrenciedExpression(Const(1.toFiniteBigDecimal()), it)
@@ -44,9 +54,8 @@ class BotInputGrammar(
     private val multiCurrencyExpressionParser by currParsers.currenciedSubSumChain
     private val allValidExpressionParsers by multiCurrencyExpressionParser or singleCurrencyExpressionParser or onlyCurrencyExpressionParser
 
-    private val botInputParser by allValidExpressionParsers and additionalCurrenciesChain map { (expr, keys) ->
-        BotInput(expr, keys.toSet())
-    }
+    private val botInputParser by allValidExpressionParsers and apiConfig and additionalCurrenciesChain map
+            { (expr, apiConfig, keys) -> BotInput(expr, keys.toSet(), apiConfig ?: rateApiAliasMatcher.default) }
 
     override val tokens = tokenDict.allTokens
 
@@ -66,7 +75,7 @@ class BotInputGrammar(
                     }
                     else -> result
                 }
-            } catch (e: InvalidCurrencyFoundException) {
+            } catch (e: InvalidTextFoundException) {
                 e.toErrorResult()
             }
     }

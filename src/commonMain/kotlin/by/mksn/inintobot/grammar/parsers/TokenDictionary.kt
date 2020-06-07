@@ -1,6 +1,6 @@
 package by.mksn.inintobot.grammar.parsers
 
-import by.mksn.inintobot.currency.CurrencyAliasMatcher
+import by.mksn.inintobot.misc.AliasMatcher
 import com.github.h0tk3y.betterParse.grammar.token
 import com.github.h0tk3y.betterParse.lexer.Token
 
@@ -12,7 +12,7 @@ import com.github.h0tk3y.betterParse.lexer.Token
  *                           determine which token is a currency and which is just a malformed input
  */
 @ExperimentalStdlibApi
-class TokenDictionary(allCurrenciesRegex: Regex) {
+class TokenDictionary(allCurrenciesRegex: Regex, allApisRegex: Regex) {
 
     // greedy whitespace occupation and optional integer part
     val number = token("number", "((\\d\\s*)+)?[.,](\\s*\\d)+|(\\d\\s*)*\\d")
@@ -26,7 +26,10 @@ class TokenDictionary(allCurrenciesRegex: Regex) {
     val ampersand = token("'&'", "&")
 
     // currency can be added with this prefix to allow expressions like '1 dollar into euro'
-    val inIntoUnion = token("union 'в'/'in'/'into'", "(?<=\\s)(into|in|в)(?=\\s)")
+    val inIntoUnion = token("union 'в'/'на'/'in'/'into'", "(?<=\\s)(?iu)(into|in|в|на)(?-iu)(?=\\s)")
+
+    val apiOption = token("API key", "(?iu)(\\-(a|а)|\\-\\-(api|апи))=?(?-iu)")
+    val api = token("API name", allApisRegex)
 
     val whitespace = token("space", "\\s+", ignore = true)
 
@@ -40,17 +43,18 @@ class TokenDictionary(allCurrenciesRegex: Regex) {
 
     /**
      * This token is for proper error handling: it placed last and would be captured only of no other (valid) tokens matched.
-     * @see InvalidCurrencyFoundException
+     * @see InvalidTextFoundException
      */
-    val invalidCurrencyToken = token("invalid currency", CurrencyAliasMatcher.BROAD_ALIAS_REGEX)
+    val invalidTextToken = token("invalid text", AliasMatcher.BROAD_ALIAS_REGEX)
 
     val allTokens: List<Token> = listOf(
         number, currency,
         kilo, mega,
         exclamation, ampersand, inIntoUnion,
+        apiOption, api,
         whitespace,
         leftPar, rightPar,
         multiply, divide, minus, plus,
-        invalidCurrencyToken
+        invalidTextToken
     )
 }

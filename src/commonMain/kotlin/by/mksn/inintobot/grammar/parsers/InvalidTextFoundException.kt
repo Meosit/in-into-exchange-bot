@@ -5,9 +5,9 @@ import com.github.h0tk3y.betterParse.parser.NoMatchingToken
 import com.github.h0tk3y.betterParse.parser.UnparsedRemainder
 
 /**
- * Represents the situation when the invalid alias placed instead of a currency.
+ * Represents the situation when the invalid alias placed instead of a expected text (either Currency or API name).
  * Such logic required since the grammar in the most cases returns [UnparsedRemainder] instead of [NoMatchingToken]
  */
-class InvalidCurrencyFoundException(private val aliasToken: TokenMatch) : RuntimeException() {
+class InvalidTextFoundException(private val aliasToken: TokenMatch) : RuntimeException() {
     fun toErrorResult() = NoMatchingToken(aliasToken)
 }

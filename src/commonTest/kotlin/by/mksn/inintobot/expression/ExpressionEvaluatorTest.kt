@@ -1,7 +1,7 @@
 package by.mksn.inintobot.expression
 
+import by.mksn.inintobot.misc.toFiniteBigDecimal
 import by.mksn.inintobot.test.*
-import by.mksn.inintobot.util.toFiniteBigDecimal
 import kotlin.test.Test
 import kotlin.test.assertEquals
 

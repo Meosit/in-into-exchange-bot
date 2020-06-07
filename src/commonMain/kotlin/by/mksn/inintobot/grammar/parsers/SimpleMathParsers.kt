@@ -1,7 +1,7 @@
 package by.mksn.inintobot.grammar.parsers
 
 import by.mksn.inintobot.expression.*
-import by.mksn.inintobot.util.toFiniteBigDecimal
+import by.mksn.inintobot.misc.toFiniteBigDecimal
 import com.github.h0tk3y.betterParse.combinators.*
 import com.github.h0tk3y.betterParse.grammar.parser
 import com.github.h0tk3y.betterParse.parser.Parser

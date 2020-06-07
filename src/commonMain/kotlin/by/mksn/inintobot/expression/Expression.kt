@@ -1,8 +1,8 @@
 package by.mksn.inintobot.expression
 
 import by.mksn.inintobot.currency.Currency
-import by.mksn.inintobot.util.toFiniteBigDecimal
-import by.mksn.inintobot.util.toStr
+import by.mksn.inintobot.misc.toFiniteBigDecimal
+import by.mksn.inintobot.misc.toStr
 import com.ionspin.kotlin.bignum.decimal.BigDecimal
 
 @ExperimentalUnsignedTypes

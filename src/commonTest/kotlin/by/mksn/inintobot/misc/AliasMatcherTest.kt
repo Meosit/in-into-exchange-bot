@@ -1,16 +1,17 @@
-package by.mksn.inintobot.currency
+package by.mksn.inintobot.misc
 
+import by.mksn.inintobot.currency.Currency
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFails
 
 @ExperimentalStdlibApi
-class CurrencyAliasMatcherTest {
+class AliasMatcherTest {
 
     @Test
     fun exact_currency_code() {
         val expectedCurrency = Currency("USD", "", setOf("dollar", "$"))
-        val matcher = CurrencyAliasMatcher(listOf(expectedCurrency))
+        val matcher = AliasMatcher(listOf(expectedCurrency))
 
         val actualCurrency = matcher.match("USD")
 
@@ -20,7 +21,7 @@ class CurrencyAliasMatcherTest {
     @Test
     fun random_case_currency_code() {
         val expectedCurrency = Currency("USD", "", setOf("dollar", "$"))
-        val matcher = CurrencyAliasMatcher(listOf(expectedCurrency))
+        val matcher = AliasMatcher(listOf(expectedCurrency))
 
         val actualCurrency = matcher.match("Usd")
 
@@ -30,7 +31,7 @@ class CurrencyAliasMatcherTest {
     @Test
     fun exact_alias() {
         val expectedCurrency = Currency("USD", "", setOf("dollar", "$"))
-        val matcher = CurrencyAliasMatcher(listOf(expectedCurrency))
+        val matcher = AliasMatcher(listOf(expectedCurrency))
 
         val actualCurrency = matcher.match("$")
 
@@ -40,7 +41,7 @@ class CurrencyAliasMatcherTest {
     @Test
     fun random_case_alias() {
         val expectedCurrency = Currency("USD", "", setOf("dollar", "$"))
-        val matcher = CurrencyAliasMatcher(listOf(expectedCurrency))
+        val matcher = AliasMatcher(listOf(expectedCurrency))
 
         val actualCurrency = matcher.match("dOlLar")
 
@@ -50,7 +51,7 @@ class CurrencyAliasMatcherTest {
     @Test
     fun russian_to_english_layout_alias() {
         val expectedCurrency = Currency("USD", "", setOf("dollar", "$"))
-        val matcher = CurrencyAliasMatcher(listOf(expectedCurrency))
+        val matcher = AliasMatcher(listOf(expectedCurrency))
 
         val actualCurrency = matcher.match("вщддфк")
 
@@ -59,8 +60,9 @@ class CurrencyAliasMatcherTest {
 
     @Test
     fun english_to_russian_layout_alias() {
-        val expectedCurrency = Currency("USD", "", setOf("dollar", "доллар", "$"))
-        val matcher = CurrencyAliasMatcher(listOf(expectedCurrency))
+        val expectedCurrency =
+            Currency("USD", "", setOf("dollar", "доллар", "$"))
+        val matcher = AliasMatcher(listOf(expectedCurrency))
 
         val actualCurrency = matcher.match("ljkkfh")
 
@@ -71,7 +73,7 @@ class CurrencyAliasMatcherTest {
     fun single_letter_alias_collision() {
         val usd = Currency("USD", "", setOf("u"))
         val uah = Currency("UAH", "", setOf("г"))
-        val matcher = CurrencyAliasMatcher(listOf(usd, uah))
+        val matcher = AliasMatcher(listOf(usd, uah))
 
         val englishLetterCurrency = matcher.match("u")
         val russianLetterCurrency = matcher.match("г")
@@ -82,8 +84,9 @@ class CurrencyAliasMatcherTest {
 
     @Test
     fun single_non_letter_alias() {
-        val expectedCurrency = Currency("BYN", "", setOf("бр", "б", "бел"))
-        val matcher = CurrencyAliasMatcher(listOf(expectedCurrency))
+        val expectedCurrency =
+            Currency("BYN", "", setOf("бр", "б", "бел"))
+        val matcher = AliasMatcher(listOf(expectedCurrency))
 
         val commaCurrency = matcher.match(",")
         val twoLetterAliasCurrency = matcher.match(",h")
@@ -95,7 +98,7 @@ class CurrencyAliasMatcherTest {
     @Test
     fun no_such_alias() {
         val currency = Currency("BYN", "", setOf("бр", "б", "бел"))
-        val matcher = CurrencyAliasMatcher(listOf(currency))
+        val matcher = AliasMatcher(listOf(currency))
 
         val exception = assertFails { matcher.match("no such alias") }
         assertEquals("Invalid alias 'no such alias'", exception.message)

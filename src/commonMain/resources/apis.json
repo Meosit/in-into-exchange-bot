@@ -1,0 +1,41 @@
+[
+  {
+    "name": "NBRB",
+    "aliases": [
+      "NBRB",
+      "нбрб"
+    ],
+    "base": "BYN",
+    "url": "http://www.nbrb.by/API/ExRates/Rates?Periodicity=0"
+  },
+  {
+    "name": "NBU",
+    "aliases": [
+      "NBU",
+      "нбу"
+    ],
+    "base": "UAH",
+    "url": "https://bank.gov.ua/NBUStatService/v1/statdirectory/exchange?json"
+  },
+  {
+    "name": "Fixer",
+    "aliases": [
+      "Fixer",
+      "fix",
+      "фиксер",
+      "фикс"
+    ],
+    "base": "EUR",
+    "url": "http://data.fixer.io/api/latest?access_key=<access_key>&symbols=BYN,USD,EUR,RUB,UAH,PLN,CZK,GBP,JPY,CNY,KZT,CHF,BGN,TRY,CAD,ISK,DKK,SEK,NOK,BTC,ILS"
+  },
+  {
+    "name": "OpenExchangeRates",
+    "aliases": [
+      "OpenExchangeRates",
+      "oer",
+      "оер"
+    ],
+    "base": "USD",
+    "url": "https://openexchangerates.org/api/latest.json?app_id=<access_key>&symbols=BYN,USD,EUR,RUB,UAH,PLN,CZK,GBP,JPY,CNY,KZT,CHF,BGN,TRY,CAD,ISK,DKK,SEK,NOK,BTC,ILS"
+  }
+]
