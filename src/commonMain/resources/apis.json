@@ -3,7 +3,7 @@
     "name": "NBRB",
     "aliases": [
       "NBRB",
-      "нбрб"
+      "НБРБ"
     ],
     "base": "BYN",
     "url": "http://www.nbrb.by/API/ExRates/Rates?Periodicity=0"
@@ -12,10 +12,30 @@
     "name": "NBU",
     "aliases": [
       "NBU",
-      "нбу"
+      "НБУ"
     ],
     "base": "UAH",
     "url": "https://bank.gov.ua/NBUStatService/v1/statdirectory/exchange?json"
+  },
+  {
+    "name": "CBR",
+    "aliases": [
+      "CBR",
+      "ЦБР",
+      "ЦБРФ"
+    ],
+    "base": "RUB",
+    "url": "http://www.cbr.ru/scripts/XML_daily.asp"
+  },
+  {
+    "name": "ECB",
+    "aliases": [
+      "CBR",
+      "ЦБР",
+      "ЦБРФ"
+    ],
+    "base": "RUB",
+    "url": "http://www.cbr.ru/scripts/XML_daily.asp"
   },
   {
     "name": "Fixer",

@@ -19,7 +19,7 @@
 - Вместо суммы допустимы арифметические выражения с использованием операторов `*`, `/`, `+`, `-` и скобок.
 - Допустимо использование суффиксов _кило-_ и _мега-_ (`10к`/`1kk`/`1.9M`/etc.) в числах.
 - Есть возможность добавлять другие валюты к результату через символ ! или словами-союзами (`в злотые`, `!JPY`, `in $`) (каждая конструкция должна быть отделена пробелами).
-- Поддерживаемые API с курсами валют: [NBRB](http://www.nbrb.by/) (`NBRB`, `НБРБ`), [NBU](https://bank.gov.ua/) (`NBU`, `НБУ`), [Fixer](https://fixer.io/) (`Fixer`, `фиксер`), [OpenExchangeRates](https://openexchangerates.org/) (`OpenExchangeRates`, `OER`, `ОЕР`)
+- Поддерживаемые API с курсами валют: [НБ РБ](http://www.nbrb.by/) (`NBRB`, `НБРБ`), [ЦБ РФ](http://cbr.ru/) (`CBR`, `ЦБР`), [НБ Украины](https://bank.gov.ua/) (`NBU`, `НБУ`), [European Central Bank](https://www.ecb.europa.eu/home/html/index.en.html) (`ECB`, `НБУ`), [Fixer.io](https://fixer.io/) (`Fixer`, `фиксер`), [OpenExchangeRates.org](https://openexchangerates.org/) (`OpenExchangeRates`, `OER`, `ОЕР`)
 - По умолчанию используется `NBRB` API
 
 Обратная связь: @meosit

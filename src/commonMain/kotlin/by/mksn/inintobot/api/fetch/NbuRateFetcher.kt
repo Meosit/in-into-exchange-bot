@@ -1,7 +1,9 @@
 package by.mksn.inintobot.api.fetch
 
+import by.mksn.inintobot.api.RateApi
 import by.mksn.inintobot.misc.BigDecimalSerializer
 import com.ionspin.kotlin.bignum.decimal.BigDecimal
+import io.ktor.client.HttpClient
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
@@ -19,7 +21,8 @@ data class NbuReponseEntry(
 )
 
 @ExperimentalUnsignedTypes
-class NbuRateFetcher(json: Json) : ApiRateFetcher<List<NbuReponseEntry>>(json) {
+class NbuRateFetcher(rateApi: RateApi, client: HttpClient, json: Json) :
+    BaseApiRateFetcher<List<NbuReponseEntry>>(rateApi, client, json) {
     override val serializer: KSerializer<List<NbuReponseEntry>> = NbuReponseEntry.serializer().list
 
     override suspend fun parseResponse(response: List<NbuReponseEntry>) =
