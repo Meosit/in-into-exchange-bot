@@ -1,0 +1,10 @@
+{
+  "invalidCurrencyAlias": "❗Неизвестная валюта '%s'",
+  "illegalCurrencyPlacement": "❗Валюта здесь недопустима",
+  "unparsedReminder": "❗Валидное выражение заканчивается здесь",
+  "mismatchedToken": "❗'%s' не ожидался здесь",
+  "noMatchingToken": "❗Неизвестный ввод '%s'",
+  "divisionByZero": "❗Выражение содержит деление на ноль",
+  "unexpectedError": "❗Неизвестная ошибка",
+  "outputTooBig": "❗Слишком много символов для отображения"
+}

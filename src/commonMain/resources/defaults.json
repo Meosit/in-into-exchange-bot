@@ -1,0 +1,17 @@
+{
+  "language": "ru",
+  "apiName": "NBRB",
+  "outputCurrencies": [
+    "BYN",
+    "USD",
+    "EUR",
+    "RUB"
+  ],
+  "dashboardCurrencies": [
+    "USD",
+    "EUR",
+    "BYN",
+    "UAH",
+    "RUB"
+  ]
+}

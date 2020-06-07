@@ -28,6 +28,7 @@
       "us",
       "dollar",
       "dollars",
+      "bucks",
       "u",
       "d",
       "$",
@@ -302,6 +303,36 @@
       "no",
       "норвегия",
       "норвегии"
+    ]
+  },
+  {
+    "code": "ILS",
+    "emoji": "\uD83C\uDDEE\uD83C\uDDF1",
+    "aliases": [
+      "ILS",
+      "IL",
+      "israel",
+      "shekel",
+      "shekels",
+      "шекель",
+      "шекелей",
+      "шекеля"
+    ]
+  },
+  {
+    "code": "BTC",
+    "emoji": "⛓",
+    "aliases": [
+      "BTC",
+      "bitcoin",
+      "bitcoins",
+      "биткоин",
+      "биткоины",
+      "биткоинов",
+      "бтц",
+      "биток",
+      "битки",
+      "битка"
     ]
   }
 ]
