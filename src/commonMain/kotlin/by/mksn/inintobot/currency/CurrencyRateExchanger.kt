@@ -11,8 +11,8 @@ import com.ionspin.kotlin.bignum.decimal.BigDecimal
  */
 @ExperimentalUnsignedTypes
 class CurrencyRateExchanger(
-    val baseCurrency: Currency,
-    val exchangeRates: Map<Currency, BigDecimal>
+    private val baseCurrency: Currency,
+    private val exchangeRates: Map<Currency, BigDecimal>
 ) {
 
     private fun failUnknownCurrency(currency: Currency): Nothing =
@@ -42,6 +42,7 @@ class CurrencyRateExchanger(
      * Exchanges the provided [value] in the given [sourceCurrency] to multiple [targets] currencies
      * using [exchangeRates] and [baseCurrency] as comparison criteria
      */
-    fun exchange(value: BigDecimal, sourceCurrency: Currency, targets: Set<Currency>): Map<Currency, BigDecimal> =
-        targets.asSequence().map { it to exchange(value, sourceCurrency, it) }.toMap()
+    fun exchange(value: BigDecimal, sourceCurrency: Currency, targets: Set<Currency>): Set<Exchange> =
+        targets.asSequence().map { Exchange(it, exchange(value, sourceCurrency, it)) }.toSet()
+
 }

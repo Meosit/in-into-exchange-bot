@@ -3,6 +3,7 @@ package by.mksn.inintobot.misc
 import by.mksn.inintobot.api.RateApi
 import by.mksn.inintobot.currency.Currency
 import by.mksn.inintobot.output.ErrorMessages
+import by.mksn.inintobot.output.TelegramStrings
 import by.mksn.inintobot.settings.DefaultSettings
 import kotlinx.serialization.DeserializationStrategy
 import kotlinx.serialization.builtins.list
@@ -24,4 +25,7 @@ object ResourceLoader {
 
     fun errorMessages(json: Json, language: String): ErrorMessages =
         json.load("message/$language/errors.json", ErrorMessages.serializer())
+
+    fun telegramStrings(json: Json, language: String): TelegramStrings =
+        json.load("message/$language/telegram.json", TelegramStrings.serializer())
 }

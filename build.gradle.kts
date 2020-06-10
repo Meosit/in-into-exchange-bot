@@ -48,6 +48,8 @@ kotlin {
                 implementation("com.github.h0tk3y.betterParse:better-parse-metadata:$betterParseVersion")
                 implementation("org.jetbrains.kotlinx:kotlinx-serialization-runtime-common:$serializationVersion")
                 implementation("io.ktor:ktor-client-core:$ktorVersion")
+                implementation("io.ktor:ktor-client-json:$ktorVersion")
+                implementation("io.ktor:ktor-client-serialization:$ktorVersion")
             }
         }
         commonTest {
@@ -61,10 +63,11 @@ kotlin {
         jvm().compilations["main"].defaultSourceSet {
             dependencies {
                 implementation(kotlin("stdlib-jdk8"))
-                implementation("io.github.config4k:config4k:0.4.1")
                 implementation("com.github.h0tk3y.betterParse:better-parse-jvm:$betterParseVersion")
                 implementation("org.jetbrains.kotlinx:kotlinx-serialization-runtime:$serializationVersion")
                 implementation("io.ktor:ktor-client-apache:$ktorVersion")
+                implementation("io.ktor:ktor-client-json-jvm:$ktorVersion")
+                implementation("io.ktor:ktor-client-serialization-jvm:$ktorVersion")
             }
         }
         jvm().compilations["test"].defaultSourceSet {
@@ -80,7 +83,8 @@ kotlin {
 //                implementation("com.github.h0tk3y.betterParse:better-parse-js:$betterParseVersion")
 //                implementation("org.jetbrains.kotlinx:kotlinx-serialization-runtime-js:$serializationVersion")
 //                implementation("io.ktor:ktor-client-js:$ktorVersion")
-//                implementation(npm("hocon-parser"))
+//                implementation("io.ktor:ktor-client-json-js:$ktorVersion")
+//                implementation("io.ktor:ktor-client-serialization-js:$ktorVersion")
 //            }
 //        }
 //        js().compilations["test"].defaultSourceSet {
