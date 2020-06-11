@@ -1,5 +1,7 @@
 package by.mksn.inintobot.misc
 
+import kotlin.random.Random
+
 /**
  * A very basic string formatting which supports only `%s` substitution
  */
@@ -25,3 +27,14 @@ fun String.escapeMarkdown() = replace("*", "\\*")
     .replace("_", "\\_")
     .replace("`", "\\`")
 
+
+private const val ALLOWED_CHARACTERS = "0123456789qwertyuiopasdfghjklzxcvbnmQWERTYUIOPASDFGHJKLZXCVBNM"
+private val RANDOM = Random.Default
+
+fun randomId32(): String {
+    val length = 32
+    val sb = StringBuilder(length)
+    for (i in 0 until length)
+        sb.append(ALLOWED_CHARACTERS[RANDOM.nextInt(ALLOWED_CHARACTERS.length)])
+    return sb.toString()
+}

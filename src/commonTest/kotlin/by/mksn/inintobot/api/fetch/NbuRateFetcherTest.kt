@@ -3,12 +3,14 @@ package by.mksn.inintobot.api.fetch
 import by.mksn.inintobot.api.RateApi
 import by.mksn.inintobot.misc.toFiniteBigDecimal
 import by.mksn.inintobot.test.assertEqualsUnordered
+import by.mksn.inintobot.test.fullUrl
 import by.mksn.inintobot.test.runTestBlocking
 import by.mksn.inintobot.test.testCurrencies
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.mock.MockEngine
 import io.ktor.client.engine.mock.respond
-import io.ktor.http.*
+import io.ktor.http.ContentType
+import io.ktor.http.headersOf
 import kotlinx.serialization.UnstableDefault
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonConfiguration
@@ -19,10 +21,6 @@ import kotlin.test.Test
 @ExperimentalUnsignedTypes
 @ExperimentalStdlibApi
 class NbuRateFetcherTest {
-
-
-    private val Url.hostWithPortIfRequired: String get() = if (port == protocol.defaultPort) host else hostWithPort
-    private val Url.fullUrl: String get() = "${protocol.name}://$hostWithPortIfRequired$fullPath"
 
     private lateinit var httpClient: HttpClient
     private val testUrl = "http://test-url.org/getResponse"
