@@ -11,8 +11,9 @@ class ExpressionEvaluatorTest {
 
     private val apiBaseCurrency = testCurrencies.first { it.code == "BYN" }
     private val expressionEvaluator = ExpressionEvaluator(
+        defaultCurrency = apiBaseCurrency,
         apiBaseCurrency = apiBaseCurrency,
-        exchangeToApiBase = { value, _ -> value }
+        exchange = { value, _, _ -> value }
     )
 
     @Test
@@ -284,6 +285,27 @@ class ExpressionEvaluatorTest {
         assertEquals(ExpressionType.SINGLE_CURRENCY_EXPR, exprType)
         assertEquals(apiBaseCurrency, baseCurrency)
         assertEqualsOrdered(listOf(apiBaseCurrency), involvedCurrencies)
+    }
+
+    @Test
+    fun custom_default_currency() {
+        val defaultCurrency = testCurrencies.first { it.code == "KZT" }
+        val apiBaseCurrency = testCurrencies.first { it.code == "BYN" }
+        val expressionEvaluator = ExpressionEvaluator(
+            defaultCurrency = defaultCurrency,
+            apiBaseCurrency = apiBaseCurrency,
+            exchange = { value, _, _ -> value }
+        )
+
+        val expr = Add("1.2222222003030330000000099999999".asConst, 2.3333333.asConst)
+
+        val (value, exprType, stringRepr, baseCurrency, involvedCurrencies) = expressionEvaluator.evaluate(expr)
+
+        assertEquals("3.555555500303033".bigDecimal, value)
+        assertEquals("1.222222200303033 + 2.3333333", stringRepr)
+        assertEquals(ExpressionType.SINGLE_CURRENCY_EXPR, exprType)
+        assertEquals(defaultCurrency, baseCurrency)
+        assertEqualsOrdered(listOf(defaultCurrency), involvedCurrencies)
     }
 
 }

@@ -7,14 +7,15 @@ import com.ionspin.kotlin.bignum.decimal.BigDecimal
 
 /**
  * Evaluates the provided [Expression] with multiple currencies support.
- * @param apiBaseCurrency base [Currency] of the Exchange Rate API used for the evaluation,
- *                        used as default in case no other currencies supplied
- * @param exchangeToApiBase function which exchanges the sum from provided [Currency] to [apiBaseCurrency]
+ * @param defaultCurrency used as default in case no other currencies supplied
+ * @param apiBaseCurrency base [Currency] of the Exchange Rate API used for the evaluation
+ * @param exchange function which exchanges the sum from source to target [Currency]
  */
 @ExperimentalUnsignedTypes
 class ExpressionEvaluator(
+    private val defaultCurrency: Currency,
     private val apiBaseCurrency: Currency,
-    private val exchangeToApiBase: (value: BigDecimal, currency: Currency) -> BigDecimal
+    private val exchange: (value: BigDecimal, source: Currency, target: Currency) -> BigDecimal
 ) {
 
     private data class CurrencyMetadata(
@@ -55,8 +56,8 @@ class ExpressionEvaluator(
         val baseCurrency: Currency?
         when (involvedCurrencies.size) {
             0 -> {
-                involvedCurrencies.add(apiBaseCurrency)
-                baseCurrency = apiBaseCurrency
+                involvedCurrencies.add(defaultCurrency)
+                baseCurrency = defaultCurrency
                 expressionType = when {
                     rootExpr.isOneUnitConst() -> ExpressionType.ONE_UNIT
                     rootExpr.isConst() -> ExpressionType.SINGLE_VALUE
@@ -139,7 +140,7 @@ class ExpressionEvaluator(
             is Multiply -> eval(expr.e1) * eval(expr.e2)
             is Divide -> eval(expr.e1) / eval(expr.e2)
             is CurrenciedExpression -> when (type) {
-                ExpressionType.MULTI_CURRENCY_EXPR -> exchangeToApiBase(eval(expr.e), expr.currency)
+                ExpressionType.MULTI_CURRENCY_EXPR -> exchange(eval(expr.e), expr.currency, apiBaseCurrency)
                 else -> eval(expr.e)
             }
         }
