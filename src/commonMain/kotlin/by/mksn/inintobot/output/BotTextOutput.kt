@@ -1,5 +1,6 @@
 package by.mksn.inintobot.output
 
+import by.mksn.inintobot.misc.BasicInfo
 import by.mksn.inintobot.misc.escapeMarkdown
 import by.mksn.inintobot.misc.trimToLength
 
@@ -10,5 +11,5 @@ data class BotTextOutput(
 
     override fun inlineDescription(): String = markdown.escapeMarkdown()
 
-    override fun markdown(): String = markdown
+    override fun markdown(): String = markdown.trimToLength(BasicInfo.maxOutputLength, "…")
 }

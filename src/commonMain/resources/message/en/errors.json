@@ -4,5 +4,6 @@
   "mismatchedToken": "❗'%s' is unexpected here",
   "noMatchingToken": "❗Illegal token '%s'",
   "divisionByZero": "❗Expression contains division by zero",
+  "queryExpected": "❗Not blank query string expected",
   "unexpectedError": "❗Unexpected error"
 }

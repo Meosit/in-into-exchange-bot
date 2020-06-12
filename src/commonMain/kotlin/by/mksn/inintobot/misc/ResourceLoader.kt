@@ -4,7 +4,6 @@ import by.mksn.inintobot.api.RateApi
 import by.mksn.inintobot.currency.Currency
 import by.mksn.inintobot.output.ErrorMessages
 import by.mksn.inintobot.output.TelegramStrings
-import by.mksn.inintobot.settings.TelegramCredentials
 import by.mksn.inintobot.settings.UserSettings
 import kotlinx.serialization.DeserializationStrategy
 import kotlinx.serialization.builtins.list
@@ -19,7 +18,6 @@ object ResourceLoader {
     fun currencies(json: Json): List<Currency> = json.load("currencies.json", Currency.serializer().list)
     fun apiConfigs(json: Json): List<RateApi> = json.load("apis.json", RateApi.serializer().list)
     fun defaultSettings(json: Json): UserSettings = json.load("defaults.json", UserSettings.serializer())
-    fun credentials(json: Json): TelegramCredentials = json.load("credentials.json", TelegramCredentials.serializer())
 
     fun helpMessage(language: String): String = loadResourceAsString("message/$language/help.md")
     fun patternsMessage(language: String): String = loadResourceAsString("message/$language/patterns.md")

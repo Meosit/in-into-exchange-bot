@@ -4,5 +4,6 @@
   "mismatchedToken": "❗'%s' не ожидался здесь",
   "noMatchingToken": "❗Неизвестный ввод '%s'",
   "divisionByZero": "❗Выражение содержит деление на ноль",
+  "queryExpected": "❗Ожидалась непустая строка запроса",
   "unexpectedError": "❗Неизвестная ошибка"
 }

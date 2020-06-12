@@ -1,5 +1,6 @@
 package by.mksn.inintobot.output
 
+import by.mksn.inintobot.misc.BasicInfo
 import by.mksn.inintobot.misc.escapeMarkdown
 import by.mksn.inintobot.misc.format
 import by.mksn.inintobot.misc.trimToLength
@@ -13,7 +14,7 @@ data class BotErrorOutput(
     val errorPosition: Int,
     val errorMessage: String
 ) : BotOutput {
-    private val trimmedRawInput = rawInput.trimToLength(32, tail = "…")
+    private val trimmedRawInput = rawInput.trimToLength(BasicInfo.maxErrorLineLength, tail = "…")
     override fun inlineTitle() = errorMessage
 
     override fun inlineDescription() = "(at $errorPosition) $rawInput"
