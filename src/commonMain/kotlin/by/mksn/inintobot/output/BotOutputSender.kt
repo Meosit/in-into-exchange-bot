@@ -13,7 +13,7 @@ class BotOutputSender(private val httpClient: HttpClient, apiToken: String) {
 
     private val apiUrl = "https://api.telegram.org/bot$apiToken"
 
-    suspend fun sendChatMessage(chatId: String, replyMessageId: Int? = null, output: BotOutput): Response<Message> =
+    suspend fun sendChatMessage(chatId: String, output: BotOutput, replyMessageId: Long? = null): Response<Message> =
         httpClient.post {
             url("$apiUrl/sendMessage")
             parameter("text", output.markdown())
@@ -25,8 +25,7 @@ class BotOutputSender(private val httpClient: HttpClient, apiToken: String) {
 
     suspend fun sendInlineQuery(queryId: String, vararg outputs: BotOutput): Response<Boolean> {
         val jsonQueryResults = outputs
-            .map { it.toInlineQueryResultArticle() }
-            .joinToString(separator = ", ", prefix = "[", postfix = "]")
+            .joinToString(separator = ", ", prefix = "[", postfix = "]") { it.toInlineQueryResultArticle() }
         return httpClient.post {
             url("$apiUrl/answerInlineQuery")
             parameter("inline_query_id", queryId)

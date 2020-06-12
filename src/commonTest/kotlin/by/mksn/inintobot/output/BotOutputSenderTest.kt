@@ -59,7 +59,7 @@ class BotOutputSenderTest {
     @Test
     fun testChatMessage() {
         val chatId = "1"
-        val replyMessageId = 222
+        val replyMessageId = 222L
         val method = "sendMessage"
 
         val botOutput = object : BotOutput {
@@ -86,7 +86,7 @@ class BotOutputSenderTest {
 
         val sender = BotOutputSender(httpClient, testToken)
 
-        val (result, _, _, _) = runTestBlocking { sender.sendChatMessage(chatId, replyMessageId, botOutput) }
+        val (result, _, _, _) = runTestBlocking { sender.sendChatMessage(chatId, botOutput, replyMessageId) }
 
         assertEquals(message, result)
     }

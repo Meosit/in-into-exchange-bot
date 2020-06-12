@@ -42,7 +42,7 @@ class CurrencyRateExchanger(
      * Exchanges the provided [value] in the given [sourceCurrency] to multiple [targets] currencies
      * using [exchangeRates] and [baseCurrency] as comparison criteria
      */
-    fun exchange(value: BigDecimal, sourceCurrency: Currency, targets: Set<Currency>): Set<Exchange> =
-        targets.asSequence().map { Exchange(it, exchange(value, sourceCurrency, it)) }.toSet()
+    fun exchangeAll(value: BigDecimal, sourceCurrency: Currency, targets: List<Currency>): List<Exchange> =
+        targets.asSequence().map { Exchange(it, exchange(value, sourceCurrency, it)) }.toList()
 
 }
