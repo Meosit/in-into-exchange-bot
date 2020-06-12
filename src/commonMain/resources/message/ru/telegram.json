@@ -9,5 +9,6 @@
     "exchange": "%s %s ⇒ %s",
     "calculate": "#️⃣ Просто посчитать",
     "dashboard": "\uD83D\uDCB9 Курс %s"
-  }
+  },
+  "outputTooBigMessage": "❗Слишком много символов"
 }

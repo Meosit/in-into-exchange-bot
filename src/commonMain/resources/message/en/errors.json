@@ -1,10 +1,8 @@
 {
-  "invalidCurrencyAlias": "❗Unknown currency '%s'",
   "illegalCurrencyPlacement": "❗Illegal currency placement",
   "unparsedReminder": "❗Valid expression ends here",
   "mismatchedToken": "❗'%s' is unexpected here",
   "noMatchingToken": "❗Illegal token '%s'",
   "divisionByZero": "❗Expression contains division by zero",
-  "unexpectedError": "❗Unexpected error",
-  "outputTooBig": "❗Output too long"
+  "unexpectedError": "❗Unexpected error"
 }

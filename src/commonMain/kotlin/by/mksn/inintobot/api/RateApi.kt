@@ -23,5 +23,9 @@ data class RateApi(
     /**
      * API url where to fetch the data from
      */
-    val url: String
+    val url: String,
+    /**
+     * List of currency codes which are unsupported by this API against the list of all currencies
+     */
+    val unsupported: Set<String>
 ) : Aliasable

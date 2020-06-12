@@ -9,5 +9,6 @@
     "exchange": "%s %s ⇒ %s",
     "calculate": "#️⃣ Just calculate",
     "dashboard": "\uD83D\uDCB9 Rates for %s"
-  }
+  },
+  "outputTooBigMessage": "❗Output too big"
 }

@@ -51,13 +51,15 @@ val testApis = listOf(
         name = "NBRB",
         aliases = setOf("NBRB", "rb", "b", "нбрб", "рб", "б"),
         base = "BYN",
-        url = "http://www.nbrb.by/API/ExRates/Rates?Periodicity=0"
+        url = "http://www.nbrb.by/API/ExRates/Rates?Periodicity=0",
+        unsupported = setOf()
     ),
     RateApi(
         name = "NBU",
         aliases = setOf("NBU", "u", "нбу", "у"),
         base = "UAH",
-        url = "https://bank.gov.ua/NBUStatService/v1/statdirectory/exchange?json"
+        url = "https://bank.gov.ua/NBUStatService/v1/statdirectory/exchange?json",
+        unsupported = setOf()
     )
 )
 // @formatter:on

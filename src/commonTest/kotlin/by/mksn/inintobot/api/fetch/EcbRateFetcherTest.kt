@@ -92,7 +92,7 @@ class EcbRateFetcherTest {
     @Test
     fun successful_fetch_and_parse() {
         val json = Json(JsonConfiguration(ignoreUnknownKeys = true))
-        val apiConfig = RateApi("ECB", setOf(), "EUR", testUrl)
+        val apiConfig = RateApi("ECB", setOf(), "EUR", testUrl, setOf())
         val fetcher = EcbRateFetcher(apiConfig, httpClient, json)
         val actualRates = runTestBlocking { fetcher.fetch(testCurrencies) }
         val expectedRates = mapOf(

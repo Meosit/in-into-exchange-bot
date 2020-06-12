@@ -7,12 +7,12 @@ import kotlinx.serialization.Serializable
  */
 @Serializable
 data class ErrorMessages(
-    val invalidCurrencyAlias: String,
     val illegalCurrencyPlacement: String,
     val unparsedReminder: String,
     val mismatchedToken: String,
     val noMatchingToken: String,
     val divisionByZero: String,
     val unexpectedError: String,
-    val outputTooBig: String
+    val outputTooBig: String,
+    val unsupportedCurrency: String
 )

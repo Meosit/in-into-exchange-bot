@@ -12,7 +12,7 @@ interface ApiRateFetcher {
     suspend fun fetch(supported: List<Currency>): Map<Currency, BigDecimal>
 
     companion object {
-        fun <T> forApi(api: RateApi, client: HttpClient, json: Json): ApiRateFetcher {
+        fun forApi(api: RateApi, client: HttpClient, json: Json): ApiRateFetcher {
             return when (api.name) {
                 "NBRB" -> NbrbRateFetcher(api, client, json)
                 "NBU" -> NbuRateFetcher(api, client, json)
