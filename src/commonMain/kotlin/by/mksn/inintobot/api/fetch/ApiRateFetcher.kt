@@ -17,6 +17,7 @@ interface ApiRateFetcher {
                 "NBRB" -> NbrbRateFetcher(api, client, json)
                 "NBU" -> NbuRateFetcher(api, client, json)
                 "CBR" -> CbrRateFetcher(api, client, json)
+                "CBE" -> CbeRateFetcher(api, client, json)
                 "Fixer", "OpenExchangeRates" -> RatesMapRateFetcher(api, client, json)
                 else -> throw IllegalArgumentException("No mapping for rate api '${api.name}'")
             }

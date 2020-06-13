@@ -11,15 +11,15 @@ import kotlinx.serialization.json.Json
 
 @Serializable
 @ExperimentalUnsignedTypes
-data class EcbResponseEntry(
+data class CbeResponseEntry(
     val code: String,
     @Serializable(with = BigDecimalSerializer::class)
     val rate: BigDecimal
 )
 
 @ExperimentalUnsignedTypes
-class EcbRateFetcher(rateApi: RateApi, client: HttpClient, json: Json) :
-    BaseApiRateFetcher<List<EcbResponseEntry>>(rateApi, client, json) {
+class CbeRateFetcher(rateApi: RateApi, client: HttpClient, json: Json) :
+    BaseApiRateFetcher<List<CbeResponseEntry>>(rateApi, client, json) {
 
     private val options = setOf(RegexOption.MULTILINE, RegexOption.IGNORE_CASE)
     private val xmlHeaderRegex = "<\\?xml.+<Cube\\s+time='.*?'>".toRegex(options)
@@ -37,9 +37,9 @@ class EcbRateFetcher(rateApi: RateApi, client: HttpClient, json: Json) :
         return result.replace(trailingCommaRegex, "}]")
     }
 
-    override val serializer: KSerializer<List<EcbResponseEntry>> = EcbResponseEntry.serializer().list
+    override val serializer: KSerializer<List<CbeResponseEntry>> = CbeResponseEntry.serializer().list
 
-    override suspend fun parseResponse(response: List<EcbResponseEntry>) =
+    override suspend fun parseResponse(response: List<CbeResponseEntry>) =
         response.asSequence().associateBy({ it.code }, { it.rate })
 
 }

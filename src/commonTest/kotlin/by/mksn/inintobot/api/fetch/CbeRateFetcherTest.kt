@@ -20,7 +20,7 @@ import kotlin.test.Test
 @UnstableDefault
 @ExperimentalUnsignedTypes
 @ExperimentalStdlibApi
-class EcbRateFetcherTest {
+class CbeRateFetcherTest {
 
     private lateinit var httpClient: HttpClient
     private val testUrl = "http://test-url.org/getResponse"
@@ -93,7 +93,7 @@ class EcbRateFetcherTest {
     fun successful_fetch_and_parse() {
         val json = Json(JsonConfiguration(ignoreUnknownKeys = true))
         val apiConfig = RateApi("ECB", setOf(), "EUR", testUrl, setOf())
-        val fetcher = EcbRateFetcher(apiConfig, httpClient, json)
+        val fetcher = CbeRateFetcher(apiConfig, httpClient, json)
         val actualRates = runTestBlocking { fetcher.fetch(testCurrencies) }
         val expectedRates = mapOf(
             testCurrencies.first { it.code == "USD" } to "1.1330".toFiniteBigDecimal(),
