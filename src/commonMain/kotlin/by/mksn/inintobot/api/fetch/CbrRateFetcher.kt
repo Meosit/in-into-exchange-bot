@@ -11,7 +11,7 @@ import kotlinx.serialization.json.Json
 
 @Serializable
 @ExperimentalUnsignedTypes
-data class CbrReponseEntry(
+data class CbrResponseEntry(
     val code: String,
     @Serializable(with = BigDecimalSerializer::class)
     val scale: BigDecimal,
@@ -21,7 +21,7 @@ data class CbrReponseEntry(
 
 @ExperimentalUnsignedTypes
 class CbrRateFetcher(rateApi: RateApi, client: HttpClient, json: Json) :
-    BaseApiRateFetcher<List<CbrReponseEntry>>(rateApi, client, json) {
+    BaseApiRateFetcher<List<CbrResponseEntry>>(rateApi, client, json) {
 
     private val options = setOf(RegexOption.MULTILINE, RegexOption.IGNORE_CASE)
     private val arrayHeader = "<ValCurs.*?>".toRegex(options)
@@ -48,9 +48,9 @@ class CbrRateFetcher(rateApi: RateApi, client: HttpClient, json: Json) :
         return result.replace(trailingCommaRegex, "}]")
     }
 
-    override val serializer: KSerializer<List<CbrReponseEntry>> = CbrReponseEntry.serializer().list
+    override val serializer: KSerializer<List<CbrResponseEntry>> = CbrResponseEntry.serializer().list
 
-    override suspend fun parseResponse(response: List<CbrReponseEntry>) =
+    override suspend fun parseResponse(response: List<CbrResponseEntry>) =
         response.asSequence().associateBy({ it.code }, { it.rate / it.scale })
 
 }

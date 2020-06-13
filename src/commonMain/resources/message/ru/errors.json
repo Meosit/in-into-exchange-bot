@@ -5,5 +5,6 @@
   "noMatchingToken": "❗Неизвестный ввод '%s'",
   "divisionByZero": "❗Выражение содержит деление на ноль",
   "queryExpected": "❗Ожидалась непустая строка запроса",
+  "unsupportedCurrency": "❗Валюта %s не поддерживается API %s",
   "unexpectedError": "❗Неизвестная ошибка"
 }

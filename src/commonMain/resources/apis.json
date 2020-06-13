@@ -39,10 +39,10 @@
     ]
   },
   {
-    "name": "ECB",
+    "name": "CBE",
     "aliases": [
-      "CBR",
-      "ЕЦБ"
+      "CBE",
+      "ЦБЕ"
     ],
     "base": "EUR",
     "url": "https://www.ecb.europa.eu/stats/eurofxref/eurofxref-daily.xml",

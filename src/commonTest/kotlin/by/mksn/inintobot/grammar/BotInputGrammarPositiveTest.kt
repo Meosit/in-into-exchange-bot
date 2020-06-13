@@ -18,11 +18,10 @@ class BotInputGrammarPositiveTest {
         val input = "1"
         val expectedExpr = 1.asConst
 
-        val (actualExpr, additionalCurrencies, apiConfig) = grammar.parseToEnd(input)
+        val (actualExpr, additionalCurrencies) = grammar.parseToEnd(input)
 
         assertTrue(additionalCurrencies.isEmpty())
         assertEquals(expectedExpr, actualExpr)
-        assertEquals(testApiAliasMatcher.default, apiConfig)
     }
 
     @Test
@@ -30,11 +29,10 @@ class BotInputGrammarPositiveTest {
         val input = "1 + 1"
         val expectedExpr = Add(1.asConst, 1.asConst)
 
-        val (actualExpr, additionalCurrencies, apiConfig) = grammar.parseToEnd(input)
+        val (actualExpr, additionalCurrencies) = grammar.parseToEnd(input)
 
         assertTrue(additionalCurrencies.isEmpty())
         assertEquals(expectedExpr, actualExpr)
-        assertEquals(testApiAliasMatcher.default, apiConfig)
     }
 
     @Test
@@ -42,11 +40,10 @@ class BotInputGrammarPositiveTest {
         val input = "1 * 1"
         val expectedExpr = Multiply(1.asConst, 1.asConst)
 
-        val (actualExpr, additionalCurrencies, apiConfig) = grammar.parseToEnd(input)
+        val (actualExpr, additionalCurrencies) = grammar.parseToEnd(input)
 
         assertTrue(additionalCurrencies.isEmpty())
         assertEquals(expectedExpr, actualExpr)
-        assertEquals(testApiAliasMatcher.default, apiConfig)
     }
 
     @Test
@@ -54,11 +51,10 @@ class BotInputGrammarPositiveTest {
         val input = "1 * 1 + 2"
         val expectedExpr = Add(Multiply(1.asConst, 1.asConst), 2.asConst)
 
-        val (actualExpr, additionalCurrencies, apiConfig) = grammar.parseToEnd(input)
+        val (actualExpr, additionalCurrencies) = grammar.parseToEnd(input)
 
         assertTrue(additionalCurrencies.isEmpty())
         assertEquals(expectedExpr, actualExpr)
-        assertEquals(testApiAliasMatcher.default, apiConfig)
     }
 
     @Test
@@ -66,11 +62,10 @@ class BotInputGrammarPositiveTest {
         val input = "1\n*\n1   \n+ 2"
         val expectedExpr = Add(Multiply(1.asConst, 1.asConst), 2.asConst)
 
-        val (actualExpr, additionalCurrencies, apiConfig) = grammar.parseToEnd(input)
+        val (actualExpr, additionalCurrencies) = grammar.parseToEnd(input)
 
         assertTrue(additionalCurrencies.isEmpty())
         assertEquals(expectedExpr, actualExpr)
-        assertEquals(testApiAliasMatcher.default, apiConfig)
     }
 
     @Test
@@ -78,23 +73,22 @@ class BotInputGrammarPositiveTest {
         val input = "1 * 1.11 + .33 - ,23"
         val expectedExpr = Subtract(Add(Multiply(1.asConst, 1.11.asConst), 0.33.asConst), 0.23.asConst)
 
-        val (actualExpr, additionalCurrencies, apiConfig) = grammar.parseToEnd(input)
+        val (actualExpr, additionalCurrencies) = grammar.parseToEnd(input)
 
         assertTrue(additionalCurrencies.isEmpty())
         assertEquals(expectedExpr, actualExpr)
-        assertEquals(testApiAliasMatcher.default, apiConfig)
     }
 
     @Test
     fun expression_with_brackets() {
-        val input = "(1 * 1) / (7 - 2)"
+        val input = "(1 * 1) / (7 - 2) #4"
         val expectedExpr = Divide(Multiply(1.asConst, 1.asConst), Subtract(7.asConst, 2.asConst))
 
-        val (actualExpr, additionalCurrencies, apiConfig) = grammar.parseToEnd(input)
+        val (actualExpr, additionalCurrencies, _, decimalDigits) = grammar.parseToEnd(input)
 
         assertTrue(additionalCurrencies.isEmpty())
         assertEquals(expectedExpr, actualExpr)
-        assertEquals(testApiAliasMatcher.default, apiConfig)
+        assertEquals(4, decimalDigits)
     }
 
     @Test
@@ -105,11 +99,10 @@ class BotInputGrammarPositiveTest {
             Divide(Subtract(7.asConst, 2.asConst), 2.asConst)
         )
 
-        val (actualExpr, additionalCurrencies, apiConfig) = grammar.parseToEnd(input)
+        val (actualExpr, additionalCurrencies) = grammar.parseToEnd(input)
 
         assertTrue(additionalCurrencies.isEmpty())
         assertEquals(expectedExpr, actualExpr)
-        assertEquals(testApiAliasMatcher.default, apiConfig)
     }
 
     @Test
@@ -117,11 +110,10 @@ class BotInputGrammarPositiveTest {
         val input = "1 гривна"
         val expectedExpr = CurrenciedExpression(1.asConst, "UAH".toCurrency())
 
-        val (actualExpr, additionalCurrencies, apiConfig) = grammar.parseToEnd(input)
+        val (actualExpr, additionalCurrencies) = grammar.parseToEnd(input)
 
         assertTrue(additionalCurrencies.isEmpty())
         assertEquals(expectedExpr, actualExpr)
-        assertEquals(testApiAliasMatcher.default, apiConfig)
     }
 
     @Test
@@ -129,11 +121,10 @@ class BotInputGrammarPositiveTest {
         val input = "1 + 1 гривна"
         val expectedExpr = CurrenciedExpression(Add(1.asConst, 1.asConst), "UAH".toCurrency())
 
-        val (actualExpr, additionalCurrencies, apiConfig) = grammar.parseToEnd(input)
+        val (actualExpr, additionalCurrencies) = grammar.parseToEnd(input)
 
         assertTrue(additionalCurrencies.isEmpty())
         assertEquals(expectedExpr, actualExpr)
-        assertEquals(testApiAliasMatcher.default, apiConfig)
     }
 
     @Test
@@ -144,11 +135,10 @@ class BotInputGrammarPositiveTest {
             CurrenciedExpression(1.417.asConst, "BYN".toCurrency())
         )
 
-        val (actualExpr, additionalCurrencies, apiConfig) = grammar.parseToEnd(input)
+        val (actualExpr, additionalCurrencies) = grammar.parseToEnd(input)
 
         assertTrue(additionalCurrencies.isEmpty())
         assertEquals(expectedExpr, actualExpr)
-        assertEquals(testApiAliasMatcher.default, apiConfig)
     }
 
     @Test
@@ -160,10 +150,9 @@ class BotInputGrammarPositiveTest {
         )
         val expectedExpr = CurrenciedExpression(10.asConst, "EUR".toCurrency())
 
-        val (actualExpr, additionalCurrencies, apiConfig) = grammar.parseToEnd(input)
+        val (actualExpr, additionalCurrencies) = grammar.parseToEnd(input)
 
         assertEquals(expectedExpr, actualExpr)
-        assertEquals(testApiAliasMatcher.default, apiConfig)
 
         assertEqualsUnordered(expectedAdditionalCurrencies, additionalCurrencies)
     }
@@ -177,10 +166,9 @@ class BotInputGrammarPositiveTest {
         )
         val expectedExpr = CurrenciedExpression(10.asConst, "EUR".toCurrency())
 
-        val (actualExpr, additionalCurrencies, apiConfig) = grammar.parseToEnd(input)
+        val (actualExpr, additionalCurrencies) = grammar.parseToEnd(input)
 
         assertEquals(expectedExpr, actualExpr)
-        assertEquals(testApiAliasMatcher.default, apiConfig)
 
         assertEqualsUnordered(expectedAdditionalCurrencies, additionalCurrencies)
     }
@@ -221,11 +209,10 @@ class BotInputGrammarPositiveTest {
             CurrenciedExpression(3.asConst, "EUR".toCurrency())
         )
 
-        val (actualExpr, additionalCurrencies, apiConfig) = grammar.parseToEnd(input)
+        val (actualExpr, additionalCurrencies) = grammar.parseToEnd(input)
 
         assertTrue(additionalCurrencies.isEmpty())
         assertEquals(expectedExpr, actualExpr)
-        assertEquals(testApiAliasMatcher.default, apiConfig)
     }
 
     @Test
@@ -233,11 +220,10 @@ class BotInputGrammarPositiveTest {
         val input = "10k"
         val expectedExpr = ConstWithSuffixes(10.bigDecimal, 1, SuffixType.KILO)
 
-        val (actualExpr, additionalCurrencies, apiConfig) = grammar.parseToEnd(input)
+        val (actualExpr, additionalCurrencies) = grammar.parseToEnd(input)
 
         assertTrue(additionalCurrencies.isEmpty())
         assertEquals(expectedExpr, actualExpr)
-        assertEquals(testApiAliasMatcher.default, apiConfig)
     }
 
     @Test
@@ -245,11 +231,10 @@ class BotInputGrammarPositiveTest {
         val input = "10 kk k"
         val expectedExpr = ConstWithSuffixes(10.bigDecimal, 3, SuffixType.KILO)
 
-        val (actualExpr, additionalCurrencies, apiConfig) = grammar.parseToEnd(input)
+        val (actualExpr, additionalCurrencies) = grammar.parseToEnd(input)
 
         assertTrue(additionalCurrencies.isEmpty())
         assertEquals(expectedExpr, actualExpr)
-        assertEquals(testApiAliasMatcher.default, apiConfig)
     }
 
     @Test
@@ -257,11 +242,10 @@ class BotInputGrammarPositiveTest {
         val input = "10Mmm"
         val expectedExpr = ConstWithSuffixes(10.bigDecimal, 3, SuffixType.MEGA)
 
-        val (actualExpr, additionalCurrencies, apiConfig) = grammar.parseToEnd(input)
+        val (actualExpr, additionalCurrencies) = grammar.parseToEnd(input)
 
         assertTrue(additionalCurrencies.isEmpty())
         assertEquals(expectedExpr, actualExpr)
-        assertEquals(testApiAliasMatcher.default, apiConfig)
     }
 
     @Test
@@ -272,11 +256,10 @@ class BotInputGrammarPositiveTest {
             "BYN".toCurrency()
         )
 
-        val (actualExpr, additionalCurrencies, apiConfig) = grammar.parseToEnd(input)
+        val (actualExpr, additionalCurrencies) = grammar.parseToEnd(input)
 
         assertTrue(additionalCurrencies.isEmpty())
         assertEquals(expectedExpr, actualExpr)
-        assertEquals(testApiAliasMatcher.default, apiConfig)
     }
 
     @Test
@@ -287,11 +270,10 @@ class BotInputGrammarPositiveTest {
             "KZT".toCurrency()
         )
 
-        val (actualExpr, additionalCurrencies, apiConfig) = grammar.parseToEnd(input)
+        val (actualExpr, additionalCurrencies) = grammar.parseToEnd(input)
 
         assertTrue(additionalCurrencies.isEmpty())
         assertEquals(expectedExpr, actualExpr)
-        assertEquals(testApiAliasMatcher.default, apiConfig)
     }
 
     @Test
@@ -302,11 +284,10 @@ class BotInputGrammarPositiveTest {
             "KZT".toCurrency()
         )
 
-        val (actualExpr, additionalCurrencies, apiConfig) = grammar.parseToEnd(input)
+        val (actualExpr, additionalCurrencies) = grammar.parseToEnd(input)
 
         assertTrue(additionalCurrencies.isEmpty())
         assertEquals(expectedExpr, actualExpr)
-        assertEquals(testApiAliasMatcher.default, apiConfig)
     }
 
     @Test
@@ -314,11 +295,10 @@ class BotInputGrammarPositiveTest {
         val input = "$10"
         val expectedExpr = CurrenciedExpression(10.asConst, "USD".toCurrency())
 
-        val (actualExpr, additionalCurrencies, apiConfig) = grammar.parseToEnd(input)
+        val (actualExpr, additionalCurrencies) = grammar.parseToEnd(input)
 
         assertTrue(additionalCurrencies.isEmpty())
         assertEquals(expectedExpr, actualExpr)
-        assertEquals(testApiAliasMatcher.default, apiConfig)
     }
 
     @Test
@@ -329,11 +309,10 @@ class BotInputGrammarPositiveTest {
             CurrenciedExpression(33.asConst, "BYN".toCurrency())
         )
 
-        val (actualExpr, additionalCurrencies, apiConfig) = grammar.parseToEnd(input)
+        val (actualExpr, additionalCurrencies) = grammar.parseToEnd(input)
 
         assertTrue(additionalCurrencies.isEmpty())
         assertEquals(expectedExpr, actualExpr)
-        assertEquals(testApiAliasMatcher.default, apiConfig)
     }
 
     @Test
@@ -344,10 +323,9 @@ class BotInputGrammarPositiveTest {
             CurrenciedExpression(33.asConst, "EUR".toCurrency())
         )
 
-        val (actualExpr, additionalCurrencies, apiConfig) = grammar.parseToEnd(input)
+        val (actualExpr, additionalCurrencies) = grammar.parseToEnd(input)
 
         assertTrue(additionalCurrencies.isEmpty())
         assertEquals(expectedExpr, actualExpr)
-        assertEquals(testApiAliasMatcher.default, apiConfig)
     }
 }

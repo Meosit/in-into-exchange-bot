@@ -1,18 +1,20 @@
+import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
+
 buildscript {
     repositories {
         jcenter()
         maven { setUrl("https://kotlin.bintray.com/kotlinx") }
     }
     dependencies {
-        classpath("com.github.jengelman.gradle.plugins:shadow:4.0.2")
-        val kotlinVersion = "1.3.70"
+        classpath("com.github.jengelman.gradle.plugins:shadow:5.0.0")
+        val kotlinVersion = "1.3.72"
         classpath(kotlin("gradle-plugin", version = kotlinVersion))
         classpath(kotlin("serialization", version = kotlinVersion))
     }
 }
 plugins {
-    kotlin("multiplatform") version "1.3.70"
-    kotlin("plugin.serialization") version "1.3.70"
+    kotlin("multiplatform") version "1.3.72"
+    kotlin("plugin.serialization") version "1.3.72"
 }
 repositories {
     mavenCentral()
@@ -68,6 +70,9 @@ kotlin {
                 implementation("io.ktor:ktor-client-apache:$ktorVersion")
                 implementation("io.ktor:ktor-client-json-jvm:$ktorVersion")
                 implementation("io.ktor:ktor-client-serialization-jvm:$ktorVersion")
+
+                implementation("com.amazonaws:aws-lambda-java-core:1.2.1")
+                implementation("com.amazonaws:aws-lambda-java-events:3.1.0")
             }
         }
         jvm().compilations["test"].defaultSourceSet {
@@ -93,5 +98,17 @@ kotlin {
 //                implementation("io.ktor:ktor-client-mock-js:$ktorVersion")
 //            }
 //        }
+    }
+}
+
+tasks {
+    val shadowCreate by creating(ShadowJar::class) {
+        archiveFileName.set("InIntoBotJvm.jar")
+        from(kotlin.jvm().compilations.getByName("main").output)
+        configurations =
+            mutableListOf(kotlin.jvm().compilations.getByName("main").compileDependencyFiles as Configuration)
+    }
+    val build by existing {
+        dependsOn(shadowCreate)
     }
 }

@@ -12,6 +12,7 @@ data class BotJustCalculateOutput(
     private val outputExpression = "${expression.stringRepr} = ${expression.result.toStr()}"
 
     override fun inlineTitle() = strings.inlineTitles.calculate
+    override fun inlineThumbUrl() = strings.inlineThumbs.calculate
 
     override fun inlineDescription() = outputExpression
 

@@ -15,16 +15,13 @@ class CurrencyRateExchanger(
     private val exchangeRates: Map<Currency, BigDecimal>
 ) {
 
-    private fun failUnknownCurrency(currency: Currency): Nothing =
-        throw IllegalArgumentException("Unknown currency: $currency")
-
     /**
      * Exchanges the provided [value] in the given [currency] to the [baseCurrency] according to the [exchangeRates]
      */
     fun exchangeToBase(value: BigDecimal, currency: Currency): BigDecimal =
         value.takeIf { currency == baseCurrency }
-            ?: exchangeRates[currency]?.let { rate -> value * rate }
-            ?: failUnknownCurrency(currency)
+            ?: exchangeRates[currency]?.let { rate -> value / rate }
+            ?: throw UnknownCurrencyException(currency)
 
     /**
      * Exchanges the provided [value] in the given [sourceCurrency] to the [targetCurrency]
@@ -34,8 +31,8 @@ class CurrencyRateExchanger(
         when (targetCurrency) {
             sourceCurrency -> value
             baseCurrency -> exchangeToBase(value, sourceCurrency)
-            else -> exchangeRates[targetCurrency]?.let { rate -> exchangeToBase(value, sourceCurrency) / rate }
-                ?: failUnknownCurrency(targetCurrency)
+            else -> exchangeRates[targetCurrency]?.let { rate -> exchangeToBase(value, sourceCurrency) * rate }
+                ?: throw UnknownCurrencyException(targetCurrency)
         }
 
     /**
@@ -46,3 +43,5 @@ class CurrencyRateExchanger(
         targets.asSequence().map { Exchange(it, exchange(value, sourceCurrency, it)) }.toList()
 
 }
+
+class UnknownCurrencyException(val currency: Currency) : RuntimeException()

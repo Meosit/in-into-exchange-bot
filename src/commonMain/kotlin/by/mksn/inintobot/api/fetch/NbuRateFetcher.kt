@@ -12,7 +12,7 @@ import kotlinx.serialization.json.Json
 
 @Serializable
 @ExperimentalUnsignedTypes
-data class NbuReponseEntry(
+data class NbuResponseEntry(
     @SerialName("cc")
     val code: String,
     @Serializable(with = BigDecimalSerializer::class)
@@ -22,10 +22,10 @@ data class NbuReponseEntry(
 
 @ExperimentalUnsignedTypes
 class NbuRateFetcher(rateApi: RateApi, client: HttpClient, json: Json) :
-    BaseApiRateFetcher<List<NbuReponseEntry>>(rateApi, client, json) {
-    override val serializer: KSerializer<List<NbuReponseEntry>> = NbuReponseEntry.serializer().list
+    BaseApiRateFetcher<List<NbuResponseEntry>>(rateApi, client, json) {
+    override val serializer: KSerializer<List<NbuResponseEntry>> = NbuResponseEntry.serializer().list
 
-    override suspend fun parseResponse(response: List<NbuReponseEntry>) =
+    override suspend fun parseResponse(response: List<NbuResponseEntry>) =
         response.asSequence().associateBy({ it.code }, { it.rate })
 
 }

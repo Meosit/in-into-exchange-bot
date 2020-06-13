@@ -39,3 +39,10 @@ fun Double.toFiniteBigDecimal() = toBigDecimal(decimalMode = DEFAULT_DECIMAL_MOD
  */
 @ExperimentalUnsignedTypes
 fun BigDecimal.toStr() = toStringExpanded().trimEnd { it == '.' }
+
+/**
+ * Converts a value to string with rounding to [decimalDigits] after decimal point
+ */
+@ExperimentalUnsignedTypes
+fun BigDecimal.toStr(decimalDigits: Long) =
+    roundToDigitPositionAfterDecimalPoint(decimalDigits, DEFAULT_ROUNDING_MODE).toStr()

@@ -1,5 +1,6 @@
 {
   "language": "ru",
+  "decimalDigits": 2,
   "defaultCurrency": "BYN",
   "apiName": "NBRB",
   "outputCurrencies": [

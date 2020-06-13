@@ -15,10 +15,12 @@ suspend fun Message.handle(json: Json, httpClient: HttpClient, settings: UserSet
     val sender = BotOutputSender(httpClient, botToken)
     when (text) {
         "", null -> {
+            println("'$text' message text received")
             val errorMessages = ResourceLoader.errorMessages(json, settings.language)
             sender.sendChatMessage(chat.id.toString(), BotTextOutput(errorMessages.queryExpected))
         }
         "/start", "/help", "/patterns", "/apis" -> {
+            println("Handling bot command $text")
             val message = when (text) {
                 "/patterns" -> ResourceLoader.patternsMessage(settings.language)
                 "/apis" -> ResourceLoader.apisMessage(settings.language)
@@ -27,8 +29,9 @@ suspend fun Message.handle(json: Json, httpClient: HttpClient, settings: UserSet
             sender.sendChatMessage(chat.id.toString(), BotTextOutput(message))
         }
         else -> {
+            println("Handling '$text' chat message")
             val outputs = handleNonEmptyInput(text, json, httpClient, settings)
-            outputs.forEach { sender.sendChatMessage(chat.id.toString(), it, messageId) }
+            outputs.firstOrNull()?.let { sender.sendChatMessage(chat.id.toString(), it) }
         }
     }
 }

@@ -13,6 +13,7 @@ data class BotSuccessOutput(
     val expression: EvaluatedExpression,
     val exchanges: List<Exchange>,
     val strings: TelegramStrings,
+    val decimalDigits: Long,
     val apiName: String? = null
 ) : BotOutput {
 
@@ -26,12 +27,12 @@ data class BotSuccessOutput(
         }
         val apiHeader = apiName?.let { strings.headers.api.format(it) } ?: ""
         val exchangeBody = exchanges
-            .joinToString("\n") { "`${it.currency.emoji}${it.currency.code}`  `${it.value.toStr()}`" }
+            .joinToString("\n") { "`${it.currency.emoji}${it.currency.code}`  `${it.value.toStr(decimalDigits)}`" }
         (expressionHeader + apiHeader + exchangeBody).trimToLength(BasicInfo.maxOutputLength, "… ${strings.outputTooBigMessage}")
     }
 
     override fun inlineTitle() = when (expression.type) {
-        ExpressionType.ONE_UNIT -> strings.inlineTitles.dashboard.format(expression.involvedCurrencies.first())
+        ExpressionType.ONE_UNIT -> strings.inlineTitles.dashboard.format(expression.involvedCurrencies.first().code)
         ExpressionType.MULTI_CURRENCY_EXPR ->
             strings.inlineTitles.exchange.format("\uD83D\uDCB1",
                 expression.involvedCurrencies.joinToString(",") { it.code },
@@ -54,6 +55,11 @@ data class BotSuccessOutput(
         .replace("`", "")
         .replace("_", "")
         .replace("\n", " ")
+
+    override fun inlineThumbUrl() = when (expression.type) {
+        ExpressionType.ONE_UNIT -> strings.inlineThumbs.dashboard
+        else -> strings.inlineThumbs.exchange
+    }
 
     override fun markdown() = markdown
 }

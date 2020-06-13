@@ -8,7 +8,8 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class TelegramStrings(
     val headers: TelegramMessageHeaders,
-    val inlineTitles: TelegramInlineTitles,
+    val inlineTitles: TelegramInlines,
+    val inlineThumbs: TelegramInlines,
     val outputTooBigMessage: String
 )
 
@@ -21,7 +22,7 @@ data class TelegramMessageHeaders(
 )
 
 @Serializable
-data class TelegramInlineTitles(
+data class TelegramInlines(
     val exchange: String,
     val calculate: String,
     val dashboard: String

@@ -11,9 +11,9 @@ class CurrencyRateExchangerTest {
 
     private val baseCurrency = "BYN".toCurrency()
     private val exchangeRates = mapOf(
-        "USD".toCurrency() to 2.bigDecimal,
-        "EUR".toCurrency() to 3.bigDecimal,
-        "UAH".toCurrency() to 0.2.bigDecimal
+        "USD".toCurrency() to 0.5.bigDecimal,
+        "EUR".toCurrency() to 0.4.bigDecimal,
+        "UAH".toCurrency() to 2.bigDecimal
     )
 
     private val currencyRateExchanger = CurrencyRateExchanger(baseCurrency, exchangeRates)
@@ -35,7 +35,7 @@ class CurrencyRateExchangerTest {
 
         val exchangedValue = currencyRateExchanger.exchangeToBase(value, sourceCurrency)
 
-        assertEquals(2.bigDecimal, exchangedValue)
+        assertEquals(5.bigDecimal, exchangedValue)
     }
 
     @Test
@@ -46,7 +46,7 @@ class CurrencyRateExchangerTest {
 
         val exchangedValue = currencyRateExchanger.exchange(value, sourceCurrency, targetCurrency)
 
-        assertEquals(100.bigDecimal, exchangedValue)
+        assertEquals(40.bigDecimal, exchangedValue)
     }
 
     @Test
@@ -57,7 +57,7 @@ class CurrencyRateExchangerTest {
 
         val exchangedValue = currencyRateExchanger.exchange(value, sourceCurrency, targetCurrency)
 
-        assertEquals(10.bigDecimal / 3.bigDecimal * 2.bigDecimal, exchangedValue)
+        assertEquals(10.bigDecimal / 2.5.bigDecimal * 2.bigDecimal, exchangedValue)
     }
 
 

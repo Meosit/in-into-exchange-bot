@@ -5,6 +5,7 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class UserSettings(
     val language: String,
+    val decimalDigits: Long,
     val defaultCurrency: String,
     val apiName: String,
     val outputCurrencies: List<String>,

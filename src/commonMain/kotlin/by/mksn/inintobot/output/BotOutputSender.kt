@@ -1,8 +1,6 @@
 package by.mksn.inintobot.output
 
 import by.mksn.inintobot.misc.randomId32
-import by.mksn.inintobot.telegram.Message
-import by.mksn.inintobot.telegram.Response
 import io.ktor.client.HttpClient
 import io.ktor.client.request.parameter
 import io.ktor.client.request.post
@@ -13,20 +11,21 @@ class BotOutputSender(private val httpClient: HttpClient, apiToken: String) {
 
     private val apiUrl = "https://api.telegram.org/bot$apiToken"
 
-    suspend fun sendChatMessage(chatId: String, output: BotOutput, replyMessageId: Long? = null): Response<Message> =
-        httpClient.post {
+    suspend fun sendChatMessage(chatId: String, output: BotOutput, replyMessageId: Long? = null) {
+        httpClient.post<String> {
             url("$apiUrl/sendMessage")
             parameter("text", output.markdown())
-            parameter("parse_mode", "MarkdownV2")
+            parameter("parse_mode", "Markdown")
             parameter("disable_web_page_preview", true)
             parameter("chat_id", chatId)
             replyMessageId?.let { parameter("reply_to_message_id", it.toString()) }
         }
+    }
 
-    suspend fun sendInlineQuery(queryId: String, vararg outputs: BotOutput): Response<Boolean> {
+    suspend fun sendInlineQuery(queryId: String, vararg outputs: BotOutput) {
         val jsonQueryResults = outputs
             .joinToString(separator = ", ", prefix = "[", postfix = "]") { it.toInlineQueryResultArticle() }
-        return httpClient.post {
+        httpClient.post<String> {
             url("$apiUrl/answerInlineQuery")
             parameter("inline_query_id", queryId)
             parameter("results", jsonQueryResults)
@@ -39,9 +38,10 @@ class BotOutputSender(private val httpClient: HttpClient, apiToken: String) {
       "id": "${randomId32()}",
       "title": ${JsonLiteral(inlineTitle())},
       "description": ${JsonLiteral(inlineDescription())},
+      "thumb_url": ${JsonLiteral(inlineThumbUrl())},
       "input_message_content": {
         "message_text": ${JsonLiteral(markdown())},
-        "parse_mode": "MarkdownV2",
+        "parse_mode": "Markdown",
         "disable_web_page_preview": true
       }
     }""".trimIndent().replace("\n", "")

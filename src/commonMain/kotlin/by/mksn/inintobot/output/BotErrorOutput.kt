@@ -16,6 +16,7 @@ data class BotErrorOutput(
 ) : BotOutput {
     private val trimmedRawInput = rawInput.trimToLength(BasicInfo.maxErrorLineLength, tail = "…")
     override fun inlineTitle() = errorMessage
+    override fun inlineThumbUrl() = "https://i.imgur.com/yTMgvf9.png"
 
     override fun inlineDescription() = "(at $errorPosition) $rawInput"
 

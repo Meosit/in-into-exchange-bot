@@ -12,8 +12,7 @@ data class ErrorMessages(
     val mismatchedToken: String,
     val noMatchingToken: String,
     val divisionByZero: String,
-    val unexpectedError: String,
-    val outputTooBig: String,
     val queryExpected: String,
-    val unsupportedCurrency: String
+    val unsupportedCurrency: String,
+    val unexpectedError: String
 )

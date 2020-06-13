@@ -23,7 +23,7 @@ import kotlinx.serialization.json.JsonConfiguration
 @ExperimentalUnsignedTypes
 @ExperimentalStdlibApi
 @UnstableDefault
-suspend fun handleRequest(requestBody: String, botToken: String) {
+suspend fun handleTelegramRequest(requestBody: String, botToken: String) {
     val json = Json(JsonConfiguration(ignoreUnknownKeys = true))
     val httpClient = createHttpClient(json)
     BasicInfo.load(json)
@@ -41,10 +41,12 @@ suspend fun handleRequest(requestBody: String, botToken: String) {
             }
         }
     } catch (e: Exception) {
-        val cause = (e as? ResponseException)?.response?.readText() ?: e.message ?: "No exception message supplied"
+        val cause = (e as? ResponseException)?.response?.readText() ?: e.message
+        ?: "No exception message supplied (${e::class.simpleName})"
         val queryString = (update.message ?: update.editedMessage)?.text ?: update.inlineQuery?.query
         val user = update.inlineQuery?.from?.userReadableName()
             ?: (update.message ?: update.editedMessage)?.chat?.userReadableName()
+        println("Error for query '$queryString': $cause")
         if ("query is too old" !in cause) {
             val sender = BotOutputSender(httpClient, botToken)
             val message = BotTextOutput("Error received.\n```\nQuery: $queryString\nUser: $user\n\nCause: $cause```")

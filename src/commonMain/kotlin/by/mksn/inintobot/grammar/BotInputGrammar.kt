@@ -43,6 +43,10 @@ class BotInputGrammar(
     }
     private val apiConfig = optional(skip(tokenDict.whitespace) and rateApiParser map { it })
 
+    private val decimalDigitsNumber = tokenDict.number map { it.text.toLongOrNull() }
+    private val decimalDigitsConfig =
+        optional(skip(tokenDict.whitespace) and skip(tokenDict.decimalDigitsOption) and decimalDigitsNumber map { it })
+
     private val onlyCurrencyExpressionParser by currParsers.currency map {
         CurrenciedExpression(Const(1.toFiniteBigDecimal()), it)
     }
@@ -54,8 +58,10 @@ class BotInputGrammar(
     private val multiCurrencyExpressionParser by currParsers.currenciedSubSumChain
     private val allValidExpressionParsers by multiCurrencyExpressionParser or singleCurrencyExpressionParser or onlyCurrencyExpressionParser
 
-    private val botInputParser by allValidExpressionParsers and apiConfig and additionalCurrenciesChain map
-            { (expr, apiConfig, keys) -> BotInput(expr, keys.toSet(), apiConfig ?: rateApiAliasMatcher.default) }
+    private val botInputParser by allValidExpressionParsers and apiConfig and additionalCurrenciesChain and decimalDigitsConfig map
+            { (expr, apiConfig, keys, decimalDigits) ->
+                BotInput(expr, keys.toSet(), apiConfig, decimalDigits)
+            }
 
     override val tokens = tokenDict.allTokens
 

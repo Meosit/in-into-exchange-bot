@@ -12,7 +12,7 @@ interface Aliasable {
  * the same order as the source list.
  */
 @ExperimentalStdlibApi
-class AliasMatcher<T : Aliasable>(available: List<T>, val default: T = available.first()) {
+class AliasMatcher<T : Aliasable>(available: List<T>) {
 
     private val aliases: Map<String, T> = sequence {
         // have to reverse as the `toMap` method takes last key collision over the first

@@ -24,11 +24,11 @@ class TokenDictionary(allCurrenciesRegex: Regex, allApisRegex: Regex) {
 
     val exclamation = token("'!'", "!")
     val ampersand = token("'&'", "&")
+    val decimalDigitsOption = token("decimal digits option '#'", "#")
 
     // currency can be added with this prefix to allow expressions like '1 dollar into euro'
     val inIntoUnion = token("union 'в'/'на'/'in'/'into'", "(?<=\\s)(?iu)(into|in|в|на)(?-iu)(?=\\s)")
 
-    val apiOption = token("API key", "(?iu)(\\-(a|а)|\\-\\-(api|апи))=?(?-iu)")
     val api = token("API name", allApisRegex)
 
     val whitespace = token("space", "\\s+", ignore = true)
@@ -51,7 +51,8 @@ class TokenDictionary(allCurrenciesRegex: Regex, allApisRegex: Regex) {
         number, currency,
         kilo, mega,
         exclamation, ampersand, inIntoUnion,
-        apiOption, api,
+        api,
+        decimalDigitsOption,
         whitespace,
         leftPar, rightPar,
         multiply, divide, minus, plus,
