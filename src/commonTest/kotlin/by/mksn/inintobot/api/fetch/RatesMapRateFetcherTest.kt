@@ -78,7 +78,6 @@ class RatesMapRateFetcherTest {
         val json = Json(JsonConfiguration(ignoreUnknownKeys = true))
         val apiConfig = RateApi("Fixer", setOf(), "USD", testUrl, setOf())
         val fetcher = RatesMapRateFetcher(apiConfig, httpClient, json)
-        val actualRates = runTestBlocking { fetcher.fetch(testCurrencies) }
         val expectedRates = mapOf(
             testCurrencies.first { it.code == "UAH" } to "26.591049".toFiniteBigDecimal(),
             testCurrencies.first { it.code == "USD" } to "1".toFiniteBigDecimal(),
@@ -86,7 +85,10 @@ class RatesMapRateFetcherTest {
             testCurrencies.first { it.code == "KZT" } to "399.629195".toFiniteBigDecimal(),
             testCurrencies.first { it.code == "BYN" } to "2.382028".toFiniteBigDecimal()
         )
-        assertEqualsUnordered(expectedRates.entries, actualRates.entries)
+        runTestBlocking {
+            val actualRates = fetcher.fetch(testCurrencies)
+            assertEqualsUnordered(expectedRates.entries, actualRates.entries)
+        }
     }
 
 }

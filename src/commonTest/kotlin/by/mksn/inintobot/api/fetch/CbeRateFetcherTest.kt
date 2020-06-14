@@ -94,11 +94,13 @@ class CbeRateFetcherTest {
         val json = Json(JsonConfiguration(ignoreUnknownKeys = true))
         val apiConfig = RateApi("ECB", setOf(), "EUR", testUrl, setOf())
         val fetcher = CbeRateFetcher(apiConfig, httpClient, json)
-        val actualRates = runTestBlocking { fetcher.fetch(testCurrencies) }
         val expectedRates = mapOf(
             testCurrencies.first { it.code == "USD" } to "1.1330".toFiniteBigDecimal(),
             testCurrencies.first { it.code == "EUR" } to "1".toFiniteBigDecimal()
         )
-        assertEqualsUnordered(expectedRates.entries, actualRates.entries)
+        runTestBlocking {
+            val actualRates = fetcher.fetch(testCurrencies)
+            assertEqualsUnordered(expectedRates.entries, actualRates.entries)
+        }
     }
 }

@@ -1,7 +1,6 @@
 package by.mksn.inintobot.app
 
 import by.mksn.inintobot.misc.BasicInfo
-import by.mksn.inintobot.misc.ResourceLoader
 import by.mksn.inintobot.output.BotOutputSender
 import by.mksn.inintobot.output.BotTextOutput
 import by.mksn.inintobot.settings.UserSettings
@@ -57,15 +56,14 @@ suspend fun handleTelegramRequest(requestBody: String, botToken: String) {
 }
 
 fun loadSettings(chat: Chat?, user: User?, json: Json): UserSettings {
-    val defaults = ResourceLoader.defaultSettings(json)
     val userId = chat?.id ?: user?.id
-    val languageCode = user?.languageCode?.take(2)?.toLowerCase()
-        .takeIf { BasicInfo.supportedLanguages.contains(it) } ?: defaults.language
+    val inferredLanguage = user?.languageCode?.take(2)?.toLowerCase()
+        .takeIf { BasicInfo.supportedLanguages.contains(it) }
     return if (userId != null) {
         // TODO load stored user settings
-        defaults.copy(language = languageCode)
+        inferredLanguage?.let { UserSettings(language = it) } ?: UserSettings()
     } else {
-        defaults.copy(language = languageCode)
+        UserSettings()
     }
 }
 

@@ -159,10 +159,10 @@ fun <E, C : Iterable<E>> assertEqualsUnordered(expected: C, actual: C) {
     }
 }
 
-expect fun <T> runTestBlocking(
+expect fun runTestBlocking(
     context: CoroutineContext = EmptyCoroutineContext,
-    block: suspend CoroutineScope.() -> T
-): T
+    block: suspend CoroutineScope.() -> Unit
+)
 
 
 private val Url.hostWithPortIfRequired: String get() = if (port == protocol.defaultPort) host else hostWithPort

@@ -69,7 +69,6 @@ class NbuRateFetcherTest {
         val json = Json(JsonConfiguration(ignoreUnknownKeys = true))
         val apiConfig = RateApi("NBY", setOf(), "UAH", testUrl, setOf())
         val fetcher = NbuRateFetcher(apiConfig, httpClient, json)
-        val actualRates = runTestBlocking { fetcher.fetch(testCurrencies) }
         val expectedRates = mapOf(
             testCurrencies.first { it.code == "UAH" } to "1".toFiniteBigDecimal(),
             testCurrencies.first { it.code == "USD" } to "26.6005".toFiniteBigDecimal(),
@@ -77,6 +76,9 @@ class NbuRateFetcherTest {
             testCurrencies.first { it.code == "KZT" } to "0.066609".toFiniteBigDecimal(),
             testCurrencies.first { it.code == "BYN" } to "11.1743".toFiniteBigDecimal()
         )
-        assertEqualsUnordered(expectedRates.entries, actualRates.entries)
+        runTestBlocking {
+            val actualRates = fetcher.fetch(testCurrencies)
+            assertEqualsUnordered(expectedRates.entries, actualRates.entries)
+        }
     }
 }

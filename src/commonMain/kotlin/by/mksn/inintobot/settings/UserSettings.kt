@@ -4,10 +4,10 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class UserSettings(
-    val language: String,
-    val decimalDigits: Long,
-    val defaultCurrency: String,
-    val apiName: String,
-    val outputCurrencies: List<String>,
-    val dashboardCurrencies: List<String>
+    val language: String = "ru",
+    val decimalDigits: Long = 2,
+    val defaultCurrency: String = "BYN",
+    val apiName: String = "NBRB",
+    val outputCurrencies: List<String> = listOf("BYN", "USD", "EUR", "RUB"),
+    val dashboardCurrencies: List<String> = listOf("USD", "EUR", "BYN", "UAH", "RUB")
 )

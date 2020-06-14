@@ -88,7 +88,6 @@ class CbrRateFetcherTest {
         val json = Json(JsonConfiguration(ignoreUnknownKeys = true))
         val apiConfig = RateApi("CBR", setOf(), "RUB", testUrl, setOf())
         val fetcher = CbrRateFetcher(apiConfig, httpClient, json)
-        val actualRates = runTestBlocking { fetcher.fetch(testCurrencies) }
         val expectedRates = mapOf(
             testCurrencies.first { it.code == "UAH" } to "2.57973".toFiniteBigDecimal(),
             testCurrencies.first { it.code == "USD" } to "68.6319".toFiniteBigDecimal(),
@@ -96,6 +95,9 @@ class CbrRateFetcherTest {
             testCurrencies.first { it.code == "KZT" } to "0.171363".toFiniteBigDecimal(),
             testCurrencies.first { it.code == "BYN" } to "28.8248".toFiniteBigDecimal()
         )
-        assertEqualsUnordered(expectedRates.entries, actualRates.entries)
+        runTestBlocking {
+            val actualRates = fetcher.fetch(testCurrencies)
+            assertEqualsUnordered(expectedRates.entries, actualRates.entries)
+        }
     }
 }
