@@ -85,15 +85,15 @@ class CbrRateFetcherTest {
         val apiConfig = RateApi("CBR", setOf(), "RUB", testUrl, setOf())
         val fetcher = CbrRateFetcher(apiConfig, httpClient, json)
         val expectedRates = mapOf(
-            testCurrencies.first { it.code == "UAH" } to "2.57973".toFixedScaleBigDecimal(),
-            testCurrencies.first { it.code == "USD" } to "68.6319".toFixedScaleBigDecimal(),
-            testCurrencies.first { it.code == "EUR" } to "77.9658".toFixedScaleBigDecimal(),
-            testCurrencies.first { it.code == "KZT" } to "0.171363".toFixedScaleBigDecimal(),
-            testCurrencies.first { it.code == "BYN" } to "28.8248".toFixedScaleBigDecimal()
+            testCurrencies.first { it.code == "UAH" } to (10.toFixedScaleBigDecimal() / "25.7973".toFixedScaleBigDecimal()).toFixedScaleBigDecimal(),
+            testCurrencies.first { it.code == "USD" } to (1.toFixedScaleBigDecimal() / "68.6319".toFixedScaleBigDecimal()).toFixedScaleBigDecimal(),
+            testCurrencies.first { it.code == "EUR" } to (1.toFixedScaleBigDecimal() / "77.9658".toFixedScaleBigDecimal()).toFixedScaleBigDecimal(),
+            testCurrencies.first { it.code == "KZT" } to (100.toFixedScaleBigDecimal() / "17.1363".toFixedScaleBigDecimal()).toFixedScaleBigDecimal(),
+            testCurrencies.first { it.code == "BYN" } to (1.toFixedScaleBigDecimal() / "28.8248".toFixedScaleBigDecimal()).toFixedScaleBigDecimal()
         )
         runBlocking {
             val actualRates = fetcher.fetch(testCurrencies)
-            assertEqualsUnordered(expectedRates.entries, actualRates.entries)
+            assertEqualsUnordered(expectedRates.entries, actualRates.entries) { it.key }
         }
     }
 }

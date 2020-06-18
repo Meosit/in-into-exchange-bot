@@ -134,14 +134,14 @@ fun <E, C : Iterable<E>> assertEqualsOrdered(expected: C, actual: C) {
 /**
  * Asserts two [Iterable]s without specific order using [expected] as a base one
  */
-fun <E, C : Iterable<E>> assertEqualsUnordered(expected: C, actual: C) {
+fun <E : Any, C : Iterable<E>> assertEqualsUnordered(expected: C, actual: C, keyExtractor: (E) -> Any = { c -> c }) {
     assertEquals(
         expected.count(), actual.count(),
         "Given collections have different size, expected ${expected.count()}, got ${actual.count()}"
     )
     expected.forEachIndexed { index, expectedElem ->
         assertEquals(
-            expectedElem, actual.find { expectedElem == it },
+            expectedElem, actual.find { keyExtractor(expectedElem) == keyExtractor(it) },
             "Expected element at index $index not found in actual collection!"
         )
     }

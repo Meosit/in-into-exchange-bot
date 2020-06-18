@@ -33,6 +33,7 @@ fun handleBotQuery(query: String, settings: UserSettings): Array<BotOutput> {
                 decimalDigits >= DEFAULT_DECIMAL_DIGITS -> DEFAULT_DECIMAL_DIGITS
                 else -> decimalDigits
             }
+            logger.info("New precision is $decimalDigits")
             logger.info("Chosen api is ${api.name} (default: ${defaultApi.name})", api.name)
             val apiCurrencies = currencies.filterNot { api.unsupported.contains(it.code) }
             val apiBaseCurrency = apiCurrencies.first { it.code == api.base }
