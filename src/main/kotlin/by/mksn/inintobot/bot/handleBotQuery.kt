@@ -1,9 +1,6 @@
 package by.mksn.inintobot.bot
 
 import by.mksn.inintobot.AppContext
-import by.mksn.inintobot.api.RateApi
-import by.mksn.inintobot.api.fetch.ApiRateFetcher
-import by.mksn.inintobot.currency.Currency
 import by.mksn.inintobot.currency.CurrencyRateExchanger
 import by.mksn.inintobot.currency.UnknownCurrencyException
 import by.mksn.inintobot.expression.ExpressionEvaluator
@@ -11,18 +8,16 @@ import by.mksn.inintobot.expression.ExpressionType
 import by.mksn.inintobot.grammar.BotInputGrammar
 import by.mksn.inintobot.misc.AliasMatcher
 import by.mksn.inintobot.misc.DEFAULT_DECIMAL_DIGITS
-import by.mksn.inintobot.misc.toStr
 import by.mksn.inintobot.output.*
 import by.mksn.inintobot.settings.UserSettings
 import com.github.h0tk3y.betterParse.grammar.tryParseToEnd
 import com.github.h0tk3y.betterParse.parser.ErrorResult
 import com.github.h0tk3y.betterParse.parser.Parsed
 import org.slf4j.LoggerFactory
-import java.math.BigDecimal
 
 private val logger = LoggerFactory.getLogger("handleQuery")
 
-suspend fun handleBotQuery(query: String, settings: UserSettings): Array<BotOutput> {
+fun handleBotQuery(query: String, settings: UserSettings): Array<BotOutput> {
     val currencies = AppContext.supportedCurrencies
     val apis = AppContext.supportedApis
     val defaultApi = apis.first { it.name == settings.apiName }
@@ -35,19 +30,14 @@ suspend fun handleBotQuery(query: String, settings: UserSettings): Array<BotOutp
             val api = rateApi ?: defaultApi
             val decimalDigits = if (decimalDigits != null && decimalDigits <= DEFAULT_DECIMAL_DIGITS)
                 decimalDigits else settings.decimalDigits
-            if (api.name != defaultApi.name) {
-                logger.info("Chosen api is ${api.name} (default: ${defaultApi.name})", api.name)
-            }
+            logger.info("Chosen api is ${api.name} (default: ${defaultApi.name})", api.name)
             val apiCurrencies = currencies.filterNot { api.unsupported.contains(it.code) }
             val apiBaseCurrency = apiCurrencies.first { it.code == api.base }
             val defaultCurrency = apiCurrencies
                 .firstOrNull { it.code == settings.defaultCurrency } ?: apiBaseCurrency
 
             logger.info("Currencies (default: ${defaultCurrency.code}, api base: ${apiBaseCurrency.code}): ${apiCurrencies.joinToString { it.code }}")
-
-            val rates = loadRates(api, apiCurrencies)
-            logger.info("Loaded rates: ${rates.entries.joinToString { "${it.key.code}: ${it.value.toStr()}" }}")
-            val rateExchanger = CurrencyRateExchanger(apiBaseCurrency, rates)
+            val rateExchanger = CurrencyRateExchanger(apiBaseCurrency, AppContext.exchangeRates.of(api))
 
             val evaluator = ExpressionEvaluator(defaultCurrency, apiBaseCurrency, rateExchanger::exchange)
             val evaluated = try {
@@ -104,7 +94,3 @@ suspend fun handleBotQuery(query: String, settings: UserSettings): Array<BotOutp
         }
     }
 }
-
-// TODO use storage and update rates separately
-suspend fun loadRates(api: RateApi, currencies: List<Currency>): Map<Currency, BigDecimal> =
-    ApiRateFetcher.forApi(api, AppContext.httpClient, AppContext.json).fetch(currencies)

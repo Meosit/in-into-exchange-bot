@@ -6,6 +6,7 @@ import io.ktor.application.Application
 import io.ktor.application.call
 import io.ktor.application.install
 import io.ktor.client.features.ClientRequestException
+import io.ktor.client.request.get
 import io.ktor.features.CallLogging
 import io.ktor.features.ContentNegotiation
 import io.ktor.features.DefaultHeaders
@@ -20,19 +21,27 @@ import io.ktor.routing.post
 import io.ktor.serialization.json
 import io.ktor.server.netty.EngineMain
 import io.ktor.utils.io.readUTF8Line
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.isActive
+import kotlinx.coroutines.launch
 import org.slf4j.LoggerFactory
 import java.io.PrintWriter
 import java.io.StringWriter
+import java.util.concurrent.TimeUnit
 
 private val logger = LoggerFactory.getLogger("MainKt")
+private val SELF_PING_DELAY = TimeUnit.MINUTES.toMillis(15)
+private val RELOAD_RATES_DELAY = TimeUnit.MINUTES.toMillis(60)
 
 fun Application.main() {
+    val appUrl: String = System.getenv("APP_URL")
     val allowedTokens = System.getenv("ALLOWED_TOKENS_STRING")?.split(",") ?: listOf()
     val apiAccessKeys: Map<String, String> = mapOf(
         "<fixer_access_key>" to System.getenv("FIXER_ACCESS_KEY"),
         "<openexchangerates_access_key>" to System.getenv("OPENEXCHANGERATES_ACCESS_KEY")
     )
 
+    logger.info("app url: $appUrl")
     logger.info("tokens: $allowedTokens")
     logger.info("access keys: ${apiAccessKeys.map { (k, v) -> "$k: $v" }}")
 
@@ -64,6 +73,27 @@ fun Application.main() {
         get("/") {
             call.request
             call.respondText("What are you looking here?", ContentType.Text.Html)
+        }
+    }
+
+    launch {
+        while (isActive) {
+            delay(SELF_PING_DELAY)
+            if (System.getenv("USE_PING") == "true") {
+                logger.info("Starting self-ping...")
+                val response = AppContext.httpClient.get<String>(appUrl)
+                logger.info("Finished self-ping with response: '$response'")
+            } else {
+                logger.info("Self-ping skipped")
+            }
+        }
+    }
+
+    launch {
+        AppContext.exchangeRates.reload(AppContext.httpClient, AppContext.json)
+        while (isActive) {
+            delay(RELOAD_RATES_DELAY)
+            AppContext.exchangeRates.reload(AppContext.httpClient, AppContext.json)
         }
     }
 }

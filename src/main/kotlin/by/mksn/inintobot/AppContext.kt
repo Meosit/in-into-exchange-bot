@@ -2,6 +2,7 @@ package by.mksn.inintobot
 
 import by.mksn.inintobot.api.RateApi
 import by.mksn.inintobot.currency.Currency
+import by.mksn.inintobot.currency.ExchangeRates
 import by.mksn.inintobot.misc.Localized
 import by.mksn.inintobot.output.strings.CommandMessages
 import by.mksn.inintobot.output.strings.ErrorMessages
@@ -33,6 +34,7 @@ private data class AppContextEntity(
     val httpClient: HttpClient,
     val supportedApis: List<RateApi>,
     val supportedCurrencies: List<Currency>,
+    val exchangeRates: ExchangeRates,
     val queryStrings: Localized<QueryStrings>,
     val apiNames: Localized<Map<String, String>>,
     val errorMessages: Localized<ErrorMessages>,
@@ -92,8 +94,10 @@ object AppContext {
                 json.load("message/$language/api-names.json", MapSerializer(String.serializer(), String.serializer()))
             }
 
+        val exchangeRates = ExchangeRates(supportedApis, supportedCurrencies)
+
         context = AppContextEntity(
-            basicInfo, json, httpClient, supportedApis, supportedCurrencies,
+            basicInfo, json, httpClient, supportedApis, supportedCurrencies, exchangeRates,
             outputStrings, apiNames, errorMessages, commandMessages
         )
     }
@@ -108,6 +112,7 @@ object AppContext {
     val supportedLanguages get() = context.basicInfo.supportedLocales
     val supportedApis get() = context.supportedApis
     val supportedCurrencies get() = context.supportedCurrencies
+    val exchangeRates get() = context.exchangeRates
 
     val queryStrings get() = context.queryStrings
     val apiNames get() = context.apiNames

@@ -23,7 +23,7 @@ suspend fun InlineQuery.handle(settings: UserSettings, botToken: String) {
         val apiBaseCurrency = currencies.first { it.code == api.base }
         logger.info("Api is ${api.name} (base: ${apiBaseCurrency.code}), currencies: ${currencies.joinToString { it.code }}")
 
-        val rates = loadRates(api, currencies)
+        val rates = AppContext.exchangeRates.of(api)
         val rateExchanger = CurrencyRateExchanger(apiBaseCurrency, rates)
         val queryStrings = AppContext.queryStrings.of(settings.language)
 
