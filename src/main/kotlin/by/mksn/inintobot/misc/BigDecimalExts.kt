@@ -30,4 +30,5 @@ fun BigDecimal.toStr(): String = stripTrailingZeros().toPlainString()
 /**
  * Converts a value to string with rounding to [decimalDigits] after decimal point
  */
-fun BigDecimal.toStr(decimalDigits: Int): String = setScale(decimalDigits).stripTrailingZeros().toPlainString()
+fun BigDecimal.toStr(decimalDigits: Int): String =
+    setScale(decimalDigits, DEFAULT_ROUNDING_MODE).stripTrailingZeros().toPlainString()
