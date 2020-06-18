@@ -17,8 +17,7 @@ import io.ktor.response.respondText
 import io.ktor.routing.Routing
 import io.ktor.routing.get
 import io.ktor.serialization.json
-import io.ktor.server.engine.embeddedServer
-import io.ktor.server.netty.Netty
+import io.ktor.server.netty.EngineMain
 import io.ktor.utils.io.readUTF8Line
 import org.slf4j.LoggerFactory
 import java.io.PrintWriter
@@ -64,6 +63,4 @@ fun Application.main() {
     }
 }
 
-fun main() {
-    embeddedServer(Netty, module = Application::main).start()
-}
+fun main(args: Array<String>) = EngineMain.main(args)
