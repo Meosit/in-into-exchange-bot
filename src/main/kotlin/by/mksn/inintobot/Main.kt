@@ -40,6 +40,7 @@ fun Application.main() {
     val appUrl: String = System.getenv("APP_URL")
     val adminKey: String = System.getenv("ADMIN_KEY")
     val allowedTokens = System.getenv("ALLOWED_TOKENS_STRING")?.split(",") ?: listOf()
+    val deprecatedTokens = System.getenv("DEPRECATED_TOKENS_STRING")?.split(",") ?: listOf()
     val apiAccessKeys: Map<String, String> = mapOf(
         "<fixer_access_key>" to System.getenv("FIXER_ACCESS_KEY"),
         "<openexchangerates_access_key>" to System.getenv("OPENEXCHANGERATES_ACCESS_KEY")
@@ -47,6 +48,7 @@ fun Application.main() {
 
     logger.info("app url: $appUrl")
     logger.info("tokens: $allowedTokens")
+    logger.info("deprecated: $allowedTokens")
     logger.info("access keys: ${apiAccessKeys.map { (k, v) -> "$k: $v" }}")
 
     AppContext.initialize(apiAccessKeys)
@@ -61,7 +63,7 @@ fun Application.main() {
             post("/handle/$token") {
                 try {
                     val update = call.receive<Update>()
-                    handleTelegramRequest(update, token)
+                    handleTelegramRequest(update, token, token in deprecatedTokens)
                 } catch (e: Exception) {
                     val sw = StringWriter()
                     e.printStackTrace(PrintWriter(sw))

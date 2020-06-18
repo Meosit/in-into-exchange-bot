@@ -15,5 +15,6 @@ data class ErrorMessages(
     val queryExpected: String,
     val unsupportedCurrency: String,
     val ratesUnavailable: String,
+    val deprecatedBot: String,
     val unexpectedError: String
 )

@@ -19,7 +19,7 @@ private val logger = LoggerFactory.getLogger("handleTelegramRequest")
 /**
  * Handles the telegram bot [Update] for the specific [botToken]
  */
-suspend fun handleTelegramRequest(update: Update, botToken: String) {
+suspend fun handleTelegramRequest(update: Update, botToken: String, deprecatedBot: Boolean) {
     try {
         with(update) {
             val chat = message?.chat ?: editedMessage?.chat
@@ -28,9 +28,9 @@ suspend fun handleTelegramRequest(update: Update, botToken: String) {
             logger.info("User {}", user?.userReadableName() ?: chat?.userReadableName())
             logger.info("Settings: $settings")
             when {
-                inlineQuery != null -> inlineQuery.handle(settings, botToken)
-                message != null -> message.handle(settings, botToken)
-                editedMessage != null -> editedMessage.handle(settings, botToken)
+                inlineQuery != null -> inlineQuery.handle(settings, botToken, deprecatedBot)
+                message != null -> message.handle(settings, botToken, deprecatedBot)
+                editedMessage != null -> editedMessage.handle(settings, botToken, deprecatedBot)
             }
         }
     } catch (e: Exception) {

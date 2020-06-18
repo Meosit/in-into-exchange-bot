@@ -1,6 +1,7 @@
 package by.mksn.inintobot.bot
 
 import by.mksn.inintobot.AppContext
+import by.mksn.inintobot.output.BotDeprecatedOutput
 import by.mksn.inintobot.output.BotOutputSender
 import by.mksn.inintobot.output.BotTextOutput
 import by.mksn.inintobot.settings.UserSettings
@@ -10,7 +11,7 @@ import org.slf4j.LoggerFactory
 
 private val logger = LoggerFactory.getLogger("handleMessage")
 
-suspend fun Message.handle(settings: UserSettings, botToken: String) {
+suspend fun Message.handle(settings: UserSettings, botToken: String, deprecatedBot: Boolean) {
     val sender = BotOutputSender(AppContext.httpClient, botToken)
     when (text) {
         "", null -> {
@@ -27,12 +28,17 @@ suspend fun Message.handle(settings: UserSettings, botToken: String) {
                     else -> help
                 }
             }
-            sender.sendChatMessage(chat.id.toString(), BotTextOutput(message))
+            val formattedMessage = if (deprecatedBot) BotDeprecatedOutput(BotTextOutput(message), settings.language)
+            else BotTextOutput(message)
+            sender.sendChatMessage(chat.id.toString(), formattedMessage)
         }
         else -> {
             logger.info("Handling '$text' chat message")
             val outputs = handleBotQuery(text, settings)
-            outputs.firstOrNull()?.let { sender.sendChatMessage(chat.id.toString(), it) }
+            outputs.firstOrNull()?.let {
+                val formattedOutput = if (deprecatedBot) BotDeprecatedOutput(it, settings.language) else it
+                sender.sendChatMessage(chat.id.toString(), formattedOutput)
+            }
         }
     }
 }

@@ -5,6 +5,7 @@ import by.mksn.inintobot.currency.CurrencyRateExchanger
 import by.mksn.inintobot.expression.EvaluatedExpression
 import by.mksn.inintobot.expression.ExpressionType
 import by.mksn.inintobot.misc.toFixedScaleBigDecimal
+import by.mksn.inintobot.output.BotDeprecatedOutput
 import by.mksn.inintobot.output.BotOutputSender
 import by.mksn.inintobot.output.BotSimpleErrorOutput
 import by.mksn.inintobot.output.BotSuccessOutput
@@ -14,7 +15,7 @@ import org.slf4j.LoggerFactory
 
 private val logger = LoggerFactory.getLogger("handleInlineQuery")
 
-suspend fun InlineQuery.handle(settings: UserSettings, botToken: String) {
+suspend fun InlineQuery.handle(settings: UserSettings, botToken: String, deprecatedBot: Boolean) {
     val outputs = if (query.isBlank()) {
         logger.info("Handling dashboard inline query")
         val api = AppContext.supportedApis
@@ -45,6 +46,9 @@ suspend fun InlineQuery.handle(settings: UserSettings, botToken: String) {
         logger.info("Handling inline query '$query'")
         handleBotQuery(query, settings)
     }
+
     val sender = BotOutputSender(AppContext.httpClient, botToken)
-    sender.sendInlineQuery(id, *outputs)
+    val formattedOutputs = if (deprecatedBot)
+        outputs.map { BotDeprecatedOutput(it, settings.language) }.toTypedArray() else outputs
+    sender.sendInlineQuery(id, *formattedOutputs)
 }
