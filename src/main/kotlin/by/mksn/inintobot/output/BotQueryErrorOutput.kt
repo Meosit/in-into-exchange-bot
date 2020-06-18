@@ -9,7 +9,7 @@ import com.github.h0tk3y.betterParse.parser.MismatchedToken
 import com.github.h0tk3y.betterParse.parser.NoMatchingToken
 import com.github.h0tk3y.betterParse.parser.UnparsedRemainder
 
-data class BotErrorOutput(
+data class BotQueryErrorOutput(
     val rawInput: String,
     val errorPosition: Int,
     val errorMessage: String
@@ -32,9 +32,9 @@ fun ErrorResult.toBotOutput(rawInput: String, messages: ErrorMessages) = when (t
     is UnparsedRemainder -> {
         val message = if (startsWith.type.name == "currency")
             messages.illegalCurrencyPlacement else messages.unparsedReminder
-        BotErrorOutput(rawInput, startsWith.column, message)
+        BotQueryErrorOutput(rawInput, startsWith.column, message)
     }
-    is MismatchedToken -> BotErrorOutput(rawInput, found.column, messages.mismatchedToken.format(found.text))
-    is NoMatchingToken -> BotErrorOutput(rawInput, tokenMismatch.column, messages.noMatchingToken.format(tokenMismatch.text))
-    else -> BotErrorOutput(rawInput, 1, messages.unexpectedError)
+    is MismatchedToken -> BotQueryErrorOutput(rawInput, found.column, messages.mismatchedToken.format(found.text))
+    is NoMatchingToken -> BotQueryErrorOutput(rawInput, tokenMismatch.column, messages.noMatchingToken.format(tokenMismatch.text))
+    else -> BotQueryErrorOutput(rawInput, 1, messages.unexpectedError)
 }

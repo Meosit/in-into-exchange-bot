@@ -7,7 +7,7 @@ data class UserSettings(
     val language: String = "ru",
     val decimalDigits: Int = 2,
     val defaultCurrency: String = "BYN",
-    val apiName: String = "NBRB",
+    val apiName: String = "OpenExchangeRates",
     val outputCurrencies: List<String> = listOf("BYN", "USD", "EUR", "RUB"),
     val dashboardCurrencies: List<String> = listOf("USD", "EUR", "BYN", "UAH", "RUB")
 )

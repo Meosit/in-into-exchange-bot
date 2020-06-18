@@ -15,7 +15,7 @@ Examples:
 Features:
 - Supported currencies (❗support depends on chosen API): `BYN`, `USD`, `EUR`, `RUB`, `UAH`, `PLN`, `CZK`, `GBP`, `JPY`, `CNY`, `KZT`, `CHF`, `BGN`, `TRY`, `CAD`, `ISK`, `DKK`, `SEK`, `NOK`, `ILS`, `BTC`
 - Supported rate APIs (см. /apis): [NBRB](http://www.nbrb.by/), [CBR](http://cbr.ru/), [NBU](https://bank.gov.ua/), [European Central Bank](https://www.ecb.europa.eu/home/html/index.en.html), [Fixer.io](https://fixer.io/), [OpenExchangeRates.org](https://openexchangerates.org/)
-- By default `NBRB` API and Belorussian ruble used, also 4 currencies displayed: `BYN`, `USD`, `EUR`, `RUB`
+- Default API is `OpenExchangeRates`, also 4 currencies displayed: `BYN`, `USD`, `EUR`, `RUB`
 - Currency `BYN` used by default, if it is not supported by the API, the API base currency used 
 - Numbers are rounded for 2 decimal digits precision (1.99), this can be overridden by `#<decimal digits>`
 - Allowed russian currency names (`евро`, `рубль`), symbols (`$`,`€`) or codes (`BYN`, `CZK`), also shortcuts (`бр`, `р`, `зл`, `грн`) - see /patterns

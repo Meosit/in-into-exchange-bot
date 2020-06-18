@@ -6,8 +6,8 @@ import by.mksn.inintobot.expression.EvaluatedExpression
 import by.mksn.inintobot.expression.ExpressionType
 import by.mksn.inintobot.misc.toFixedScaleBigDecimal
 import by.mksn.inintobot.output.BotOutputSender
+import by.mksn.inintobot.output.BotSimpleErrorOutput
 import by.mksn.inintobot.output.BotSuccessOutput
-import by.mksn.inintobot.output.BotTextOutput
 import by.mksn.inintobot.settings.UserSettings
 import by.mksn.inintobot.telegram.InlineQuery
 import org.slf4j.LoggerFactory
@@ -39,7 +39,7 @@ suspend fun InlineQuery.handle(settings: UserSettings, botToken: String) {
                 .toList().toTypedArray()
         } else {
             logger.error("Rates unavailable for API ${api.name}")
-            arrayOf(BotTextOutput(AppContext.errorMessages.of(settings.language).ratesUnavailable))
+            arrayOf(BotSimpleErrorOutput(AppContext.errorMessages.of(settings.language).ratesUnavailable))
         }
     } else {
         logger.info("Handling inline query '$query'")

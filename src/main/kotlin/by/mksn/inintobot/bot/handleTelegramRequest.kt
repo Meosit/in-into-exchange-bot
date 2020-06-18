@@ -26,6 +26,7 @@ suspend fun handleTelegramRequest(update: Update, botToken: String) {
             val user = inlineQuery?.from ?: message?.from ?: editedMessage?.from
             val settings = loadSettings(chat, user)
             logger.info("User {}", user?.userReadableName() ?: chat?.userReadableName())
+            logger.info("Settings: $settings")
             when {
                 inlineQuery != null -> inlineQuery.handle(settings, botToken)
                 message != null -> message.handle(settings, botToken)
