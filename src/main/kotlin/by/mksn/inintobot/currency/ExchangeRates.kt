@@ -5,6 +5,7 @@ import by.mksn.inintobot.api.fetch.ApiRateFetcher
 import io.ktor.client.HttpClient
 import kotlinx.atomicfu.AtomicRef
 import kotlinx.atomicfu.atomic
+import kotlinx.coroutines.delay
 import kotlinx.serialization.json.Json
 import org.slf4j.LoggerFactory
 import java.io.PrintWriter
@@ -26,6 +27,7 @@ class ExchangeRates(
         logger.info("Reloading exchange rates...")
         val apiToRates = apiToRates.value.toMutableMap()
         for (api in apis) {
+            delay(100)
             val rates = try {
                 ApiRateFetcher.forApi(api, httpClient, json).fetch(currencies)
             } catch (e: Exception) {
