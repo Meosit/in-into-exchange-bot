@@ -1,4 +1,4 @@
-package by.mksn.inintobot.output
+package by.mksn.inintobot.output.strings
 
 import kotlinx.serialization.Serializable
 

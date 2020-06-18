@@ -1,16 +1,17 @@
 package by.mksn.inintobot.output
 
+import by.mksn.inintobot.AppContext
 import by.mksn.inintobot.currency.Exchange
 import by.mksn.inintobot.expression.EvaluatedExpression
 import by.mksn.inintobot.expression.ExpressionType
-import by.mksn.inintobot.misc.BasicInfo
 import by.mksn.inintobot.misc.toStr
 import by.mksn.inintobot.misc.trimToLength
+import by.mksn.inintobot.output.strings.QueryStrings
 
 data class BotSuccessOutput(
     val expression: EvaluatedExpression,
     val exchanges: List<Exchange>,
-    val strings: TelegramStrings,
+    val strings: QueryStrings,
     val decimalDigits: Int,
     val apiName: String? = null
 ) : BotOutput {
@@ -26,7 +27,7 @@ data class BotSuccessOutput(
         val apiHeader = apiName?.let { strings.headers.api.format(it) } ?: ""
         val exchangeBody = exchanges
             .joinToString("\n") { "`${it.currency.emoji}${it.currency.code}`  `${it.value.toStr(decimalDigits)}`" }
-        (expressionHeader + apiHeader + exchangeBody).trimToLength(BasicInfo.maxOutputLength, "… ${strings.outputTooBigMessage}")
+        (expressionHeader + apiHeader + exchangeBody).trimToLength(AppContext.maxOutputLength, "… ${strings.outputTooBigMessage}")
     }
 
     override fun inlineTitle() = when (expression.type) {

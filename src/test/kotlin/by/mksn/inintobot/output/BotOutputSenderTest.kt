@@ -11,19 +11,17 @@ import io.ktor.http.ContentType
 import io.ktor.http.Parameters
 import io.ktor.http.headersOf
 import kotlinx.coroutines.runBlocking
-import kotlinx.serialization.UnstableDefault
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonConfiguration
 import java.util.*
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
-@UnstableDefault
 class BotOutputSenderTest {
 
     private val testToken = "TEST_TOKEN"
     private val apiUrl = "https://api.telegram.org/bot$testToken"
-    private val json = Json(JsonConfiguration(ignoreUnknownKeys = true))
+    private val json = Json(JsonConfiguration.Stable.copy(ignoreUnknownKeys = true))
 
     private fun testEngine(method: String, assertParametersBlock: Parameters.() -> Unit): HttpClient =
         HttpClient(MockEngine) {

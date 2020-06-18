@@ -11,13 +11,11 @@ import io.ktor.client.engine.mock.respond
 import io.ktor.http.ContentType
 import io.ktor.http.headersOf
 import kotlinx.coroutines.runBlocking
-import kotlinx.serialization.UnstableDefault
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonConfiguration
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 
-@UnstableDefault
 class NbrbRateFetcherTest {
 
     private lateinit var httpClient: HttpClient
@@ -51,7 +49,7 @@ class NbrbRateFetcherTest {
 
     @Test
     fun successful_fetch_and_parse() {
-        val json = Json(JsonConfiguration(ignoreUnknownKeys = true))
+        val json = Json(JsonConfiguration.Stable.copy(ignoreUnknownKeys = true))
         val apiConfig = RateApi("NBRB", setOf(), "BYN", testUrl, setOf())
         val fetcher = NbrbRateFetcher(apiConfig, httpClient, json)
         val expectedRates = mapOf(

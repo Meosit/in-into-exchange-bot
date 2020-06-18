@@ -1,8 +1,9 @@
 package by.mksn.inintobot.output
 
-import by.mksn.inintobot.misc.BasicInfo
+import by.mksn.inintobot.AppContext
 import by.mksn.inintobot.misc.escapeMarkdown
 import by.mksn.inintobot.misc.trimToLength
+import by.mksn.inintobot.output.strings.ErrorMessages
 import com.github.h0tk3y.betterParse.parser.ErrorResult
 import com.github.h0tk3y.betterParse.parser.MismatchedToken
 import com.github.h0tk3y.betterParse.parser.NoMatchingToken
@@ -13,7 +14,7 @@ data class BotErrorOutput(
     val errorPosition: Int,
     val errorMessage: String
 ) : BotOutput {
-    private val trimmedRawInput = rawInput.trimToLength(BasicInfo.maxErrorLineLength, tail = "…")
+    private val trimmedRawInput = rawInput.trimToLength(AppContext.maxErrorLineLength, tail = "…")
     override fun inlineTitle() = errorMessage
     override fun inlineThumbUrl() = "https://i.imgur.com/yTMgvf9.png"
 
