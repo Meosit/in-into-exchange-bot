@@ -15,7 +15,7 @@ import com.github.h0tk3y.betterParse.parser.ErrorResult
 import com.github.h0tk3y.betterParse.parser.Parsed
 import org.slf4j.LoggerFactory
 
-private val logger = LoggerFactory.getLogger("handleQuery")
+private val logger = LoggerFactory.getLogger("handleBotQuery")
 
 fun handleBotQuery(query: String, settings: UserSettings): Array<BotOutput> {
     val currencies = AppContext.supportedCurrencies
@@ -28,8 +28,11 @@ fun handleBotQuery(query: String, settings: UserSettings): Array<BotOutput> {
     when (val result = grammar.tryParseToEnd(query)) {
         is Parsed -> with(result.value) {
             val api = rateApi ?: defaultApi
-            val decimalDigits = if (decimalDigits != null && decimalDigits <= DEFAULT_DECIMAL_DIGITS)
-                decimalDigits else settings.decimalDigits
+            val decimalDigits = when {
+                decimalDigits == null -> settings.decimalDigits
+                decimalDigits >= DEFAULT_DECIMAL_DIGITS -> DEFAULT_DECIMAL_DIGITS
+                else -> decimalDigits
+            }
             logger.info("Chosen api is ${api.name} (default: ${defaultApi.name})", api.name)
             val apiCurrencies = currencies.filterNot { api.unsupported.contains(it.code) }
             val apiBaseCurrency = apiCurrencies.first { it.code == api.base }
@@ -75,8 +78,8 @@ fun handleBotQuery(query: String, settings: UserSettings): Array<BotOutput> {
                 return arrayOf(BotTextOutput(messages.unsupportedCurrency.format(e.currency.code, apiDisplayName)))
             }
             val queryStrings = AppContext.queryStrings.of(settings.language)
-            val nonDefaultApiName = if (api.name == settings.apiName) null else
-                AppContext.apiNames.of(settings.language).getValue(api.name)
+            val nonDefaultApiName = if (api.name == settings.apiName && evaluated.type != ExpressionType.ONE_UNIT)
+                null else AppContext.apiNames.of(settings.language).getValue(api.name)
 
             val output = BotSuccessOutput(evaluated, exchanged, queryStrings, decimalDigits, nonDefaultApiName)
             return if (evaluated.type == ExpressionType.SINGLE_CURRENCY_EXPR) {

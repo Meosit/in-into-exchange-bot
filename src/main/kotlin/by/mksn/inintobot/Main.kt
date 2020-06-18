@@ -1,8 +1,6 @@
 package by.mksn.inintobot
 
-import by.mksn.inintobot.api.RateApi
 import by.mksn.inintobot.bot.handleTelegramRequest
-import by.mksn.inintobot.currency.Currency
 import by.mksn.inintobot.misc.BigDecimalSerializer
 import by.mksn.inintobot.telegram.Update
 import io.ktor.application.Application
@@ -28,6 +26,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import kotlinx.serialization.builtins.MapSerializer
+import kotlinx.serialization.builtins.serializer
 import org.slf4j.LoggerFactory
 import java.io.PrintWriter
 import java.io.StringWriter
@@ -82,10 +81,13 @@ fun Application.main() {
         get("/$adminKey/manual-reload") {
             AppContext.exchangeRates.reload(AppContext.httpClient, AppContext.json)
             val rates = AppContext.supportedApis.asSequence()
-                .map { it to (AppContext.exchangeRates.of(it) ?: mapOf()) }.toMap()
+                .map {
+                    it.name to (AppContext.exchangeRates.of(it) ?: mapOf()).entries.asSequence()
+                        .map { it.key.code to it.value }.toMap()
+                }.toMap()
             call.respondText(
                 AppContext.json.stringify(
-                    MapSerializer(RateApi.serializer(), MapSerializer(Currency.serializer(), BigDecimalSerializer)), rates
+                    MapSerializer(String.serializer(), MapSerializer(String.serializer(), BigDecimalSerializer)), rates
                 ), ContentType.Application.Json
             )
         }

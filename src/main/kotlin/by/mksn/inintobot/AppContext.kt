@@ -57,7 +57,7 @@ object AppContext {
         this.parse(deserializer, loadResourceAsString(resourceBaseName))
 
     fun initialize(apiAccessKeys: Map<String, String>) {
-        val json = Json(JsonConfiguration.Stable.copy(ignoreUnknownKeys = true))
+        val json = Json(JsonConfiguration.Stable.copy(ignoreUnknownKeys = true, prettyPrint = true))
         val httpClient = HttpClient {
             install(JsonFeature) {
                 serializer = KotlinxSerializer(json)
