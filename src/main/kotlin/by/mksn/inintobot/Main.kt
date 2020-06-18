@@ -32,6 +32,9 @@ fun Application.main() {
         "<openexchangerates_access_key>" to System.getenv("OPENEXCHANGERATES_ACCESS_KEY")
     )
 
+    logger.info("tokens: $allowedTokens")
+    logger.info("access keys: ${apiAccessKeys.map { (k, v) -> "$k: $v" }}")
+
     AppContext.initialize(apiAccessKeys)
 
     install(ContentNegotiation) {
@@ -55,6 +58,7 @@ fun Application.main() {
                 }
                 call.respond(HttpStatusCode.OK)
             }
+            logger.info("Added bot route: $token")
         }
         get("/") {
             call.request
