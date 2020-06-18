@@ -10,6 +10,8 @@ import by.mksn.inintobot.telegram.User
 import io.ktor.client.features.ResponseException
 import io.ktor.client.statement.readText
 import org.slf4j.LoggerFactory
+import java.io.PrintWriter
+import java.io.StringWriter
 
 
 private val logger = LoggerFactory.getLogger("handleTelegramRequest")
@@ -41,6 +43,9 @@ suspend fun handleTelegramRequest(update: Update, botToken: String) {
             val message = BotTextOutput("Error received.\n```\nQuery: $queryString\nUser: $user\n\nCause: $cause```")
             sender.sendChatMessage(AppContext.creatorId, message)
         }
+        val sw = StringWriter()
+        e.printStackTrace(PrintWriter(sw))
+        logger.error(sw.toString())
     }
     return
 }

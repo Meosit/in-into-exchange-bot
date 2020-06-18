@@ -1,6 +1,9 @@
 package by.mksn.inintobot
 
+import by.mksn.inintobot.api.RateApi
 import by.mksn.inintobot.bot.handleTelegramRequest
+import by.mksn.inintobot.currency.Currency
+import by.mksn.inintobot.misc.BigDecimalSerializer
 import by.mksn.inintobot.telegram.Update
 import io.ktor.application.Application
 import io.ktor.application.call
@@ -24,6 +27,7 @@ import io.ktor.utils.io.readUTF8Line
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
+import kotlinx.serialization.builtins.MapSerializer
 import org.slf4j.LoggerFactory
 import java.io.PrintWriter
 import java.io.StringWriter
@@ -35,6 +39,7 @@ private val RELOAD_RATES_DELAY = TimeUnit.MINUTES.toMillis(60)
 
 fun Application.main() {
     val appUrl: String = System.getenv("APP_URL")
+    val adminKey: String = System.getenv("ADMIN_KEY")
     val allowedTokens = System.getenv("ALLOWED_TOKENS_STRING")?.split(",") ?: listOf()
     val apiAccessKeys: Map<String, String> = mapOf(
         "<fixer_access_key>" to System.getenv("FIXER_ACCESS_KEY"),
@@ -73,6 +78,16 @@ fun Application.main() {
         get("/") {
             call.request
             call.respondText("What are you looking here?", ContentType.Text.Html)
+        }
+        get("/$adminKey/manual-reload") {
+            AppContext.exchangeRates.reload(AppContext.httpClient, AppContext.json)
+            val rates = AppContext.supportedApis.asSequence()
+                .map { it to (AppContext.exchangeRates.of(it) ?: mapOf()) }.toMap()
+            call.respondText(
+                AppContext.json.stringify(
+                    MapSerializer(RateApi.serializer(), MapSerializer(Currency.serializer(), BigDecimalSerializer)), rates
+                ), ContentType.Application.Json
+            )
         }
     }
 

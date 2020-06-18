@@ -7,6 +7,8 @@ import kotlinx.atomicfu.AtomicRef
 import kotlinx.atomicfu.atomic
 import kotlinx.serialization.json.Json
 import org.slf4j.LoggerFactory
+import java.io.PrintWriter
+import java.io.StringWriter
 import java.math.BigDecimal
 
 class ExchangeRates(
@@ -22,10 +24,16 @@ class ExchangeRates(
 
     suspend fun reload(httpClient: HttpClient, json: Json) {
         logger.info("Reloading exchange rates...")
-        val apiToRates: MutableMap<RateApi, Map<Currency, BigDecimal>> = mutableMapOf()
+        val apiToRates = apiToRates.value.toMutableMap()
         for (api in apis) {
-            val rates = ApiRateFetcher.forApi(api, httpClient, json)
-                .fetch(currencies)
+            val rates = try {
+                ApiRateFetcher.forApi(api, httpClient, json).fetch(currencies)
+            } catch (e: Exception) {
+                val sw = StringWriter()
+                e.printStackTrace(PrintWriter(sw))
+                logger.error("Failed to load rates for ${api.name}: \n$sw")
+                continue
+            }
             apiToRates[api] = rates
             logger.info("Loaded for ${api.name}")
         }
@@ -33,6 +41,6 @@ class ExchangeRates(
         logger.info("Exchange rates updated")
     }
 
-    fun of(api: RateApi) = apiToRates.value.getValue(api)
+    fun of(api: RateApi) = apiToRates.value[api]
 
 }

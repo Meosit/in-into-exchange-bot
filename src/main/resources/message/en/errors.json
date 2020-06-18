@@ -6,5 +6,6 @@
   "divisionByZero": "❗Expression contains division by zero",
   "queryExpected": "❗Not blank query string expected",
   "unsupportedCurrency": "❗Unsupported currency %s for %s API",
+  "ratesUnavailable": "❗Rates for this API currently unavailable, try later",
   "unexpectedError": "❗Unexpected error"
 }
