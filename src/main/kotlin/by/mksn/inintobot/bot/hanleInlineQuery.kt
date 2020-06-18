@@ -7,6 +7,7 @@ import by.mksn.inintobot.expression.ExpressionType
 import by.mksn.inintobot.misc.toFixedScaleBigDecimal
 import by.mksn.inintobot.output.BotOutputSender
 import by.mksn.inintobot.output.BotSuccessOutput
+import by.mksn.inintobot.output.BotTextOutput
 import by.mksn.inintobot.settings.UserSettings
 import by.mksn.inintobot.telegram.InlineQuery
 import org.slf4j.LoggerFactory
@@ -24,17 +25,22 @@ suspend fun InlineQuery.handle(settings: UserSettings, botToken: String) {
         logger.info("Api is ${api.name} (base: ${apiBaseCurrency.code}), currencies: ${currencies.joinToString { it.code }}")
 
         val rates = AppContext.exchangeRates.of(api)
-        val rateExchanger = CurrencyRateExchanger(apiBaseCurrency, rates)
-        val queryStrings = AppContext.queryStrings.of(settings.language)
+        if (rates != null) {
+            val rateExchanger = CurrencyRateExchanger(apiBaseCurrency, rates)
+            val queryStrings = AppContext.queryStrings.of(settings.language)
 
-        currencies.asSequence()
-            .filter { settings.dashboardCurrencies.contains(it.code) }
-            .map { EvaluatedExpression(1.toFixedScaleBigDecimal(), ExpressionType.ONE_UNIT, "1", it, listOf(it)) }
-            .map { it to rateExchanger.exchangeAll(it.result, it.baseCurrency, currencies) }
-            .map { (expression, exchanged) ->
-                BotSuccessOutput(expression, exchanged, queryStrings, settings.decimalDigits)
-            }
-            .toList().toTypedArray()
+            currencies.asSequence()
+                .filter { settings.dashboardCurrencies.contains(it.code) }
+                .map { EvaluatedExpression(1.toFixedScaleBigDecimal(), ExpressionType.ONE_UNIT, "1", it, listOf(it)) }
+                .map { it to rateExchanger.exchangeAll(it.result, it.baseCurrency, currencies) }
+                .map { (expression, exchanged) ->
+                    BotSuccessOutput(expression, exchanged, queryStrings, settings.decimalDigits)
+                }
+                .toList().toTypedArray()
+        } else {
+            logger.error("Rates unavailable for API ${api.name}")
+            arrayOf(BotTextOutput(AppContext.errorMessages.of(settings.language).ratesUnavailable))
+        }
     } else {
         logger.info("Handling inline query '$query'")
         handleBotQuery(query, settings)
