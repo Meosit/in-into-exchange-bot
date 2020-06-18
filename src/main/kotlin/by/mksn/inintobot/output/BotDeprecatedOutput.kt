@@ -14,6 +14,6 @@ data class BotDeprecatedOutput(
     override fun inlineDescription(): String = botOutput.inlineDescription()
 
     override fun markdown(): String =
-        "${botOutput.markdown()}\n\n---\n_${AppContext.errorMessages.of(language).deprecatedBot}_"
+        "${botOutput.markdown()}\n\n_${AppContext.errorMessages.of(language).deprecatedBot}_"
             .trimToLength(AppContext.maxOutputLength, "…")
 }

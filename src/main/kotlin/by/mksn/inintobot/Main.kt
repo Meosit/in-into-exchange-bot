@@ -48,7 +48,7 @@ fun Application.main() {
 
     logger.info("app url: $appUrl")
     logger.info("tokens: $allowedTokens")
-    logger.info("deprecated: $allowedTokens")
+    logger.info("deprecated: $deprecatedTokens")
     logger.info("access keys: ${apiAccessKeys.map { (k, v) -> "$k: $v" }}")
 
     AppContext.initialize(apiAccessKeys)
