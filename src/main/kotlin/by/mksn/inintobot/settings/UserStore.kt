@@ -25,7 +25,7 @@ INSERT INTO users (id, name, last_used, last_query, requests, inline_requests)
 VALUES (:id, :name, :last_used, :last_query, :requests, :inline_requests)
 ON CONFLICT (id) DO UPDATE SET 
     name = EXCLUDED.name, last_used = EXCLUDED.last_used, last_query = EXCLUDED.last_query,
-    requests = user.requests + EXCLUDED.requests, inline_requests = user.inline_requests + EXCLUDED.inline_requests
+    requests = users.requests + EXCLUDED.requests, inline_requests = users.inline_requests + EXCLUDED.inline_requests
 RETURNING id, name, last_used, last_query, requests, inline_requests, settings
 """
 
