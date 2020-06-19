@@ -1,6 +1,7 @@
 package by.mksn.inintobot.settings
 
 import by.mksn.inintobot.AppContext
+import com.vladsch.kotlin.jdbc.Row
 import com.vladsch.kotlin.jdbc.sqlQuery
 import com.vladsch.kotlin.jdbc.usingDefault
 import java.sql.Timestamp
@@ -82,17 +83,27 @@ ON CONFLICT (id) DO UPDATE SET settings = EXCLUDED.settings
             FROM users 
             ORDER BY last_used DESC LIMIT ?
         """.trimIndent()
-        session.list(sqlQuery(query, limit)) { row ->
-            BotUser(
-                row.long("id"),
-                row.string("name"),
-                row.sqlTimestamp("last_used"),
-                row.string("last_query"),
-                row.int("requests"),
-                row.int("inline_requests"),
-                row.stringOrNull("settings")?.let { AppContext.json.parse(UserSettings.serializer(), it) }
-            )
-        }
+        session.list(sqlQuery(query, limit)) { it.toBotUser() }
     }
+
+    fun lastUsed(limit: Int, lastHours: Int): List<BotUser> = usingDefault { session ->
+        val query = """
+            SELECT id, name, last_used, last_query, requests, inline_requests, settings 
+            FROM users 
+            WHERE last_used > current_timestamp - interval '? hours'
+            ORDER BY last_used DESC LIMIT ?
+        """.trimIndent()
+        session.list(sqlQuery(query, limit, lastHours)) { it.toBotUser() }
+    }
+
+    private fun Row.toBotUser() = BotUser(
+        long("id"),
+        string("name"),
+        sqlTimestamp("last_used"),
+        string("last_query"),
+        int("requests"),
+        int("inline_requests"),
+        stringOrNull("settings")?.let { AppContext.json.parse(UserSettings.serializer(), it) }
+    )
 
 }
