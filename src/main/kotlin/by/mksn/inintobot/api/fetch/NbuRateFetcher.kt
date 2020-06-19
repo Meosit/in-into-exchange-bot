@@ -2,6 +2,7 @@ package by.mksn.inintobot.api.fetch
 
 import by.mksn.inintobot.api.RateApi
 import by.mksn.inintobot.misc.BigDecimalSerializer
+import by.mksn.inintobot.misc.toFixedScaleBigDecimal
 import io.ktor.client.HttpClient
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.SerialName
@@ -24,6 +25,6 @@ class NbuRateFetcher(rateApi: RateApi, client: HttpClient, json: Json) :
     override val serializer: KSerializer<List<NbuResponseEntry>> = NbuResponseEntry.serializer().list
 
     override suspend fun parseResponse(response: List<NbuResponseEntry>) =
-        response.asSequence().associateBy({ it.code }, { it.rate })
+        response.asSequence().associateBy({ it.code }, { 1.toFixedScaleBigDecimal() / it.rate })
 
 }

@@ -66,11 +66,11 @@ class NbuRateFetcherTest {
         val apiConfig = RateApi("NBY", setOf(), "UAH", testUrl, setOf())
         val fetcher = NbuRateFetcher(apiConfig, httpClient, json)
         val expectedRates = mapOf(
-            testCurrencies.first { it.code == "UAH" } to "1".toFixedScaleBigDecimal(),
-            testCurrencies.first { it.code == "USD" } to "26.6005".toFixedScaleBigDecimal(),
-            testCurrencies.first { it.code == "EUR" } to "30.1477".toFixedScaleBigDecimal(),
-            testCurrencies.first { it.code == "KZT" } to "0.066609".toFixedScaleBigDecimal(),
-            testCurrencies.first { it.code == "BYN" } to "11.1743".toFixedScaleBigDecimal()
+            testCurrencies.first { it.code == "UAH" } to 1.toFixedScaleBigDecimal() / "1".toFixedScaleBigDecimal(),
+            testCurrencies.first { it.code == "USD" } to 1.toFixedScaleBigDecimal() / "26.6005".toFixedScaleBigDecimal(),
+            testCurrencies.first { it.code == "EUR" } to 1.toFixedScaleBigDecimal() / "30.1477".toFixedScaleBigDecimal(),
+            testCurrencies.first { it.code == "KZT" } to 1.toFixedScaleBigDecimal() / "0.066609".toFixedScaleBigDecimal(),
+            testCurrencies.first { it.code == "BYN" } to 1.toFixedScaleBigDecimal() / "11.1743".toFixedScaleBigDecimal()
         )
         runBlocking {
             val actualRates = fetcher.fetch(testCurrencies)

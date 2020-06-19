@@ -53,11 +53,11 @@ class NbrbRateFetcherTest {
         val apiConfig = RateApi("NBRB", setOf(), "BYN", testUrl, setOf())
         val fetcher = NbrbRateFetcher(apiConfig, httpClient, json)
         val expectedRates = mapOf(
-            testCurrencies.first { it.code == "UAH" } to (100.toFixedScaleBigDecimal() / "8.952".toFixedScaleBigDecimal()).toFixedScaleBigDecimal(),
-            testCurrencies.first { it.code == "USD" } to (1.toFixedScaleBigDecimal() / "2.3810".toFixedScaleBigDecimal()).toFixedScaleBigDecimal(),
-            testCurrencies.first { it.code == "EUR" } to (1.toFixedScaleBigDecimal() / "2.7028".toFixedScaleBigDecimal()).toFixedScaleBigDecimal(),
-            testCurrencies.first { it.code == "KZT" } to (1000.toFixedScaleBigDecimal() / "5.9591".toFixedScaleBigDecimal()).toFixedScaleBigDecimal(),
-            testCurrencies.first { it.code == "BYN" } to ("1".toFixedScaleBigDecimal()).toFixedScaleBigDecimal()
+            testCurrencies.first { it.code == "UAH" } to 100.toFixedScaleBigDecimal() / "8.952".toFixedScaleBigDecimal(),
+            testCurrencies.first { it.code == "USD" } to 1.toFixedScaleBigDecimal() / "2.3810".toFixedScaleBigDecimal(),
+            testCurrencies.first { it.code == "EUR" } to 1.toFixedScaleBigDecimal() / "2.7028".toFixedScaleBigDecimal(),
+            testCurrencies.first { it.code == "KZT" } to 1000.toFixedScaleBigDecimal() / "5.9591".toFixedScaleBigDecimal(),
+            testCurrencies.first { it.code == "BYN" } to "1".toFixedScaleBigDecimal()
         )
         runBlocking {
             val actualRates = fetcher.fetch(testCurrencies)
