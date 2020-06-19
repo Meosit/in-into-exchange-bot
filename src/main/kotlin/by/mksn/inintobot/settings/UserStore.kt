@@ -47,15 +47,19 @@ RETURNING id, name, last_used, last_query, requests, inline_requests, settings
         )
         session.execute(sqlQuery(UPSERT_SQL, params)) { stmt ->
             stmt.resultSet.use { result ->
-                BotUser(
-                    result.getLong("id"),
-                    result.getString("name"),
-                    result.getTimestamp("last_used"),
-                    result.getString("last_query"),
-                    result.getInt("requests"),
-                    result.getInt("inline_requests"),
-                    result.getString("settings")?.let { AppContext.json.parse(UserSettings.serializer(), it) }
-                )
+                if (result.next()) {
+                    BotUser(
+                        result.getLong("id"),
+                        result.getString("name"),
+                        result.getTimestamp("last_used"),
+                        result.getString("last_query"),
+                        result.getInt("requests"),
+                        result.getInt("inline_requests"),
+                        result.getString("settings")?.let { AppContext.json.parse(UserSettings.serializer(), it) }
+                    )
+                } else {
+                    null
+                }
             }
         }
     }
