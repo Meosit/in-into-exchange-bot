@@ -9,8 +9,8 @@ import java.time.Instant
 object UserStore {
 
     private const val CREATE_TABLE_SQL = """
-CREATE TABLE IF NOT EXISTS user (
-  id BIGINT NOT NULL
+CREATE TABLE IF NOT EXISTS users (
+  id BIGINT NOT NULL,
   name TEXT NOT NULL,
   last_used Timestamp,
   last_query TEXT NOT NULL,
@@ -21,7 +21,7 @@ CREATE TABLE IF NOT EXISTS user (
 )"""
 
     private const val UPSERT_SQL = """
-INSERT INTO user (id, name, last_used, last_query, requests, inline_requests)
+INSERT INTO users (id, name, last_used, last_query, requests, inline_requests)
 VALUES (:id, :name, :last_used, :last_query, :requests, :inline_requests)
 ON CONFLICT (id) DO UPDATE SET 
     name = EXCLUDED.name, last_used = EXCLUDED.last_used, last_query = EXCLUDED.last_query,
