@@ -29,6 +29,11 @@ ON CONFLICT (id) DO UPDATE SET
 RETURNING id, name, last_used, last_query, requests, inline_requests, settings
 """
 
+    private const val UPSERT_SETTINGS = """
+INSERT INTO users (id, settings) VALUES (?, ?)
+ON CONFLICT (id) DO UPDATE SET settings = EXCLUDED.settings
+"""
+
 
     fun initializeStore() {
         usingDefault { session ->
@@ -61,6 +66,32 @@ RETURNING id, name, last_used, last_query, requests, inline_requests, settings
                     null
                 }
             }
+        }
+    }
+
+    fun updateSettings(id: Long, settings: UserSettings): Boolean {
+        val settingsString = AppContext.json.stringify(UserSettings.serializer(), settings)
+        return 1 == usingDefault { session ->
+            session.update(sqlQuery(UPSERT_SETTINGS, id, settingsString))
+        }
+    }
+
+    fun lastUsed(limit: Int): List<BotUser> = usingDefault { session ->
+        val query = """
+            SELECT id, name, last_used, last_query, requests, inline_requests, settings 
+            FROM users 
+            ORDER BY last_used DESC LIMIT ?
+        """.trimIndent()
+        session.list(sqlQuery(query, limit)) { row ->
+            BotUser(
+                row.long("id"),
+                row.string("name"),
+                row.sqlTimestamp("last_used"),
+                row.string("last_query"),
+                row.int("requests"),
+                row.int("inline_requests"),
+                row.stringOrNull("settings")?.let { AppContext.json.parse(UserSettings.serializer(), it) }
+            )
         }
     }
 

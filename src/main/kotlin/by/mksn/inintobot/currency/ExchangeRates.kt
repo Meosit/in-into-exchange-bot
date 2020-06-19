@@ -25,6 +25,8 @@ class ExchangeRates(
 
     private val lastUpdated: AtomicRef<Map<RateApi, ZonedDateTime>> = atomic(mapOf())
 
+    val whenUpdated get() = lastUpdated.value
+
     private val apiToRates: AtomicRef<Map<RateApi, Map<Currency, BigDecimal>>> = atomic(mapOf())
 
     suspend fun reload(httpClient: HttpClient, json: Json) {
@@ -45,6 +47,7 @@ class ExchangeRates(
             lastUpdated[api] = ZonedDateTime.now(ZoneOffset.UTC)
             logger.info("Loaded for ${api.name}")
         }
+        this.lastUpdated.value = lastUpdated
         this.apiToRates.value = apiToRates
         logger.info("Exchange rates updated")
     }
