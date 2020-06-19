@@ -1,4 +1,5 @@
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 buildscript {
     repositories {
@@ -34,6 +35,10 @@ val betterParseVersion = "0.4.0-alpha-3"
 val serializationVersion = "0.20.0"
 val ktorVersion = "1.3.2"
 
+java {
+    sourceCompatibility = JavaVersion.VERSION_1_8
+    targetCompatibility = JavaVersion.VERSION_1_8
+}
 
 dependencies {
 
@@ -49,6 +54,9 @@ dependencies {
     implementation("io.ktor:ktor-client-json-jvm:$ktorVersion")
     implementation("io.ktor:ktor-client-serialization-jvm:$ktorVersion")
     implementation("ch.qos.logback:logback-classic:1.2.3")
+    implementation("org.postgresql:postgresql:42.2.1")
+    implementation("com.zaxxer:HikariCP:3.4.5")
+    implementation("com.vladsch.kotlin-jdbc:kotlin-jdbc:0.5.0")
 
     testImplementation(kotlin("test"))
     testImplementation(kotlin("test-junit"))
@@ -56,6 +64,12 @@ dependencies {
 }
 
 tasks {
+    withType<KotlinCompile> {
+        kotlinOptions {
+            jvmTarget = JavaVersion.VERSION_1_8.toString()
+        }
+    }
+
     named<ShadowJar>("shadowJar") {
         archiveFileName.set("InIntoBot.jar")
         mergeServiceFiles()

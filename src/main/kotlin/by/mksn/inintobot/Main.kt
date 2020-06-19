@@ -38,6 +38,7 @@ private val RELOAD_RATES_DELAY = TimeUnit.MINUTES.toMillis(60)
 
 fun Application.main() {
     val appUrl: String = System.getenv("APP_URL")
+    val dbUrl: String = System.getenv("DATABASE_URL")
     val adminKey: String = System.getenv("ADMIN_KEY")
     val allowedTokens = System.getenv("ALLOWED_TOKENS_STRING")?.split(",") ?: listOf()
     val deprecatedTokens = System.getenv("DEPRECATED_TOKENS_STRING")?.split(",") ?: listOf()
@@ -47,11 +48,12 @@ fun Application.main() {
     )
 
     logger.info("app url: $appUrl")
+    logger.info("DB url: $dbUrl")
     logger.info("tokens: $allowedTokens")
     logger.info("deprecated: $deprecatedTokens")
     logger.info("access keys: ${apiAccessKeys.map { (k, v) -> "$k: $v" }}")
 
-    AppContext.initialize(apiAccessKeys)
+    AppContext.initialize(dbUrl, apiAccessKeys)
 
     install(ContentNegotiation) {
         json(AppContext.json, ContentType.Application.Json)

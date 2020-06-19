@@ -7,6 +7,9 @@ import by.mksn.inintobot.misc.Localized
 import by.mksn.inintobot.output.strings.CommandMessages
 import by.mksn.inintobot.output.strings.ErrorMessages
 import by.mksn.inintobot.output.strings.QueryStrings
+import by.mksn.inintobot.settings.UserStore
+import com.vladsch.kotlin.jdbc.HikariCP
+import com.vladsch.kotlin.jdbc.SessionImpl
 import io.ktor.client.HttpClient
 import io.ktor.client.features.json.JsonFeature
 import io.ktor.client.features.json.serializer.KotlinxSerializer
@@ -17,7 +20,9 @@ import kotlinx.serialization.builtins.list
 import kotlinx.serialization.builtins.serializer
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonConfiguration
+import org.slf4j.LoggerFactory
 import java.io.InputStreamReader
+import java.net.URI
 
 
 @Serializable
@@ -46,6 +51,8 @@ private data class AppContextEntity(
  */
 object AppContext {
 
+    private val logger = LoggerFactory.getLogger(AppContext.javaClass.simpleName)
+
     private lateinit var context: AppContextEntity
 
     private fun loadResourceAsString(resourceBaseName: String): String = AppContext::class.java.classLoader
@@ -53,16 +60,29 @@ object AppContext {
         .let { it ?: throw IllegalStateException("Null resource stream for $resourceBaseName") }
         .use { InputStreamReader(it).use(InputStreamReader::readText) }
 
+    private fun initializeDataSource(dbUrl: String) {
+        val dbUri = URI(dbUrl)
+        val (username: String, password: String) = dbUri.userInfo.split(":")
+        val jdbcUrl = "jdbc:postgresql://${dbUri.host}:${dbUri.port}${dbUri.path}?sslmode=require"
+        HikariCP.default(jdbcUrl, username, password)
+        SessionImpl.defaultDataSource = { HikariCP.dataSource() }
+        logger.info("JDBC url: $jdbcUrl")
+        UserStore.initializeStore()
+        logger.info("Initialized UserStore")
+    }
+
     private fun <T> Json.load(resourceBaseName: String, deserializer: DeserializationStrategy<T>): T =
         this.parse(deserializer, loadResourceAsString(resourceBaseName))
 
-    fun initialize(apiAccessKeys: Map<String, String>) {
-        val json = Json(JsonConfiguration.Stable.copy(ignoreUnknownKeys = true, prettyPrint = true))
+    fun initialize(dbUrl: String, apiAccessKeys: Map<String, String>) {
+        val json = Json(JsonConfiguration.Stable.copy(ignoreUnknownKeys = true))
         val httpClient = HttpClient {
             install(JsonFeature) {
                 serializer = KotlinxSerializer(json)
             }
         }
+
+        initializeDataSource(dbUrl)
 
         val basicInfo = json.load("core/basic-info.json", BasicInfoEntity.serializer())
         val supportedCurrencies = json.load("core/currencies.json", Currency.serializer().list)
@@ -100,6 +120,7 @@ object AppContext {
             basicInfo, json, httpClient, supportedApis, supportedCurrencies, exchangeRates,
             outputStrings, apiNames, errorMessages, commandMessages
         )
+        logger.info("AppContext initialized")
     }
 
     val creatorId get() = context.basicInfo.creatorId

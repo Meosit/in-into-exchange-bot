@@ -4,6 +4,7 @@ import by.mksn.inintobot.AppContext
 import by.mksn.inintobot.output.BotOutputSender
 import by.mksn.inintobot.output.BotTextOutput
 import by.mksn.inintobot.settings.UserSettings
+import by.mksn.inintobot.settings.UserStore
 import by.mksn.inintobot.telegram.Chat
 import by.mksn.inintobot.telegram.Update
 import by.mksn.inintobot.telegram.User
@@ -21,11 +22,9 @@ private val logger = LoggerFactory.getLogger("handleTelegramRequest")
  */
 suspend fun handleTelegramRequest(update: Update, botToken: String, deprecatedBot: Boolean) {
     try {
+        val settings = loadSettings(update)
         with(update) {
-            val chat = message?.chat ?: editedMessage?.chat
-            val user = inlineQuery?.from ?: message?.from ?: editedMessage?.from
-            val settings = loadSettings(chat, user)
-            logger.info("User {}", user?.userReadableName() ?: chat?.userReadableName())
+            logger.info("User {}", userReadableName())
             logger.info("Settings: $settings")
             when {
                 inlineQuery != null -> inlineQuery.handle(settings, botToken, deprecatedBot)
@@ -37,8 +36,7 @@ suspend fun handleTelegramRequest(update: Update, botToken: String, deprecatedBo
         val cause = (e as? ResponseException)?.response?.readText() ?: e.message
         ?: "No exception message supplied (${e::class.simpleName})"
         val queryString = (update.message ?: update.editedMessage)?.text ?: update.inlineQuery?.query
-        val user = update.inlineQuery?.from?.userReadableName()
-            ?: (update.message ?: update.editedMessage)?.chat?.userReadableName()
+        val user = update.userReadableName()
         logger.info("Error for query '$queryString': $cause")
         if ("query is too old" !in cause) {
             val sender = BotOutputSender(AppContext.httpClient, botToken)
@@ -52,20 +50,28 @@ suspend fun handleTelegramRequest(update: Update, botToken: String, deprecatedBo
     return
 }
 
-fun loadSettings(chat: Chat?, user: User?): UserSettings {
+fun loadSettings(update: Update) = with(update) {
+    val chat = message?.chat ?: editedMessage?.chat
+    val user = inlineQuery?.from ?: message?.from ?: editedMessage?.from
+    val query = inlineQuery?.query ?: message?.text ?: editedMessage?.text ?: "null chat message"
     val userId = chat?.id ?: user?.id
-    val inferredLanguage = user?.languageCode?.take(2)?.toLowerCase()
-        .takeIf { AppContext.supportedLanguages.contains(it) }
-    return if (userId != null) {
-        // TODO load stored user settings
-        inferredLanguage?.let { UserSettings(language = it) } ?: UserSettings()
+    val botUser = userId?.let { UserStore.refreshAndGet(it, userReadableName(), query, inlineQuery != null) }
+    logger.info("Load user $botUser")
+    if (botUser?.settings != null) {
+        botUser.settings
     } else {
-        UserSettings()
+        val inferredLanguage = user?.languageCode?.take(2)?.toLowerCase()
+            .takeIf { AppContext.supportedLanguages.contains(it) }
+        inferredLanguage?.let { UserSettings(language = it) } ?: UserSettings()
     }
 }
 
+private fun Update.userReadableName() = inlineQuery?.from?.userReadableName()
+    ?: (message ?: editedMessage)?.chat?.userReadableName()
+    ?: "Unknown username"
+
 private fun Chat.userReadableName() =
-    with(this) { username ?: "$firstName ${lastName ?: ""} ($id)" }
+    username ?: "$firstName ${lastName ?: ""} ($id)"
 
 private fun User.userReadableName() =
-    with(this) { username ?: "$firstName ${lastName ?: ""} ($id)" }
+    username ?: "$firstName ${lastName ?: ""} ($id)"
