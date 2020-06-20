@@ -6,13 +6,13 @@ import by.mksn.inintobot.output.BotOutputSender
 import by.mksn.inintobot.output.BotTextOutput
 import by.mksn.inintobot.settings.UserStore
 import by.mksn.inintobot.telegram.Message
-import java.text.SimpleDateFormat
 import java.time.ZoneId
 import java.time.ZoneOffset
 import java.time.ZonedDateTime
+import java.time.format.DateTimeFormatter
 
-
-private fun ZonedDateTime.toSimpleString() = SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(this)
+private val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")
+private fun ZonedDateTime.toSimpleString() = formatter.format(this)
 
 suspend fun Message.handleAdminCommand(sender: BotOutputSender): Boolean = when (text) {
     "/reload" -> {
