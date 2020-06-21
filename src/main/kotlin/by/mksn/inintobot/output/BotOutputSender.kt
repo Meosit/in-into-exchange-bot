@@ -20,7 +20,7 @@ class BotOutputSender(private val httpClient: HttpClient, apiToken: String) {
             parameter("chat_id", chatId)
             parameter("message_id", messageId)
             val keyboardJson = output.keyboardJson()
-            keyboardJson?.let { parameter("inline_markup", it) }
+            keyboardJson?.let { parameter("reply_markup", it) }
         }
     }
 
@@ -41,7 +41,7 @@ class BotOutputSender(private val httpClient: HttpClient, apiToken: String) {
             parameter("chat_id", chatId)
             replyMessageId?.let { parameter("reply_to_message_id", it.toString()) }
             val keyboardJson = output.keyboardJson()
-            keyboardJson?.let { parameter("inline_markup", it) }
+            keyboardJson?.let { parameter("reply_markup", it) }
         }
     }
 

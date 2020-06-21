@@ -40,7 +40,8 @@ fun Application.main() {
     val deprecatedTokens = System.getenv("DEPRECATED_TOKENS_STRING")?.split(",") ?: listOf()
     val apiAccessKeys: Map<String, String> = mapOf(
         "<fixer_access_key>" to System.getenv("FIXER_ACCESS_KEY"),
-        "<openexchangerates_access_key>" to System.getenv("OPENEXCHANGERATES_ACCESS_KEY")
+        "<openexchangerates_access_key>" to System.getenv("OPENEXCHANGERATES_ACCESS_KEY"),
+        "<tradermade_access_key>" to System.getenv("TRADERMADE_ACCESS_KEY")
     )
 
     logger.info("app url: $appUrl")
