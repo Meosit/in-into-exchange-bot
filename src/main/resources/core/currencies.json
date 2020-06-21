@@ -334,5 +334,16 @@
       "битки",
       "битка"
     ]
+  },
+  {
+    "code": "ETH",
+    "emoji": "\uD83D\uDCA0",
+    "aliases": [
+      "ETH",
+      "Ethereum",
+      "ether",
+      "Эфириум",
+      "эфир"
+    ]
   }
 ]

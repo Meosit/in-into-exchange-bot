@@ -39,10 +39,10 @@
     ]
   },
   {
-    "name": "CBE",
+    "name": "ECB",
     "aliases": [
-      "CBE",
-      "ЦБЕ"
+      "ECB",
+      "ЕЦБ"
     ],
     "base": "EUR",
     "url": "https://www.ecb.europa.eu/stats/eurofxref/eurofxref-daily.xml",
@@ -84,11 +84,23 @@
       "тм"
     ],
     "base": "USD",
-    "url": "https://marketdata.tradermade.com/api/v1/live?api_key=<tradermade_access_key>&currency=USDEUR,USDRUB,USDUAH,USDPLN,USDCZK,USDGBP,USDJPY,USDCNY,USDCHF,USDTRY,USDCAD,USDISK,USDDKK,USDSEK,USDNOK,USDBTC,USDILS",
+    "url": "https://marketdata.tradermade.com/api/v1/live?api_key=<tradermade_access_key>&currency=USDEUR,USDRUB,USDUAH,USDPLN,USDCZK,USDGBP,USDJPY,USDCNY,USDCHF,USDTRY,USDCAD,USDISK,USDDKK,USDSEK,USDNOK,USDILS,USDBTC,USDETH",
     "unsupported": [
       "BYN",
       "BGN",
       "KZT"
     ]
+  },
+  {
+    "name": "Forex",
+    "aliases": [
+      "Forex",
+      "FX",
+      "FC",
+      "Форекс"
+    ],
+    "base": "USD",
+    "url": "https://fcsapi.com/api-v2/forex/latest?access_key=<forex_access_key>&symbol=USD/BYN,USD/EUR,USD/RUB,USD/UAH,USD/PLN,USD/CZK,USD/GBP,USD/JPY,USD/CNY,USD/KZT,USD/CHF,USD/BGN,USD/TRY,USD/CAD,USD/ISK,USD/DKK,USD/SEK,USD/NOK,USD/ILS,USD/BTC,USD/ETH",
+    "unsupported": []
   }
 ]

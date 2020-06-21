@@ -9,7 +9,7 @@
   "queryExpected": "❗Not blank query string expected",
   "unsupportedCurrency": "❗Unsupported currency %s for %s API",
   "ratesUnavailable": "❗Rates for this API currently unavailable, try later",
-  "deprecatedBot": "⚠️ This bot is deprecated and can be disabled soon, please use @inintobot which does the same but also offers extended functionality. If you have any questions, contact @meosit",
+  "deprecatedBot": "⚠️ This bot is deprecated and can be disabled soon, please use @inintobot which does the same but also offers extended functionality including settings customization. If you have any questions or issues, contact @meosit",
   "unableToSave": "❗Unable to save settings",
   "unexpectedError": "❗Unexpected error"
 }

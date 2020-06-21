@@ -18,7 +18,8 @@ object DefaultApiSettingHandler : SettingHandler(4) {
 
     override fun messageMarkdown(settings: UserSettings, messages: MessagesSettingsStrings): String {
         val apiDisplayName = AppContext.apiNames.of(settings.language).getValue(settings.apiName)
-        return messages.defaultApi.format(apiDisplayName, settings.apiName)
+        val unsupported = AppContext.supportedApis.first { it.name == settings.apiName }.unsupported.joinToString()
+        return messages.defaultApi.format(apiDisplayName, settings.apiName, unsupported)
     }
 
     override fun isValidPayload(payload: String): Boolean = AppContext.supportedApis.any { it.name == payload }

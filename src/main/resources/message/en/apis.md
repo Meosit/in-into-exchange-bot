@@ -18,9 +18,9 @@ __Central Bank of Russia__
 - Base currency: `RUB`
 - NOT supported: `ILS`, `BTC`
 
-__Central Bank of Europe__
+__European Central Bank__
 - Site: https://www.ecb.europa.eu/home/html/index.en.html
-- Names: `CBE`, `ЦБЕ`
+- Names: `ECB`, `ЕЦБ`
 - Base currency: `EUR`
 - NOT supported: `BYN`, `UAH`, `KZT`, `BTC`
 
@@ -39,3 +39,8 @@ __TraderMade.com__
 - Names: `TraderMade`, `tm`, `тм`
 - Base currency: `USD`
 - Unsupported: `BYN`, `BGN`, `KZT`
+
+__Forex API__
+- Site: https://fcsapi.com/
+- Names: `Forex`, `FX`, `FC`, `Форекс`
+- Base currency: `USD`

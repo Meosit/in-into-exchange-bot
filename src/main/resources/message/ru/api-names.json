@@ -2,8 +2,9 @@
   "NBRB": "НБ Беларуси",
   "NBU": "НБ Украины",
   "CBR": "ЦБ России",
-  "CBE": "ЦБ Европы",
+  "ECB": "ЦБ Европы",
   "Fixer": "Fixer.io",
   "OpenExchangeRates": "OpenExchangeRates.org",
-  "TraderMade": "TraderMade.com"
+  "TraderMade": "TraderMade.com",
+  "Forex": "Forex API"
 }

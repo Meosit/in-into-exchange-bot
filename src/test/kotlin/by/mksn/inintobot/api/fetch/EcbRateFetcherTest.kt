@@ -16,7 +16,7 @@ import kotlinx.serialization.json.JsonConfiguration
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 
-class CbeRateFetcherTest {
+class EcbRateFetcherTest {
 
     private lateinit var httpClient: HttpClient
     private val testUrl = "http://test-url.org/getResponse"
@@ -89,7 +89,7 @@ class CbeRateFetcherTest {
     fun successful_fetch_and_parse() {
         val json = Json(JsonConfiguration.Stable.copy(ignoreUnknownKeys = true))
         val apiConfig = RateApi("ECB", setOf(), "EUR", testUrl, setOf())
-        val fetcher = CbeRateFetcher(apiConfig, httpClient, json)
+        val fetcher = EcbRateFetcher(apiConfig, httpClient, json)
         val expectedRates = mapOf(
             testCurrencies.first { it.code == "USD" } to "1.1330".toFixedScaleBigDecimal(),
             testCurrencies.first { it.code == "EUR" } to "1".toFixedScaleBigDecimal()

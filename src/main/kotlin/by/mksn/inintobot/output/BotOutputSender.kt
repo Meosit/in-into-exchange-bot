@@ -45,6 +45,13 @@ class BotOutputSender(private val httpClient: HttpClient, apiToken: String) {
         }
     }
 
+    suspend fun pingCallbackQuery(queryId: String) {
+        httpClient.post<String> {
+            url("$apiUrl/answerCallbackQuery")
+            parameter("callback_query_id", queryId)
+        }
+    }
+
     suspend fun sendInlineQuery(queryId: String, vararg outputs: BotOutput) {
         val jsonQueryResults = outputs
             .joinToString(prefix = "[", postfix = "]") { it.toInlineQueryResultArticle() }

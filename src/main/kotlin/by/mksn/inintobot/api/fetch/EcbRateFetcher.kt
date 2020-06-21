@@ -10,14 +10,14 @@ import kotlinx.serialization.json.Json
 import java.math.BigDecimal
 
 @Serializable
-data class CbeResponseEntry(
+data class EcbResponseEntry(
     val code: String,
     @Serializable(with = BigDecimalSerializer::class)
     val rate: BigDecimal
 )
 
-class CbeRateFetcher(rateApi: RateApi, client: HttpClient, json: Json) :
-    BaseApiRateFetcher<List<CbeResponseEntry>>(rateApi, client, json) {
+class EcbRateFetcher(rateApi: RateApi, client: HttpClient, json: Json) :
+    BaseApiRateFetcher<List<EcbResponseEntry>>(rateApi, client, json) {
 
     private val options = setOf(RegexOption.MULTILINE, RegexOption.IGNORE_CASE)
     private val xmlHeaderRegex = "<\\?xml.+<Cube\\s+time='.*?'>".toRegex(options)
@@ -35,9 +35,9 @@ class CbeRateFetcher(rateApi: RateApi, client: HttpClient, json: Json) :
         return result.replace(trailingCommaRegex, "}]")
     }
 
-    override val serializer: KSerializer<List<CbeResponseEntry>> = CbeResponseEntry.serializer().list
+    override val serializer: KSerializer<List<EcbResponseEntry>> = EcbResponseEntry.serializer().list
 
-    override suspend fun parseResponse(response: List<CbeResponseEntry>) =
+    override suspend fun parseResponse(response: List<EcbResponseEntry>) =
         response.asSequence().associateBy({ it.code }, { it.rate })
 
 }

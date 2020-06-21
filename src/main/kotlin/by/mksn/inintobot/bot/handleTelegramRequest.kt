@@ -32,7 +32,10 @@ suspend fun handleTelegramRequest(update: Update, botToken: String, deprecatedBo
                 inlineQuery != null -> inlineQuery.handle(settings, sender, deprecatedBot)
                 message != null -> message.handle(settings, sender, deprecatedBot)
                 editedMessage != null -> editedMessage.handle(settings, sender, deprecatedBot)
-                callbackQuery != null -> Setting.handle(callbackQuery, settings, sender)
+                callbackQuery != null -> {
+                    Setting.handle(callbackQuery, settings, sender)
+                    sender.pingCallbackQuery(callbackQuery.id)
+                }
             }
         }
     } catch (e: Exception) {

@@ -31,7 +31,7 @@ import java.util.concurrent.TimeUnit
 
 private val logger = LoggerFactory.getLogger("MainKt")
 private val SELF_PING_DELAY = TimeUnit.MINUTES.toMillis(15)
-private val RELOAD_RATES_DELAY = TimeUnit.MINUTES.toMillis(60)
+private val RELOAD_RATES_DELAY = TimeUnit.HOURS.toMillis(1)
 
 fun Application.main() {
     val appUrl: String = System.getenv("APP_URL")
@@ -41,7 +41,8 @@ fun Application.main() {
     val apiAccessKeys: Map<String, String> = mapOf(
         "<fixer_access_key>" to System.getenv("FIXER_ACCESS_KEY"),
         "<openexchangerates_access_key>" to System.getenv("OPENEXCHANGERATES_ACCESS_KEY"),
-        "<tradermade_access_key>" to System.getenv("TRADERMADE_ACCESS_KEY")
+        "<tradermade_access_key>" to System.getenv("TRADERMADE_ACCESS_KEY"),
+        "<forex_access_key>" to System.getenv("FOREX_ACCESS_KEY")
     )
 
     logger.info("app url: $appUrl")
