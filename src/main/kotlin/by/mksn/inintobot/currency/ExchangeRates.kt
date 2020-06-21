@@ -5,7 +5,6 @@ import by.mksn.inintobot.api.fetch.ApiRateFetcher
 import io.ktor.client.HttpClient
 import kotlinx.atomicfu.AtomicRef
 import kotlinx.atomicfu.atomic
-import kotlinx.coroutines.delay
 import kotlinx.serialization.json.Json
 import org.slf4j.LoggerFactory
 import java.io.PrintWriter
@@ -22,6 +21,7 @@ class ExchangeRates(
 
     companion object {
         private val logger = LoggerFactory.getLogger(ExchangeRates::class.simpleName)
+        private const val NUM_RETRIES = 3
     }
 
     private val lastUpdated: AtomicRef<Map<RateApi, ZonedDateTime>> = atomic(mapOf())
@@ -31,41 +31,31 @@ class ExchangeRates(
     private val apiToRates: AtomicRef<Map<RateApi, Map<Currency, BigDecimal>>> = atomic(mapOf())
 
     suspend fun reloadOne(api: RateApi, httpClient: HttpClient, json: Json) {
-        logger.info("Reloading exchange rates for ${api.name}...")
-        val lastUpdated = lastUpdated.value.toMutableMap()
-        val apiToRates = apiToRates.value.toMutableMap()
-        try {
-            val rates = ApiRateFetcher.forApi(api, httpClient, json).fetch(currencies)
-            apiToRates[api] = rates
-            lastUpdated[api] = ZonedDateTime.now(ZoneOffset.UTC)
-            logger.info("Successfully loaded rates for ${api.name}")
-        } catch (e: Exception) {
-            val sw = StringWriter()
-            e.printStackTrace(PrintWriter(sw))
-            logger.error("Failed to load rates for ${api.name}: \n$sw")
+        for (i in 1..NUM_RETRIES) {
+            logger.info("Reloading exchange rates for ${api.name} (try $i)...")
+            val lastUpdated = lastUpdated.value.toMutableMap()
+            val apiToRates = apiToRates.value.toMutableMap()
+            try {
+                val rates = ApiRateFetcher.forApi(api, httpClient, json).fetch(currencies)
+                apiToRates[api] = rates
+                lastUpdated[api] = ZonedDateTime.now(ZoneOffset.UTC)
+                this.lastUpdated.value = lastUpdated
+                this.apiToRates.value = apiToRates
+                logger.info("Successfully loaded rates for ${api.name}")
+                break
+            } catch (e: Exception) {
+                val sw = StringWriter()
+                e.printStackTrace(PrintWriter(sw))
+                logger.error("Failed to load rates for ${api.name}: \n$sw")
+            }
         }
     }
 
     suspend fun reloadAll(httpClient: HttpClient, json: Json) {
         logger.info("Reloading exchange rates...")
-        val lastUpdated = lastUpdated.value.toMutableMap()
-        val apiToRates = apiToRates.value.toMutableMap()
         for (api in apis) {
-            delay(300)
-            val rates = try {
-                ApiRateFetcher.forApi(api, httpClient, json).fetch(currencies)
-            } catch (e: Exception) {
-                val sw = StringWriter()
-                e.printStackTrace(PrintWriter(sw))
-                logger.error("Failed to load rates for ${api.name}: \n$sw")
-                continue
-            }
-            apiToRates[api] = rates
-            lastUpdated[api] = ZonedDateTime.now(ZoneOffset.UTC)
-            logger.info("Loaded for ${api.name}")
+            reloadOne(api, httpClient, json)
         }
-        this.lastUpdated.value = lastUpdated
-        this.apiToRates.value = apiToRates
         logger.info("Exchange rates updated")
     }
 

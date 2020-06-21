@@ -9,7 +9,8 @@
     "url": "http://www.nbrb.by/API/ExRates/Rates?Periodicity=0",
     "unsupported": [
       "ILS",
-      "BTC"
+      "BTC",
+      "ETH"
     ],
     "refreshHours": 1
   },
@@ -22,7 +23,8 @@
     "base": "UAH",
     "url": "https://bank.gov.ua/NBUStatService/v1/statdirectory/exchange?json",
     "unsupported": [
-      "BTC"
+      "BTC",
+      "ETH"
     ],
     "refreshHours": 1
   },
@@ -37,7 +39,8 @@
     "url": "http://www.cbr.ru/scripts/XML_daily.asp",
     "unsupported": [
       "ILS",
-      "BTC"
+      "BTC",
+      "ETH"
     ],
     "refreshHours": 1
   },
@@ -53,7 +56,8 @@
       "BYN",
       "UAH",
       "KZT",
-      "BTC"
+      "BTC",
+      "ETH"
     ],
     "refreshHours": 1
   },
@@ -67,7 +71,9 @@
     ],
     "base": "EUR",
     "url": "http://data.fixer.io/api/latest?access_key=<fixer_access_key>&symbols=BYN,USD,EUR,RUB,UAH,PLN,CZK,GBP,JPY,CNY,KZT,CHF,BGN,TRY,CAD,ISK,DKK,SEK,NOK,BTC,ILS",
-    "unsupported": [],
+    "unsupported": [
+      "ETH"
+    ],
     "refreshHours": 1
   },
   {
@@ -79,7 +85,9 @@
     ],
     "base": "USD",
     "url": "https://openexchangerates.org/api/latest.json?app_id=<openexchangerates_access_key>&symbols=BYN,USD,EUR,RUB,UAH,PLN,CZK,GBP,JPY,CNY,KZT,CHF,BGN,TRY,CAD,ISK,DKK,SEK,NOK,BTC,ILS",
-    "unsupported": [],
+    "unsupported": [
+      "ETH"
+    ],
     "refreshHours": 1
   },
   {

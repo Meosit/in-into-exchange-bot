@@ -6,6 +6,7 @@ import by.mksn.inintobot.settings.UserSettings
 import by.mksn.inintobot.telegram.InlineKeyboardButton
 
 object OutputCurrenciesSettingHandler : SettingHandler(5) {
+    override val buttonsPerRow: Int = 3
     override fun keyboardButtons(settings: UserSettings, checkedButtonLablel: String): List<InlineKeyboardButton> {
         val api = AppContext.supportedApis.first { settings.apiName == it.name }
         return AppContext.supportedCurrencies.mapNotNull {
