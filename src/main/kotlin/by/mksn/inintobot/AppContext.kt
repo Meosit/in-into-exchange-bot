@@ -7,6 +7,7 @@ import by.mksn.inintobot.misc.Localized
 import by.mksn.inintobot.output.strings.CommandMessages
 import by.mksn.inintobot.output.strings.ErrorMessages
 import by.mksn.inintobot.output.strings.QueryStrings
+import by.mksn.inintobot.output.strings.SettingsStrings
 import by.mksn.inintobot.settings.UserStore
 import com.vladsch.kotlin.jdbc.HikariCP
 import com.vladsch.kotlin.jdbc.SessionImpl
@@ -30,7 +31,7 @@ private data class BasicInfoEntity(
     val creatorId: String,
     val maxOutputLength: Int,
     val maxErrorLineLength: Int,
-    val supportedLocales: Set<String>
+    val supportedLanguages: Map<String, String>
 )
 
 private data class AppContextEntity(
@@ -43,7 +44,8 @@ private data class AppContextEntity(
     val queryStrings: Localized<QueryStrings>,
     val apiNames: Localized<Map<String, String>>,
     val errorMessages: Localized<ErrorMessages>,
-    val commandMessages: Localized<CommandMessages>
+    val commandMessages: Localized<CommandMessages>,
+    val settingsStrings: Localized<SettingsStrings>
 )
 
 /**
@@ -94,15 +96,15 @@ object AppContext {
             })
 
         val outputStrings =
-            Localized(basicInfo.supportedLocales) { language ->
+            Localized(basicInfo.supportedLanguages.keys) { language ->
                 json.load("message/$language/query.json", QueryStrings.serializer())
             }
         val errorMessages =
-            Localized(basicInfo.supportedLocales) { language ->
+            Localized(basicInfo.supportedLanguages.keys) { language ->
                 json.load("message/$language/errors.json", ErrorMessages.serializer())
             }
         val commandMessages =
-            Localized(basicInfo.supportedLocales) { language ->
+            Localized(basicInfo.supportedLanguages.keys) { language ->
                 CommandMessages(
                     loadResourceAsString("message/$language/help.md"),
                     loadResourceAsString("message/$language/patterns.md"),
@@ -110,15 +112,20 @@ object AppContext {
                 )
             }
         val apiNames =
-            Localized(basicInfo.supportedLocales) { language ->
+            Localized(basicInfo.supportedLanguages.keys) { language ->
                 json.load("message/$language/api-names.json", MapSerializer(String.serializer(), String.serializer()))
+            }
+
+        val settingsStrings =
+            Localized(basicInfo.supportedLanguages.keys) { language ->
+                json.load("message/$language/settings.json", SettingsStrings.serializer())
             }
 
         val exchangeRates = ExchangeRates(supportedApis, supportedCurrencies)
 
         context = AppContextEntity(
             basicInfo, json, httpClient, supportedApis, supportedCurrencies, exchangeRates,
-            outputStrings, apiNames, errorMessages, commandMessages
+            outputStrings, apiNames, errorMessages, commandMessages, settingsStrings
         )
         logger.info("AppContext initialized")
     }
@@ -130,7 +137,7 @@ object AppContext {
     val json get() = context.json
     val httpClient get() = context.httpClient
 
-    val supportedLanguages get() = context.basicInfo.supportedLocales
+    val supportedLanguages get() = context.basicInfo.supportedLanguages
     val supportedApis get() = context.supportedApis
     val supportedCurrencies get() = context.supportedCurrencies
     val exchangeRates get() = context.exchangeRates
@@ -139,5 +146,6 @@ object AppContext {
     val apiNames get() = context.apiNames
     val errorMessages get() = context.errorMessages
     val commandMessages get() = context.commandMessages
+    val settingsStrings get() = context.settingsStrings
 
 }

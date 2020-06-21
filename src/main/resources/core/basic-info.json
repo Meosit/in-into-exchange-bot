@@ -2,8 +2,8 @@
   "creatorId": "137847053",
   "maxOutputLength": 4096,
   "maxErrorLineLength": 32,
-  "supportedLocales": [
-    "ru",
-    "en"
-  ]
+  "supportedLanguages": {
+    "ru": "Русский",
+    "en": "English"
+  }
 }

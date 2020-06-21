@@ -1,6 +1,7 @@
 package by.mksn.inintobot.bot
 
 import by.mksn.inintobot.AppContext
+import by.mksn.inintobot.bot.settings.Setting
 import by.mksn.inintobot.output.BotDeprecatedOutput
 import by.mksn.inintobot.output.BotOutputSender
 import by.mksn.inintobot.output.BotTextOutput
@@ -11,8 +12,7 @@ import org.slf4j.LoggerFactory
 
 private val logger = LoggerFactory.getLogger("handleMessage")
 
-suspend fun Message.handle(settings: UserSettings, botToken: String, deprecatedBot: Boolean) {
-    val sender = BotOutputSender(AppContext.httpClient, botToken)
+suspend fun Message.handle(settings: UserSettings, sender: BotOutputSender, deprecatedBot: Boolean) {
     if (chat.id.toString() == AppContext.creatorId) {
         val handled = handleAdminCommand(sender)
         if (handled) return
@@ -36,9 +36,13 @@ suspend fun Message.handle(settings: UserSettings, botToken: String, deprecatedB
             else BotTextOutput(message)
             sender.sendChatMessage(chat.id.toString(), formattedMessage)
         }
+        "/settings" -> {
+            logger.info("Handling settings command")
+            Setting.ROOT.handle(null, this, settings, sender)
+        }
         else -> {
             logger.info("Handling '$text' chat message")
-            val outputs = handleBotQuery(text, settings)
+            val outputs = handleBotExchangeQuery(text, settings)
             outputs.firstOrNull()?.let {
                 val formattedOutput = if (deprecatedBot) BotDeprecatedOutput(it, settings.language) else it
                 sender.sendChatMessage(chat.id.toString(), formattedOutput)

@@ -22,5 +22,6 @@ Features:
 - Allowed math operators `*`, `/`, `+`, `-` and brackets.
 - Suffixes _kilo-_ and _mega-_ can be used (`10к`/`1kk`/`1.9M`/etc.) with numbers.
 - Additional currencies can be added by using ! sign or union words (`into bucks`, `!JPY`, `in $`) (each addition should be separated with spaces).
+- To customize defaults use /settings command 
 
 For feedback: @meosit

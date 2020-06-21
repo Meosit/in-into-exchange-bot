@@ -1,6 +1,7 @@
 package by.mksn.inintobot.bot
 
 import by.mksn.inintobot.AppContext
+import by.mksn.inintobot.bot.settings.Setting
 import by.mksn.inintobot.output.BotOutputSender
 import by.mksn.inintobot.output.BotTextOutput
 import by.mksn.inintobot.settings.UserSettings
@@ -21,25 +22,25 @@ private val logger = LoggerFactory.getLogger("handleTelegramRequest")
  * Handles the telegram bot [Update] for the specific [botToken]
  */
 suspend fun handleTelegramRequest(update: Update, botToken: String, deprecatedBot: Boolean) {
+    val sender = BotOutputSender(AppContext.httpClient, botToken)
     try {
         val settings = loadSettings(update)
         with(update) {
             logger.info("User {}", userReadableName())
             logger.info("Settings: $settings")
             when {
-                inlineQuery != null -> inlineQuery.handle(settings, botToken, deprecatedBot)
-                message != null -> message.handle(settings, botToken, deprecatedBot)
-                editedMessage != null -> editedMessage.handle(settings, botToken, deprecatedBot)
+                inlineQuery != null -> inlineQuery.handle(settings, sender, deprecatedBot)
+                message != null -> message.handle(settings, sender, deprecatedBot)
+                editedMessage != null -> editedMessage.handle(settings, sender, deprecatedBot)
+                callbackQuery != null -> Setting.handle(callbackQuery, settings, sender)
             }
         }
     } catch (e: Exception) {
-        val cause = (e as? ResponseException)?.response?.readText() ?: e.message
-        ?: "No exception message supplied (${e::class.simpleName})"
+        val cause = (e as? ResponseException)?.response?.readText() ?: "${e::class.simpleName} ${e.message}"
         val queryString = (update.message ?: update.editedMessage)?.text ?: update.inlineQuery?.query
         val user = update.userReadableName()
         logger.info("Error for query '$queryString': $cause")
         if ("query is too old" !in cause) {
-            val sender = BotOutputSender(AppContext.httpClient, botToken)
             val message = BotTextOutput("Error received.\n```\nQuery: $queryString\nUser: $user\n\nCause: $cause```")
             sender.sendChatMessage(AppContext.creatorId, message)
         }
@@ -61,7 +62,7 @@ fun loadSettings(update: Update) = with(update) {
         botUser.settings
     } else {
         val inferredLanguage = user?.languageCode?.take(2)?.toLowerCase()
-            .takeIf { AppContext.supportedLanguages.contains(it) }
+            ?.takeIf { it in AppContext.supportedLanguages }
         inferredLanguage?.let { UserSettings(language = it) } ?: UserSettings()
     }
 }

@@ -17,7 +17,7 @@ import org.slf4j.LoggerFactory
 
 private val logger = LoggerFactory.getLogger("handleBotQuery")
 
-fun handleBotQuery(query: String, settings: UserSettings): Array<BotOutput> {
+fun handleBotExchangeQuery(query: String, settings: UserSettings): Array<BotOutput> {
     val currencies = AppContext.supportedCurrencies
     val apis = AppContext.supportedApis
     val defaultApi = apis.first { it.name == settings.apiName }
@@ -35,7 +35,7 @@ fun handleBotQuery(query: String, settings: UserSettings): Array<BotOutput> {
             }
             logger.info("New precision is $decimalDigits")
             logger.info("Chosen api is ${api.name} (default: ${defaultApi.name})", api.name)
-            val apiCurrencies = currencies.filterNot { api.unsupported.contains(it.code) }
+            val apiCurrencies = currencies.filterNot { it.code in api.unsupported }
             val apiBaseCurrency = apiCurrencies.first { it.code == api.base }
             val defaultCurrency = apiCurrencies
                 .firstOrNull { it.code == settings.defaultCurrency } ?: apiBaseCurrency
@@ -64,9 +64,7 @@ fun handleBotQuery(query: String, settings: UserSettings): Array<BotOutput> {
             }
 
             val outputCurrencies = apiCurrencies.filter {
-                evaluated.involvedCurrencies.contains(it)
-                        || settings.outputCurrencies.contains(it.code)
-                        || additionalCurrencies.contains(it)
+                it in evaluated.involvedCurrencies || it.code in settings.outputCurrencies || it in additionalCurrencies
             }
             logger.info("Output currencies: ${outputCurrencies.joinToString { it.code }}")
 

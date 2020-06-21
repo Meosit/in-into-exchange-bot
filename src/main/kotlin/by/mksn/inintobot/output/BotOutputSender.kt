@@ -11,6 +11,27 @@ class BotOutputSender(private val httpClient: HttpClient, apiToken: String) {
 
     private val apiUrl = "https://api.telegram.org/bot$apiToken"
 
+    suspend fun editChatMessage(chatId: String, messageId: Long, output: BotOutput) {
+        httpClient.post<String> {
+            url("$apiUrl/editMessageText")
+            parameter("text", output.markdown())
+            parameter("parse_mode", "Markdown")
+            parameter("disable_web_page_preview", true)
+            parameter("chat_id", chatId)
+            parameter("message_id", messageId)
+            val keyboardJson = output.keyboardJson()
+            keyboardJson?.let { parameter("inline_markup", it) }
+        }
+    }
+
+    suspend fun deleteChatMessage(chatId: String, messageId: Long) {
+        httpClient.post<String> {
+            url("$apiUrl/deleteMessage")
+            parameter("chat_id", chatId)
+            parameter("message_id", messageId)
+        }
+    }
+
     suspend fun sendChatMessage(chatId: String, output: BotOutput, replyMessageId: Long? = null) {
         httpClient.post<String> {
             url("$apiUrl/sendMessage")
@@ -19,6 +40,8 @@ class BotOutputSender(private val httpClient: HttpClient, apiToken: String) {
             parameter("disable_web_page_preview", true)
             parameter("chat_id", chatId)
             replyMessageId?.let { parameter("reply_to_message_id", it.toString()) }
+            val keyboardJson = output.keyboardJson()
+            keyboardJson?.let { parameter("inline_markup", it) }
         }
     }
 

@@ -5,4 +5,5 @@ interface BotOutput {
     fun inlineDescription(): String
     fun inlineThumbUrl(): String
     fun markdown(): String
+    fun keyboardJson(): String? = null
 }

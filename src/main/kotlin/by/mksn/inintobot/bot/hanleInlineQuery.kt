@@ -15,7 +15,7 @@ import org.slf4j.LoggerFactory
 
 private val logger = LoggerFactory.getLogger("handleInlineQuery")
 
-suspend fun InlineQuery.handle(settings: UserSettings, botToken: String, deprecatedBot: Boolean) {
+suspend fun InlineQuery.handle(settings: UserSettings, sender: BotOutputSender, deprecatedBot: Boolean) {
     val outputs = if (query.isBlank()) {
         logger.info("Handling dashboard inline query")
         val api = AppContext.supportedApis
@@ -44,10 +44,9 @@ suspend fun InlineQuery.handle(settings: UserSettings, botToken: String, depreca
         }
     } else {
         logger.info("Handling inline query '$query'")
-        handleBotQuery(query, settings)
+        handleBotExchangeQuery(query, settings)
     }
 
-    val sender = BotOutputSender(AppContext.httpClient, botToken)
     val formattedOutputs = if (deprecatedBot)
         outputs.map { BotDeprecatedOutput(it, settings.language) }.toTypedArray() else outputs
     sender.sendInlineQuery(id, *formattedOutputs)

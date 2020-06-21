@@ -30,10 +30,7 @@ ON CONFLICT (id) DO UPDATE SET
 RETURNING id, name, last_used, last_query, requests, inline_requests, settings
 """
 
-    private const val UPSERT_SETTINGS = """
-INSERT INTO users (id, settings) VALUES (?, ?)
-ON CONFLICT (id) DO UPDATE SET settings = EXCLUDED.settings
-"""
+    private const val UPDATE_SETTINGS = """UPDATE users SET settings = ? WHERE id = ?"""
 
 
     fun initializeStore() {
@@ -70,11 +67,9 @@ ON CONFLICT (id) DO UPDATE SET settings = EXCLUDED.settings
         }
     }
 
-    fun updateSettings(id: Long, settings: UserSettings): Boolean {
+    fun updateSettings(id: Long, settings: UserSettings) {
         val settingsString = AppContext.json.stringify(UserSettings.serializer(), settings)
-        return 1 == usingDefault { session ->
-            session.update(sqlQuery(UPSERT_SETTINGS, id, settingsString))
-        }
+        usingDefault { session -> session.update(sqlQuery(UPDATE_SETTINGS, settingsString, id)) }
     }
 
     fun lastUsed(limit: Int): List<BotUser> = usingDefault { session ->
@@ -90,10 +85,10 @@ ON CONFLICT (id) DO UPDATE SET settings = EXCLUDED.settings
         val query = """
             SELECT id, name, last_used, last_query, requests, inline_requests, settings 
             FROM users 
-            WHERE last_used > current_timestamp - interval '? hours'
+            WHERE last_used > current_timestamp - interval '$lastHours hours'
             ORDER BY last_used DESC LIMIT ?
         """.trimIndent()
-        session.list(sqlQuery(query, limit, lastHours)) { it.toBotUser() }
+        session.list(sqlQuery(query, limit)) { it.toBotUser() }
     }
 
     private fun Row.toBotUser() = BotUser(

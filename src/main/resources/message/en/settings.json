@@ -1,0 +1,24 @@
+{
+  "messages": {
+    "root": "Choose the setting you would like to modify",
+    "language": "Select preferred language, by default it's inferred from the device locale.\n\nCurrent: *%s* (`%s`)",
+    "defaultCurrency": "Select the default currency to be used in case no other currencies specified within an expression. Full currency list depends on chosen API (%s), see /apis.\n\nCurrent default currency: *%s*",
+    "defaultApi": "Select currency rate API to be used by default, see /apis for more info.\n\nCurrent API: *%s* (`%s`)",
+    "outputCurrencies": "Select default output currency list, if the currency already in the list, it would be removed on button click. Currency list depends on chosen API (%s), see /apis.\n\n*Current currencies:\n* %s",
+    "dashboardCurrencies": "Select currency list to choose between in order to show all available rates in case of empty inline query, if the currency already in the list, it would be removed on button click. Currency list depends on chosen API (%s), see /apis.\n\n*Current currencies:*\n %s",
+    "decimalDigits": "Select a number of digits after decimal point to show in results. \n\nCurrent value: *%d* (`%s`)"
+  },
+  "rootButtons": {
+    "language": "Language",
+    "defaultApi": "Default rate API",
+    "defaultCurrency": "Default currency",
+    "outputCurrencies": "Output currencies",
+    "dashboardCurrencies": "Empty inline query currencies",
+    "decimalDigits": "Digits after decimal point"
+  },
+  "buttons": {
+    "checked": "✅ %s",
+    "back": "↩️️ Back",
+    "close": "⏹ Close"
+  }
+}
