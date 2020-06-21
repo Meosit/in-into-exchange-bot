@@ -100,11 +100,11 @@ RETURNING id, name, last_used, last_query, requests, inline_requests, settings
         session.list(sqlQuery(query, id)) { it.toBotUser() }.firstOrNull()
     }
 
-    fun usersByWhere(where: String): List<BotUser> = usingDefault { session ->
+    fun usersGenericSelect(afterFromClause: String): List<BotUser> = usingDefault { session ->
         val query = """
             SELECT id, name, last_used, last_query, requests, inline_requests, settings 
             FROM users 
-            WHERE $where
+            $afterFromClause
         """.trimIndent()
         session.list(sqlQuery(query)) { it.toBotUser() }
     }

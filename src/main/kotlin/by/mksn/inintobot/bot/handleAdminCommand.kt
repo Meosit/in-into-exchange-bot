@@ -2,6 +2,7 @@ package by.mksn.inintobot.bot
 
 import by.mksn.inintobot.AppContext
 import by.mksn.inintobot.misc.AliasMatcher
+import by.mksn.inintobot.misc.escapeMarkdown
 import by.mksn.inintobot.misc.trimToLength
 import by.mksn.inintobot.output.BotOutputSender
 import by.mksn.inintobot.output.BotTextOutput
@@ -18,12 +19,12 @@ private val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")
 private fun ZonedDateTime.toSimpleString() = formatter.format(this)
 
 private fun BotUser.toChatString() = """
-    User: ${if (name.contains(" ")) "`${name}`" else "@${name}"} (`${id}`)
+    User: ${if (name.contains(" ")) "`${name.escapeMarkdown()}`" else "@${name.escapeMarkdown()}"} (`${id}`)
     When: `${lastUsed.toLocalDateTime().atZone(ZoneOffset.UTC).withZoneSameInstant(ZoneId.of("UTC+3"))
     .toSimpleString()}`
-    Query: `${lastQuery.trimToLength(25, "…")}`
+    Query: `${lastQuery.escapeMarkdown().trimToLength(25, "…")}`
     Requests: `${numRequests}` (chat: `${numRequests - inlineRequests}`; inline: `${inlineRequests}`)
-    Settings: `${settings?.let { AppContext.json.stringify(UserSettings.serializer(), it) }}`
+    Settings: `${settings?.let { AppContext.json.stringify(UserSettings.serializer(), it).escapeMarkdown() }}`
 """.trimIndent()
 
 suspend fun Message.handleAdminCommand(sender: BotOutputSender): Boolean = when (text) {
@@ -96,10 +97,10 @@ suspend fun Message.handleAdminCommand(sender: BotOutputSender): Boolean = when 
             sender.sendChatMessage(AppContext.creatorId, BotTextOutput(markdown))
             true
         }
-        text != null && text.startsWith("/where ") -> {
-            val whereClause = text.removePrefix("/where ")
+        text != null && text.startsWith("/select ") -> {
+            val whereClause = text.removePrefix("/select ")
             val markdown = try {
-                val users = UserStore.usersByWhere(whereClause)
+                val users = UserStore.usersGenericSelect(whereClause)
                 users.joinToString(separator = "\n---\n", prefix = "Selected:\n") { it.toChatString() }
             } catch (e: Exception) {
                 "Unable to select: ${e::class.simpleName} ${e.message ?: e.cause?.message}"
