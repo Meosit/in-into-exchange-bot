@@ -75,5 +75,20 @@
     "base": "USD",
     "url": "https://openexchangerates.org/api/latest.json?app_id=<openexchangerates_access_key>&symbols=BYN,USD,EUR,RUB,UAH,PLN,CZK,GBP,JPY,CNY,KZT,CHF,BGN,TRY,CAD,ISK,DKK,SEK,NOK,BTC,ILS",
     "unsupported": []
+  },
+  {
+    "name": "TraderMade",
+    "aliases": [
+      "TraderMade",
+      "tm",
+      "тм"
+    ],
+    "base": "USD",
+    "url": "https://marketdata.tradermade.com/api/v1/live?api_key=<tradermade_access_key>&currency=USDEUR,USDRUB,USDUAH,USDPLN,USDCZK,USDGBP,USDJPY,USDCNY,USDCHF,USDTRY,USDCAD,USDISK,USDDKK,USDSEK,USDNOK,USDBTC,USDILS",
+    "unsupported": [
+      "BYN",
+      "BGN",
+      "KZT"
+    ]
   }
 ]

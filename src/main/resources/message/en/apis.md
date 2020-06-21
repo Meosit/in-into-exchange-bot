@@ -33,3 +33,9 @@ __OpenExchangeRates.org__
 - Site: https://openexchangerates.org/
 - Names: `OpenExchangeRates`, `OER`, `ОЕР`
 - Base currency: `USD`
+
+__TraderMade.com__
+- Site: https://tradermade.com/
+- Names: `TraderMade`, `tm`, `тм`
+- Base currency: `USD`
+- Unsupported: `BYN`, `BGN`, `KZT`

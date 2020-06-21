@@ -11,6 +11,9 @@ import by.mksn.inintobot.settings.UserStore
 import by.mksn.inintobot.telegram.InlineKeyboardButton
 import by.mksn.inintobot.telegram.InlineKeyboardMarkup
 import by.mksn.inintobot.telegram.Message
+import org.slf4j.LoggerFactory
+
+private val logger = LoggerFactory.getLogger(SettingHandler::class.simpleName)
 
 abstract class SettingHandler(id: Int) {
 
@@ -36,6 +39,7 @@ abstract class SettingHandler(id: Int) {
     protected open fun createOutputWithKeyboard(settings: UserSettings): BotOutput {
         val settingsStrings = AppContext.settingsStrings.of(settings.language)
         val buttons = keyboardButtons(settings, settingsStrings.buttons.checked)
+        logger.info("${buttons.size} buttons generated")
         val keyboard = sequence {
             for (i in buttons.indices step buttonsPerRow) {
                 yield(listOfNotNull(buttons.getOrNull(i), buttons.getOrNull(i + 1)))
@@ -55,6 +59,7 @@ abstract class SettingHandler(id: Int) {
         throw IllegalStateException("Invalid payload '$data' supplied")
 
     open suspend fun handle(data: String?, message: Message, current: UserSettings, sender: BotOutputSender) {
+        logger.info("Handling settings payload: $data")
         val payload = data?.trimType()
         if (payload == null) {
             val output = createOutputWithKeyboard(current)
@@ -64,6 +69,7 @@ abstract class SettingHandler(id: Int) {
                 val newSettings = createNewSettings(current, payload)
                 try {
                     UserStore.updateSettings(message.chat.id, newSettings)
+                    logger.info("Settings successfully updated")
                     sender.editChatMessage(message.chat.id.toString(), message.messageId, createOutputWithKeyboard(newSettings))
                 } catch (e: Exception) {
                     val error = AppContext.errorMessages.of(current.language).unableToSave

@@ -18,6 +18,7 @@ interface ApiRateFetcher {
                 "CBR" -> CbrRateFetcher(api, client, json)
                 "CBE" -> CbeRateFetcher(api, client, json)
                 "Fixer", "OpenExchangeRates" -> RatesMapRateFetcher(api, client, json)
+                "TraderMade" -> TradermadeRateFetcher(api, client, json)
                 else -> throw IllegalArgumentException("No mapping for rate api '${api.name}'")
             }
         }
