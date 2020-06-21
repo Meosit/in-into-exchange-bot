@@ -5,10 +5,7 @@ import by.mksn.inintobot.api.RateApi
 import by.mksn.inintobot.currency.Currency
 import by.mksn.inintobot.expression.Const
 import by.mksn.inintobot.expression.CurrenciedExpression
-import by.mksn.inintobot.grammar.parsers.CurrenciedMathParsers
-import by.mksn.inintobot.grammar.parsers.InvalidTextFoundException
-import by.mksn.inintobot.grammar.parsers.SimpleMathParsers
-import by.mksn.inintobot.grammar.parsers.TokenDictionary
+import by.mksn.inintobot.grammar.parsers.*
 import by.mksn.inintobot.misc.AliasMatcher
 import by.mksn.inintobot.misc.toFixedScaleBigDecimal
 import com.github.h0tk3y.betterParse.combinators.*
@@ -26,19 +23,26 @@ class BotInputGrammar(
     rateApiAliasMatcher: AliasMatcher<RateApi>
 ) : Grammar<BotInput>() {
 
-    private val tokenDict = TokenDictionary(currencyAliasMatcher.allAliasesRegex, rateApiAliasMatcher.allAliasesRegex)
+    private val tokenDict = TokenDictionary(
+        AliasMatcher
+            .createAliasRegex(currencyAliasMatcher.aliasRegexParts + rateApiAliasMatcher.aliasRegexParts)
+    )
+
+    private val currencyOrApiParser = tokenDict.currencyOrApi map {
+        it to (currencyAliasMatcher.matchOrNull(it.text)
+            ?: rateApiAliasMatcher.matchOrNull(it.text)
+            ?: throw InvalidTextFoundException(it))
+    }
+
     private val mathParsers = SimpleMathParsers(tokenDict)
-    private val currParsers = CurrenciedMathParsers(tokenDict, mathParsers, currencyAliasMatcher)
+    private val currParsers = CurrenciedMathParsers(tokenDict, mathParsers, currencyOrApiParser)
 
     private val currencyKeyPrefix = skip(tokenDict.exclamation or tokenDict.ampersand or tokenDict.inIntoUnion)
     private val currencyKey = skip(tokenDict.whitespace) and (currencyKeyPrefix and currParsers.currency) map { it }
     private val additionalCurrenciesChain by zeroOrMore(currencyKey)
 
-    private val rateApiParser: Parser<RateApi> = tokenDict.api or tokenDict.invalidTextToken map {
-        if (it.type == tokenDict.invalidTextToken) {
-            throw InvalidTextFoundException(it)
-        }
-        rateApiAliasMatcher.match(it.text)
+    private val rateApiParser: Parser<RateApi> = currencyOrApiParser map {
+        if (it.second is RateApi) it.second as RateApi else throw InvalidCurrencyPlacementException(it.first)
     }
     private val apiConfig = optional(skip(tokenDict.whitespace) and rateApiParser map { it })
 

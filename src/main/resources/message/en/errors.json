@@ -3,6 +3,8 @@
   "unparsedReminder": "❗Valid expression ends here",
   "mismatchedToken": "❗'%s' is unexpected here",
   "noMatchingToken": "❗Illegal token '%s'",
+  "currencyUnexpected": "❗Illegal currency placement '%s'",
+  "rateApiUnexpected": "❗Illegal API name placement '%s'",
   "divisionByZero": "❗Expression contains division by zero",
   "queryExpected": "❗Not blank query string expected",
   "unsupportedCurrency": "❗Unsupported currency %s for %s API",

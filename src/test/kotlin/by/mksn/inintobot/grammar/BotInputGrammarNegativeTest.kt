@@ -1,5 +1,6 @@
 package by.mksn.inintobot.grammar
 
+import by.mksn.inintobot.grammar.parsers.CurrencyUnexpected
 import by.mksn.inintobot.test.testApiAliasMatcher
 import by.mksn.inintobot.test.testCurrencyAliasMatcher
 import com.github.h0tk3y.betterParse.grammar.tryParseToEnd
@@ -39,10 +40,10 @@ class BotInputGrammarNegativeTest {
         val input = "asd?/"
 
         val result = grammar.tryParseToEnd(input)
-
+        println(result)
         assertTrue(result is NoMatchingToken)
         assertEquals(1, result.tokenMismatch.column)
-        assertEquals("asd", result.tokenMismatch.text)
+        assertEquals("asd?/", result.tokenMismatch.text)
     }
 
     @Test
@@ -84,9 +85,9 @@ class BotInputGrammarNegativeTest {
 
         val result = grammar.tryParseToEnd(input)
 
-        assertTrue(result is UnparsedRemainder)
-        assertEquals(14, result.startsWith.column)
-        assertEquals("USD", result.startsWith.text)
+        assertTrue(result is CurrencyUnexpected)
+        assertEquals(14, result.tokenMismatch.column)
+        assertEquals("USD", result.tokenMismatch.text)
     }
 
     @Test
@@ -97,7 +98,7 @@ class BotInputGrammarNegativeTest {
 
         assertTrue(result is UnparsedRemainder)
         assertEquals(10, result.startsWith.column)
-        assertEquals("ю", result.startsWith.text)
+        assertEquals("ю91", result.startsWith.text)
     }
 
     @Test
@@ -106,9 +107,9 @@ class BotInputGrammarNegativeTest {
 
         val result = grammar.tryParseToEnd(input)
 
-        assertTrue(result is UnparsedRemainder)
-        assertEquals(9, result.startsWith.column)
-        assertEquals("BYN", result.startsWith.text)
+        assertTrue(result is CurrencyUnexpected)
+        assertEquals(9, result.tokenMismatch.column)
+        assertEquals("BYN", result.tokenMismatch.text)
     }
 
     @Test
@@ -136,10 +137,10 @@ class BotInputGrammarNegativeTest {
         val input = "10 долларов + 10 asdf"
 
         val result = grammar.tryParseToEnd(input)
-
-        assertTrue(result is NoMatchingToken)
-        assertEquals(18, result.tokenMismatch.column)
-        assertEquals("asdf", result.tokenMismatch.text)
+        println(result)
+        assertTrue(result is UnparsedRemainder)
+        assertEquals(13, result.startsWith.column)
+        assertEquals("+", result.startsWith.text)
     }
 
     @Test
@@ -157,7 +158,7 @@ class BotInputGrammarNegativeTest {
         val input = "adfs"
 
         val result = grammar.tryParseToEnd(input)
-
+        println(result)
         assertTrue(result is NoMatchingToken)
         assertEquals(1, result.tokenMismatch.column)
         assertEquals("adfs", result.tokenMismatch.text)
@@ -169,9 +170,9 @@ class BotInputGrammarNegativeTest {
 
         val result = grammar.tryParseToEnd(input)
         println(result)
-        assertTrue(result is NoMatchingToken)
-        assertEquals(9, result.tokenMismatch.column)
-        assertEquals("IIIII", result.tokenMismatch.text)
+        assertTrue(result is UnparsedRemainder)
+        assertEquals(9, result.startsWith.column)
+        assertEquals("IIIII", result.startsWith.text)
     }
 
     @Test
@@ -180,8 +181,19 @@ class BotInputGrammarNegativeTest {
 
         val result = grammar.tryParseToEnd(input)
         println(result)
-        assertTrue(result is UnparsedRemainder)
-        assertEquals(9, result.startsWith.column)
-        assertEquals("kzt", result.startsWith.text)
+        assertTrue(result is CurrencyUnexpected)
+        assertEquals(9, result.tokenMismatch.column)
+        assertEquals("kzt", result.tokenMismatch.text)
+    }
+
+    @Test
+    fun api_wrong_placement() {
+        val input = "10 euro kzt !usd"
+
+        val result = grammar.tryParseToEnd(input)
+        println(result)
+        assertTrue(result is CurrencyUnexpected)
+        assertEquals(9, result.tokenMismatch.column)
+        assertEquals("kzt", result.tokenMismatch.text)
     }
 }

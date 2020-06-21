@@ -2,9 +2,10 @@ package by.mksn.inintobot.grammar.parsers
 
 import by.mksn.inintobot.currency.Currency
 import by.mksn.inintobot.expression.*
-import by.mksn.inintobot.misc.AliasMatcher
+import by.mksn.inintobot.misc.Aliasable
 import com.github.h0tk3y.betterParse.combinators.*
 import com.github.h0tk3y.betterParse.grammar.parser
+import com.github.h0tk3y.betterParse.lexer.TokenMatch
 import com.github.h0tk3y.betterParse.parser.Parser
 
 /**
@@ -13,14 +14,11 @@ import com.github.h0tk3y.betterParse.parser.Parser
 class CurrenciedMathParsers(
     tokenDict: TokenDictionary,
     mathParsers: SimpleMathParsers,
-    currencyAliasMatcher: AliasMatcher<Currency>
+    currencyOrApiParser: Parser<Pair<TokenMatch, Aliasable>>
 ) {
 
-    val currency: Parser<Currency> = tokenDict.currency or tokenDict.invalidTextToken map {
-        if (it.type == tokenDict.invalidTextToken) {
-            throw InvalidTextFoundException(it)
-        }
-        currencyAliasMatcher.match(it.text)
+    val currency: Parser<Currency> = currencyOrApiParser map {
+        if (it.second is Currency) it.second as Currency else throw InvalidRateApiPlacementException(it.first)
     }
 
     private val currenciedTerm: Parser<Expression> =

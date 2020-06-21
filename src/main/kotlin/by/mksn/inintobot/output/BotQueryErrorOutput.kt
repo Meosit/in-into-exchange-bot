@@ -1,6 +1,8 @@
 package by.mksn.inintobot.output
 
 import by.mksn.inintobot.AppContext
+import by.mksn.inintobot.grammar.parsers.CurrencyUnexpected
+import by.mksn.inintobot.grammar.parsers.RateApiUnexpected
 import by.mksn.inintobot.misc.escapeMarkdown
 import by.mksn.inintobot.misc.trimToLength
 import by.mksn.inintobot.output.strings.ErrorMessages
@@ -36,5 +38,7 @@ fun ErrorResult.toBotOutput(rawInput: String, messages: ErrorMessages) = when (t
     }
     is MismatchedToken -> BotQueryErrorOutput(rawInput, found.column, messages.mismatchedToken.format(found.text))
     is NoMatchingToken -> BotQueryErrorOutput(rawInput, tokenMismatch.column, messages.noMatchingToken.format(tokenMismatch.text))
+    is CurrencyUnexpected -> BotQueryErrorOutput(rawInput, tokenMismatch.column, messages.currencyUnexpected.format(tokenMismatch.text))
+    is RateApiUnexpected -> BotQueryErrorOutput(rawInput, tokenMismatch.column, messages.rateApiUnexpected.format(tokenMismatch.text))
     else -> BotQueryErrorOutput(rawInput, 1, messages.unexpectedError)
 }

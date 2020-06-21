@@ -200,6 +200,21 @@ class BotInputGrammarPositiveTest {
     }
 
     @Test
+    fun explicit_currency_api_with_name_collision() {
+        val input = "10 euro tm into usd"
+        val expectedExpr = CurrenciedExpression(10.asConst, "EUR".toCurrency())
+
+        val expectedAdditionalCurrencies = setOf("USD".toCurrency())
+
+        val (actualExpr, additionalCurrencies, apiConfig) = grammar.parseToEnd(input)
+
+        assertEquals(expectedExpr, actualExpr)
+        assertEquals(apiConfig, "TraderMade".toRateApi())
+        assertEqualsUnordered(expectedAdditionalCurrencies, additionalCurrencies)
+
+    }
+
+    @Test
     fun comma_alias_currency() {
         val input = "2, + 3 euro"
         val expectedExpr = Add(

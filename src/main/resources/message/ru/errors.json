@@ -3,6 +3,8 @@
   "unparsedReminder": "❗Валидное выражение заканчивается здесь",
   "mismatchedToken": "❗'%s' не ожидался здесь",
   "noMatchingToken": "❗Неизвестный ввод '%s'",
+  "currencyUnexpected": "❗Валюта '%s' здесь недопустима",
+  "rateApiUnexpected": "❗Имя API '%s' здесь недопустимо",
   "divisionByZero": "❗Выражение содержит деление на ноль",
   "queryExpected": "❗Ожидалась непустая строка запроса",
   "unsupportedCurrency": "❗Валюта %s не поддерживается API %s",

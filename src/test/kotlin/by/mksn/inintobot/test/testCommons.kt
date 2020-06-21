@@ -47,16 +47,23 @@ val testCurrencies = listOf(
 val testApis = listOf(
     RateApi(
         name = "NBRB",
-        aliases = setOf("NBRB", "rb", "b", "нбрб", "рб", "б"),
+        aliases = setOf("NBRB", "нбрб"),
         base = "BYN",
         url = "http://www.nbrb.by/API/ExRates/Rates?Periodicity=0",
         unsupported = setOf()
     ),
     RateApi(
         name = "NBU",
-        aliases = setOf("NBU", "u", "нбу", "у"),
+        aliases = setOf("NBU", "нбу"),
         base = "UAH",
         url = "https://bank.gov.ua/NBUStatService/v1/statdirectory/exchange?json",
+        unsupported = setOf()
+    ),
+    RateApi(
+        name = "TraderMade",
+        aliases = setOf("TraderMade", "tm", "тм"),
+        base = "USD",
+        url = "blah",
         unsupported = setOf()
     )
 )
