@@ -42,7 +42,7 @@ abstract class SettingHandler(id: Int) {
         logger.info("${buttons.size} buttons generated")
         val keyboard = sequence {
             for (i in buttons.indices step buttonsPerRow) {
-                yield(listOfNotNull(buttons.getOrNull(i), buttons.getOrNull(i + 1)))
+                yield((0..buttonsPerRow).mapNotNull { buttons.getOrNull(i + it) })
             }
         }.toMutableList()
         keyboard.add(controlButtons(settingsStrings.buttons))
@@ -69,7 +69,7 @@ abstract class SettingHandler(id: Int) {
                 val newSettings = createNewSettings(current, payload)
                 try {
                     UserStore.updateSettings(message.chat.id, newSettings)
-                    logger.info("Settings successfully updated")
+                    logger.info("Settings successfully updated: $newSettings")
                     sender.editChatMessage(message.chat.id.toString(), message.messageId, createOutputWithKeyboard(newSettings))
                 } catch (e: Exception) {
                     val error = AppContext.errorMessages.of(current.language).unableToSave

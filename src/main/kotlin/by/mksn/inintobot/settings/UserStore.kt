@@ -91,6 +91,15 @@ RETURNING id, name, last_used, last_query, requests, inline_requests, settings
         session.list(sqlQuery(query, limit)) { it.toBotUser() }
     }
 
+    fun userById(id: Long): BotUser? = usingDefault { session ->
+        val query = """
+            SELECT id, name, last_used, last_query, requests, inline_requests, settings 
+            FROM users 
+            WHERE id = ?
+        """.trimIndent()
+        session.list(sqlQuery(query, id)) { it.toBotUser() }.firstOrNull()
+    }
+
     private fun Row.toBotUser() = BotUser(
         long("id"),
         string("name"),

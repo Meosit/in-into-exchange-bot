@@ -25,6 +25,19 @@ suspend fun Message.handleAdminCommand(sender: BotOutputSender): Boolean = when 
         sender.sendChatMessage(AppContext.creatorId, BotTextOutput(markdown))
         true
     }
+    "/me" -> {
+        val user = UserStore.userById(AppContext.creatorId.toLong())
+        val markdown = if (user != null) """
+            User: ${user.name}
+            When: ${user.lastUsed.toLocalDateTime().atZone(ZoneOffset.UTC)
+            .withZoneSameInstant(ZoneId.of("UTC+3")).toSimpleString()}
+            Query: ${user.lastQuery.trimToLength(25, "…")}
+            Requests: ${user.numRequests} (chat: ${user.numRequests - user.inlineRequests}; inline: ${user.inlineRequests})
+            Settings: ${user.settings}
+        """.trimIndent() else "Not found"
+        sender.sendChatMessage(AppContext.creatorId, BotTextOutput(markdown))
+        true
+    }
     "/last5" -> {
         val users = UserStore.lastUsed(5).drop(1)
         val markdown = users

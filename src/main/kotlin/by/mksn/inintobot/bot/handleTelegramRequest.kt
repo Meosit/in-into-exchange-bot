@@ -52,9 +52,13 @@ suspend fun handleTelegramRequest(update: Update, botToken: String, deprecatedBo
 }
 
 fun loadSettings(update: Update) = with(update) {
-    val chat = message?.chat ?: editedMessage?.chat
-    val user = inlineQuery?.from ?: message?.from ?: editedMessage?.from
-    val query = inlineQuery?.query ?: message?.text ?: editedMessage?.text ?: "null chat message"
+    val chat = message?.chat ?: editedMessage?.chat ?: callbackQuery?.message?.chat
+    val user = inlineQuery?.from ?: message?.from ?: editedMessage?.from ?: callbackQuery?.from
+    val query = inlineQuery?.query
+        ?: message?.text
+        ?: editedMessage?.text
+        ?: callbackQuery?.let { "callback payload '${it.data}'" }
+        ?: "null chat message"
     val userId = chat?.id ?: user?.id
     val botUser = userId?.let { UserStore.refreshAndGet(it, userReadableName(), query, inlineQuery != null) }
     logger.info("Load user $botUser")

@@ -12,7 +12,7 @@ const val DEFAULT_DECIMAL_DIGITS: Int = 16
 /**
  * Default rounding mode.
  */
-val DEFAULT_ROUNDING_MODE = RoundingMode.HALF_UP
+val DEFAULT_ROUNDING_MODE = RoundingMode.HALF_EVEN
 
 fun String.toFixedScaleBigDecimal(): BigDecimal = toBigDecimal().setScale(DEFAULT_DECIMAL_DIGITS, DEFAULT_ROUNDING_MODE)
 

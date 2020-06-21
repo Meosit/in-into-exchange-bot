@@ -1,6 +1,5 @@
 package by.mksn.inintobot.bot.settings
 
-import by.mksn.inintobot.AppContext
 import by.mksn.inintobot.misc.DEFAULT_DECIMAL_DIGITS
 import by.mksn.inintobot.output.strings.MessagesSettingsStrings
 import by.mksn.inintobot.settings.UserSettings
@@ -15,11 +14,8 @@ object DigitsSettingHandler : SettingHandler(7) {
             InlineKeyboardButton(label, callbackData(it.toString()))
         }
 
-    override fun messageMarkdown(settings: UserSettings, messages: MessagesSettingsStrings): String {
-        val api = AppContext.supportedApis.first { settings.apiName == it.name }
-        val apiDisplayName = AppContext.apiNames.of(settings.language).getValue(api.name)
-        return messages.decimalDigits.format(apiDisplayName, settings.defaultCurrency)
-    }
+    override fun messageMarkdown(settings: UserSettings, messages: MessagesSettingsStrings): String =
+        messages.decimalDigits.format(settings.decimalDigits, "1.12345678901234567".take(settings.decimalDigits + 2))
 
     override fun isValidPayload(payload: String): Boolean = payload.toIntOrNull() in 0..DEFAULT_DECIMAL_DIGITS
 

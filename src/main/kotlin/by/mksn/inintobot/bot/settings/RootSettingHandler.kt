@@ -38,7 +38,11 @@ object RootSettingHandler : SettingHandler(1) {
             "decimalDigits" -> Setting.DECIMAL_DIGITS.handle(null, message, current, sender)
             else -> {
                 val output = createOutputWithKeyboard(current)
-                sender.sendChatMessage(message.chat.id.toString(), output)
+                if (data == null) {
+                    sender.sendChatMessage(message.chat.id.toString(), output)
+                } else {
+                    sender.editChatMessage(message.chat.id.toString(), message.messageId, output)
+                }
             }
         }
     }
