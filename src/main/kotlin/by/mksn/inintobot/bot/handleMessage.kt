@@ -29,6 +29,7 @@ suspend fun Message.handle(settings: UserSettings, sender: BotOutputSender, depr
                 when (text) {
                     "/patterns" -> patterns
                     "/apis" -> apis
+                    "/start" -> start
                     else -> help
                 }
             }

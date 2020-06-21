@@ -47,3 +47,5 @@ All currencies can be referenced through their official 3-letter codes and some 
 `ILS`, `shekel`, `il`, `шекель` + russian forms
 - Bitcoin:
 `BTC`, `bitcoin`, `биткоин`, `биток` + russian forms
+- Ethereum:
+`ETH`, `Ethereum`, `ether`, `эфириум`, `эфир` + russian forms

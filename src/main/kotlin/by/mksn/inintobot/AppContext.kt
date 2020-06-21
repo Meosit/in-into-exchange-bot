@@ -106,6 +106,7 @@ object AppContext {
         val commandMessages =
             Localized(basicInfo.supportedLanguages.keys) { language ->
                 CommandMessages(
+                    loadResourceAsString("message/$language/start.md"),
                     loadResourceAsString("message/$language/help.md"),
                     loadResourceAsString("message/$language/patterns.md"),
                     loadResourceAsString("message/$language/apis.md")
