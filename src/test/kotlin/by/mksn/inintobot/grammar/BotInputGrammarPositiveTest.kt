@@ -1,5 +1,6 @@
 package by.mksn.inintobot.grammar
 
+import by.mksn.inintobot.currency.Currency
 import by.mksn.inintobot.expression.*
 import by.mksn.inintobot.test.*
 import com.github.h0tk3y.betterParse.grammar.parseToEnd
@@ -190,6 +191,22 @@ class BotInputGrammarPositiveTest {
         val expectedExpr = CurrenciedExpression(10.asConst, "EUR".toCurrency())
 
         val expectedAdditionalCurrencies = setOf("USD".toCurrency())
+
+        val (actualExpr, additionalCurrencies, apiConfig) = grammar.parseToEnd(input)
+
+        assertEquals(expectedExpr, actualExpr)
+        assertEquals(apiConfig, "NBRB".toRateApi())
+        assertEqualsUnordered(expectedAdditionalCurrencies, additionalCurrencies)
+
+    }
+
+
+    @Test
+    fun explicit_api_only() {
+        val input = "10 nbrb"
+        val expectedExpr = 10.asConst
+
+        val expectedAdditionalCurrencies = setOf<Currency>()
 
         val (actualExpr, additionalCurrencies, apiConfig) = grammar.parseToEnd(input)
 

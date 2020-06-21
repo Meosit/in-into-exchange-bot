@@ -50,7 +50,7 @@ class NbrbRateFetcherTest {
     @Test
     fun successful_fetch_and_parse() {
         val json = Json(JsonConfiguration.Stable.copy(ignoreUnknownKeys = true))
-        val apiConfig = RateApi("NBRB", setOf(), "BYN", testUrl, setOf())
+        val apiConfig = RateApi("NBRB", setOf(), "BYN", testUrl, setOf(), 1)
         val fetcher = NbrbRateFetcher(apiConfig, httpClient, json)
         val expectedRates = mapOf(
             testCurrencies.first { it.code == "UAH" } to 100.toFixedScaleBigDecimal() / "8.952".toFixedScaleBigDecimal(),

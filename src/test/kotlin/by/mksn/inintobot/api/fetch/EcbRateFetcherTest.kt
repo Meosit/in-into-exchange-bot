@@ -88,7 +88,7 @@ class EcbRateFetcherTest {
     @Test
     fun successful_fetch_and_parse() {
         val json = Json(JsonConfiguration.Stable.copy(ignoreUnknownKeys = true))
-        val apiConfig = RateApi("ECB", setOf(), "EUR", testUrl, setOf())
+        val apiConfig = RateApi("ECB", setOf(), "EUR", testUrl, setOf(), 1)
         val fetcher = EcbRateFetcher(apiConfig, httpClient, json)
         val expectedRates = mapOf(
             testCurrencies.first { it.code == "USD" } to "1.1330".toFixedScaleBigDecimal(),

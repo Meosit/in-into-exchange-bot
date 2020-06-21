@@ -2,6 +2,8 @@ package by.mksn.inintobot.grammar.parsers
 
 import by.mksn.inintobot.currency.Currency
 import by.mksn.inintobot.expression.*
+import by.mksn.inintobot.grammar.RateApiUnexpected
+import by.mksn.inintobot.grammar.mapOrError
 import by.mksn.inintobot.misc.Aliasable
 import com.github.h0tk3y.betterParse.combinators.*
 import com.github.h0tk3y.betterParse.grammar.parser
@@ -17,9 +19,8 @@ class CurrenciedMathParsers(
     currencyOrApiParser: Parser<Pair<TokenMatch, Aliasable>>
 ) {
 
-    val currency: Parser<Currency> = currencyOrApiParser map {
-        if (it.second is Currency) it.second as Currency else throw InvalidRateApiPlacementException(it.first)
-    }
+    val currency: Parser<Currency> = currencyOrApiParser
+        .mapOrError({ RateApiUnexpected(it.first) }, { it.second as? Currency })
 
     private val currenciedTerm: Parser<Expression> =
         (currency and mathParsers.divMulChain map { (c, e) -> CurrenciedExpression(e, c) }) or

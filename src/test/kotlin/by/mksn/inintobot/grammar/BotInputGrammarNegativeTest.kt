@@ -1,6 +1,5 @@
 package by.mksn.inintobot.grammar
 
-import by.mksn.inintobot.grammar.parsers.CurrencyUnexpected
 import by.mksn.inintobot.test.testApiAliasMatcher
 import by.mksn.inintobot.test.testCurrencyAliasMatcher
 import com.github.h0tk3y.betterParse.grammar.tryParseToEnd
@@ -85,9 +84,9 @@ class BotInputGrammarNegativeTest {
 
         val result = grammar.tryParseToEnd(input)
 
-        assertTrue(result is CurrencyUnexpected)
-        assertEquals(14, result.tokenMismatch.column)
-        assertEquals("USD", result.tokenMismatch.text)
+        assertTrue(result is UnparsedRemainder)
+        assertEquals(14, result.startsWith.column)
+        assertEquals("USD", result.startsWith.text)
     }
 
     @Test
@@ -107,9 +106,9 @@ class BotInputGrammarNegativeTest {
 
         val result = grammar.tryParseToEnd(input)
 
-        assertTrue(result is CurrencyUnexpected)
-        assertEquals(9, result.tokenMismatch.column)
-        assertEquals("BYN", result.tokenMismatch.text)
+        assertTrue(result is UnparsedRemainder)
+        assertEquals(9, result.startsWith.column)
+        assertEquals("BYN", result.startsWith.text)
     }
 
     @Test
@@ -181,19 +180,19 @@ class BotInputGrammarNegativeTest {
 
         val result = grammar.tryParseToEnd(input)
         println(result)
-        assertTrue(result is CurrencyUnexpected)
-        assertEquals(9, result.tokenMismatch.column)
-        assertEquals("kzt", result.tokenMismatch.text)
+        assertTrue(result is UnparsedRemainder)
+        assertEquals(9, result.startsWith.column)
+        assertEquals("kzt", result.startsWith.text)
     }
 
     @Test
     fun api_wrong_placement() {
-        val input = "10 euro kzt !usd"
+        val input = "10 euro !usd nbrb"
 
         val result = grammar.tryParseToEnd(input)
         println(result)
-        assertTrue(result is CurrencyUnexpected)
-        assertEquals(9, result.tokenMismatch.column)
-        assertEquals("kzt", result.tokenMismatch.text)
+        assertTrue(result is UnparsedRemainder)
+        assertEquals(14, result.startsWith.column)
+        assertEquals("nbrb", result.startsWith.text)
     }
 }

@@ -82,7 +82,7 @@ class CbrRateFetcherTest {
     @Test
     fun successful_fetch_and_parse() {
         val json = Json(JsonConfiguration.Stable.copy(ignoreUnknownKeys = true))
-        val apiConfig = RateApi("CBR", setOf(), "RUB", testUrl, setOf())
+        val apiConfig = RateApi("CBR", setOf(), "RUB", testUrl, setOf(), 1)
         val fetcher = CbrRateFetcher(apiConfig, httpClient, json)
         val expectedRates = mapOf(
             testCurrencies.first { it.code == "UAH" } to 10.toFixedScaleBigDecimal() / "25.7973".toFixedScaleBigDecimal(),

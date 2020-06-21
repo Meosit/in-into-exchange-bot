@@ -1,8 +1,8 @@
 package by.mksn.inintobot.output
 
 import by.mksn.inintobot.AppContext
-import by.mksn.inintobot.grammar.parsers.CurrencyUnexpected
-import by.mksn.inintobot.grammar.parsers.RateApiUnexpected
+import by.mksn.inintobot.grammar.CurrencyUnexpected
+import by.mksn.inintobot.grammar.RateApiUnexpected
 import by.mksn.inintobot.misc.escapeMarkdown
 import by.mksn.inintobot.misc.trimToLength
 import by.mksn.inintobot.output.strings.ErrorMessages
