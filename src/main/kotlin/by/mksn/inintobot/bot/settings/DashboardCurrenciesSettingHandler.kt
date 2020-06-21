@@ -35,6 +35,8 @@ object DashboardCurrenciesSettingHandler : SettingHandler(6) {
             validPayload in currencies -> currencies - validPayload
             else -> currencies + validPayload
         }
-        return currentSettings.copy(dashboardCurrencies = newDashboardCurrencies)
+        val orderedNewCurrencies = AppContext.supportedCurrencies
+            .mapNotNull { if (it.code in newDashboardCurrencies) it.code else null }
+        return currentSettings.copy(dashboardCurrencies = orderedNewCurrencies)
     }
 }

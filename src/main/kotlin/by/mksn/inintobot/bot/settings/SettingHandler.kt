@@ -42,7 +42,7 @@ abstract class SettingHandler(id: Int) {
         logger.info("${buttons.size} buttons generated")
         val keyboard = sequence {
             for (i in buttons.indices step buttonsPerRow) {
-                yield((0..buttonsPerRow).mapNotNull { buttons.getOrNull(i + it) })
+                yield((0 until buttonsPerRow).mapNotNull { buttons.getOrNull(i + it) })
             }
         }.toMutableList()
         keyboard.add(controlButtons(settingsStrings.buttons))

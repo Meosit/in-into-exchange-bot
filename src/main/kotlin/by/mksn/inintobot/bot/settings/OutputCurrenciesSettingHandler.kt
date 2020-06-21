@@ -33,6 +33,8 @@ object OutputCurrenciesSettingHandler : SettingHandler(5) {
             validPayload in currencies -> currencies - validPayload
             else -> currencies + validPayload
         }
-        return currentSettings.copy(outputCurrencies = newOutputCurrencies)
+        val orderedNewCurrencies = AppContext.supportedCurrencies
+            .mapNotNull { if (it.code in newOutputCurrencies) it.code else null }
+        return currentSettings.copy(outputCurrencies = orderedNewCurrencies)
     }
 }

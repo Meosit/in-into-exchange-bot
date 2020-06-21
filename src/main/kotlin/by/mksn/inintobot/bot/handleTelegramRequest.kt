@@ -72,7 +72,7 @@ fun loadSettings(update: Update) = with(update) {
 }
 
 private fun Update.userReadableName() = inlineQuery?.from?.userReadableName()
-    ?: (message ?: editedMessage)?.chat?.userReadableName()
+    ?: (message ?: editedMessage ?: callbackQuery?.message)?.chat?.userReadableName()
     ?: "Unknown username"
 
 private fun Chat.userReadableName() =
