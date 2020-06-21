@@ -8,7 +8,7 @@ import by.mksn.inintobot.telegram.InlineKeyboardButton
 object DefaultApiSettingHandler : SettingHandler(4) {
 
     override fun keyboardButtons(settings: UserSettings, checkedButtonLablel: String): List<InlineKeyboardButton> {
-        val apiDisplayNames = AppContext.apiNames.of(settings.language)
+        val apiDisplayNames = AppContext.apiDisplayNames.of(settings.language)
         return AppContext.supportedApis.map { api ->
             val displayName = apiDisplayNames.getValue(api.name)
             val label = if (settings.apiName == api.name) checkedButtonLablel.format(displayName) else displayName
@@ -17,7 +17,7 @@ object DefaultApiSettingHandler : SettingHandler(4) {
     }
 
     override fun messageMarkdown(settings: UserSettings, messages: MessagesSettingsStrings): String {
-        val apiDisplayName = AppContext.apiNames.of(settings.language).getValue(settings.apiName)
+        val apiDisplayName = AppContext.apiDisplayNames.of(settings.language).getValue(settings.apiName)
         val unsupported = AppContext.supportedApis.first { it.name == settings.apiName }.unsupported.joinToString()
         return messages.defaultApi.format(apiDisplayName, settings.apiName, unsupported)
     }

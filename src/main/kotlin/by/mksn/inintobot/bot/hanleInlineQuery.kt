@@ -26,17 +26,19 @@ suspend fun InlineQuery.handle(settings: UserSettings, sender: BotOutputSender, 
         logger.info("Api is ${api.name} (base: ${apiBaseCurrency.code}), currencies: ${currencies.joinToString { it.code }}")
 
         val rates = AppContext.exchangeRates.of(api)
+        val isStaleRates = AppContext.exchangeRates.isStale(api)
         if (rates != null) {
             val rateExchanger = CurrencyRateExchanger(apiBaseCurrency, rates)
             val queryStrings = AppContext.queryStrings.of(settings.language)
-
+            val apiDisplayNames = AppContext.apiDisplayNames.of(settings.language)
             currencies.asSequence()
                 .filter { settings.dashboardCurrencies.contains(it.code) }
                 .map { EvaluatedExpression(1.toFixedScaleBigDecimal(), ExpressionType.ONE_UNIT, "1", it, listOf(it)) }
                 .map { it to rateExchanger.exchangeAll(it.result, it.baseCurrency, currencies) }
                 .map { (expression, exchanged) ->
-                    BotSuccessOutput(expression, exchanged, queryStrings, settings.decimalDigits)
+                    BotSuccessOutput(expression, exchanged, queryStrings, settings.decimalDigits, apiDisplayNames[settings.apiName])
                 }
+                .map { if (isStaleRates) it else it }
                 .toList().toTypedArray()
         } else {
             logger.error("Rates unavailable for API ${api.name}")

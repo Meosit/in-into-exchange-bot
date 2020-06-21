@@ -46,6 +46,7 @@ fun handleBotExchangeQuery(query: String, settings: UserSettings): Array<BotOutp
                 logger.error("Rates unavailable for API ${api.name}")
                 return arrayOf(BotSimpleErrorOutput(AppContext.errorMessages.of(settings.language).ratesUnavailable))
             }
+            val isStaleRates = AppContext.exchangeRates.isStale(api)
 
             val rateExchanger = CurrencyRateExchanger(apiBaseCurrency, rates)
 
@@ -59,7 +60,7 @@ fun handleBotExchangeQuery(query: String, settings: UserSettings): Array<BotOutp
             } catch (e: UnknownCurrencyException) {
                 logger.info("Unsupported currency ${e.currency.code} for ${api.name} api used")
                 val messages = AppContext.errorMessages.of(settings.language)
-                val apiDisplayName = AppContext.apiNames.of(settings.language).getValue(api.name)
+                val apiDisplayName = AppContext.apiDisplayNames.of(settings.language).getValue(api.name)
                 return arrayOf(BotSimpleErrorOutput(messages.unsupportedCurrency.format(e.currency.code, apiDisplayName)))
             }
 
@@ -73,14 +74,16 @@ fun handleBotExchangeQuery(query: String, settings: UserSettings): Array<BotOutp
             } catch (e: UnknownCurrencyException) {
                 logger.info("Unsupported currency ${e.currency.code} for ${api.name} api used")
                 val messages = AppContext.errorMessages.of(settings.language)
-                val apiDisplayName = AppContext.apiNames.of(settings.language).getValue(api.name)
+                val apiDisplayName = AppContext.apiDisplayNames.of(settings.language).getValue(api.name)
                 return arrayOf(BotSimpleErrorOutput(messages.unsupportedCurrency.format(e.currency.code, apiDisplayName)))
             }
             val queryStrings = AppContext.queryStrings.of(settings.language)
             val nonDefaultApiName = if (api.name == settings.apiName && evaluated.type != ExpressionType.ONE_UNIT)
-                null else AppContext.apiNames.of(settings.language).getValue(api.name)
+                null else AppContext.apiDisplayNames.of(settings.language).getValue(api.name)
 
-            val output = BotSuccessOutput(evaluated, exchanged, queryStrings, decimalDigits, nonDefaultApiName)
+            val output = BotSuccessOutput(evaluated, exchanged, queryStrings, decimalDigits, nonDefaultApiName).let {
+                if (isStaleRates) BotStaleRatesOutput(it, api.name, settings.language) else it
+            }
             return if (evaluated.type == ExpressionType.SINGLE_CURRENCY_EXPR) {
                 arrayOf(output, BotJustCalculateOutput(evaluated, queryStrings))
             } else {

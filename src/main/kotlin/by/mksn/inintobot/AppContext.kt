@@ -143,7 +143,7 @@ object AppContext {
     val exchangeRates get() = context.exchangeRates
 
     val queryStrings get() = context.queryStrings
-    val apiNames get() = context.apiNames
+    val apiDisplayNames get() = context.apiNames
     val errorMessages get() = context.errorMessages
     val commandMessages get() = context.commandMessages
     val settingsStrings get() = context.settingsStrings

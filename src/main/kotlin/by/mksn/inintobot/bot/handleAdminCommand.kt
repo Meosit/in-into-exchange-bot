@@ -1,6 +1,7 @@
 package by.mksn.inintobot.bot
 
 import by.mksn.inintobot.AppContext
+import by.mksn.inintobot.misc.AliasMatcher
 import by.mksn.inintobot.misc.trimToLength
 import by.mksn.inintobot.output.BotOutputSender
 import by.mksn.inintobot.output.BotTextOutput
@@ -16,7 +17,7 @@ private fun ZonedDateTime.toSimpleString() = formatter.format(this)
 
 suspend fun Message.handleAdminCommand(sender: BotOutputSender): Boolean = when (text) {
     "/reload" -> {
-        AppContext.exchangeRates.reload(AppContext.httpClient, AppContext.json)
+        AppContext.exchangeRates.reloadAll(AppContext.httpClient, AppContext.json)
         val markdown = AppContext.exchangeRates.whenUpdated.asSequence()
             .map { (api, updated) ->
                 "${api.name}: ${updated.withZoneSameInstant(ZoneId.of("UTC+3")).toSimpleString()}"
@@ -82,5 +83,25 @@ suspend fun Message.handleAdminCommand(sender: BotOutputSender): Boolean = when 
         sender.sendChatMessage(AppContext.creatorId, BotTextOutput(markdown))
         true
     }
-    else -> false
+    else -> when {
+        text != null && text.startsWith("/reload ") -> {
+            val (_, apiAlias) = text.split(" ")
+            val rateApi = AliasMatcher(AppContext.supportedApis).matchOrNull(apiAlias)
+            val markdown = if (rateApi != null) {
+                AppContext.exchangeRates.reloadOne(rateApi, AppContext.httpClient, AppContext.json)
+                AppContext.exchangeRates.whenUpdated.asSequence()
+                    .filter { it.key == rateApi }
+                    .map { (api, updated) ->
+                        "${api.name}: ${updated.withZoneSameInstant(ZoneId.of("UTC+3")).toSimpleString()}"
+                    }
+                    .ifEmpty { sequenceOf("API was never updated") }
+                    .joinToString(separator = "\n", prefix = "Last updated:\n```\n", postfix = "\n```")
+            } else {
+                "Invalid API alias provided"
+            }
+            sender.sendChatMessage(AppContext.creatorId, BotTextOutput(markdown))
+            true
+        }
+        else -> false
+    }
 }

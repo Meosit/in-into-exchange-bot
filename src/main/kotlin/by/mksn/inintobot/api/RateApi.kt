@@ -27,5 +27,22 @@ data class RateApi(
     /**
      * List of currency codes which are unsupported by this API against the list of all currencies
      */
-    val unsupported: Set<String>
-) : Aliasable
+    val unsupported: Set<String>,
+    /**
+     * Number of hours after the last refresh to consider the data is outdated and should be refreshed
+     */
+    val refreshHours: Int
+) : Aliasable {
+    /**
+     * Comparison is performed only over the API name.
+     * By design the [name] must be unique.
+     */
+    override fun equals(other: Any?): Boolean = when (other) {
+        is RateApi -> other.name == name
+        else -> false
+    }
+
+    override fun hashCode(): Int {
+        return name.hashCode()
+    }
+}

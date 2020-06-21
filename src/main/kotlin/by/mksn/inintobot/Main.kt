@@ -96,10 +96,17 @@ fun Application.main() {
     }
 
     launch {
-        AppContext.exchangeRates.reload(AppContext.httpClient, AppContext.json)
+        var hourCounter = 0
+        AppContext.exchangeRates.reloadAll(AppContext.httpClient, AppContext.json)
         while (isActive) {
             delay(RELOAD_RATES_DELAY)
-            AppContext.exchangeRates.reload(AppContext.httpClient, AppContext.json)
+            hourCounter++
+            for (api in AppContext.supportedApis) {
+                if (hourCounter % api.refreshHours == 0) {
+                    AppContext.exchangeRates.reloadOne(api, AppContext.httpClient, AppContext.json)
+                }
+            }
+            logger.info("Exchange rates updated")
         }
     }
 }

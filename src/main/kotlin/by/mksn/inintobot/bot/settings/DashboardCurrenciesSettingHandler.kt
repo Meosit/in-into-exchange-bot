@@ -22,7 +22,7 @@ object DashboardCurrenciesSettingHandler : SettingHandler(6) {
 
     override fun messageMarkdown(settings: UserSettings, messages: MessagesSettingsStrings): String {
         val api = AppContext.supportedApis.first { settings.apiName == it.name }
-        val apiDisplayName = AppContext.apiNames.of(settings.language).getValue(api.name)
+        val apiDisplayName = AppContext.apiDisplayNames.of(settings.language).getValue(api.name)
         return messages.dashboardCurrencies.format(apiDisplayName, settings.dashboardCurrencies.joinToString())
     }
 
