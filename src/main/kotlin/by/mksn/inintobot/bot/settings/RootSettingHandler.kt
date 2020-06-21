@@ -29,17 +29,17 @@ object RootSettingHandler : SettingHandler(1) {
     }
 
     override suspend fun handle(data: String?, message: Message, current: UserSettings, sender: BotOutputSender) {
-        if (data == null) {
-            throwInvalid(data)
-        }
-        when (data.trimType()) {
+        when (data?.trimType()) {
             "language" -> Setting.LANGUAGE.handle(null, message, current, sender)
             "defaultCurrency" -> Setting.DEFAULT_CURRENCY.handle(null, message, current, sender)
             "defaultApi" -> Setting.DEFAULT_API.handle(null, message, current, sender)
             "outputCurrencies" -> Setting.OUTPUT_CURRENCIES.handle(null, message, current, sender)
             "dashboardCurrencies" -> Setting.DASHBOARD_CURRENCIES.handle(null, message, current, sender)
             "decimalDigits" -> Setting.DECIMAL_DIGITS.handle(null, message, current, sender)
-            else -> throwInvalid(data)
+            else -> {
+                val output = createOutputWithKeyboard(current)
+                sender.editChatMessage(message.chat.id.toString(), message.messageId, output)
+            }
         }
     }
 }
