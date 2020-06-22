@@ -108,6 +108,17 @@ suspend fun Message.handleAdminCommand(sender: BotOutputSender): Boolean = when 
             sender.sendChatMessage(AppContext.creatorId, BotTextOutput(markdown))
             true
         }
+        text != null && text.startsWith("/count ") -> {
+            val whereClause = text.removePrefix("/count ")
+            val markdown = try {
+                val count = UserStore.usersCount(whereClause)
+                "Count is $count"
+            } catch (e: Exception) {
+                "Unable to select: ${e::class.simpleName} ${e.message ?: e.cause?.message}"
+            }
+            sender.sendChatMessage(AppContext.creatorId, BotTextOutput(markdown))
+            true
+        }
         else -> false
     }
 }

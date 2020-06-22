@@ -109,6 +109,21 @@ RETURNING id, name, last_used, last_query, requests, inline_requests, settings
         session.list(sqlQuery(query)) { it.toBotUser() }
     }
 
+    fun usersCount(afterFromClause: String): Long = usingDefault { session ->
+        val query = """
+            SELECT count(*) 
+            FROM users 
+            $afterFromClause
+        """.trimIndent()
+        session.query(sqlQuery(query)) { rs ->
+            if (rs.next()) {
+                rs.getLong(1)
+            } else {
+                -1
+            }
+        }
+    }
+
     private fun Row.toBotUser() = BotUser(
         long("id"),
         string("name"),
