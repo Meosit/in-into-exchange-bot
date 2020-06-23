@@ -32,7 +32,7 @@ class ExchangeRates(
 
     private val apiStatuses: AtomicRef<Map<RateApi, ApiStatus>> = atomic(mapOf())
 
-    val ratesStatus = apiStatuses.value
+    val ratesStatus get() = apiStatuses.value
 
     private val apiToRates: AtomicRef<Map<RateApi, Map<Currency, BigDecimal>>> = atomic(mapOf())
 
