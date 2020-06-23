@@ -22,7 +22,7 @@ private fun BotUser.toChatString() = """
     User: ${if (name.contains(" ")) "`${name.escapeMarkdown()}`" else "@${name.escapeMarkdown()}"} (`${id}`)
     When: `${lastUsed.toLocalDateTime().atZone(ZoneOffset.UTC).withZoneSameInstant(ZoneId.of("UTC+3"))
     .toSimpleString()}`
-    Query: `${lastQuery.escapeMarkdown().trimToLength(25, "…")}`
+    Query: `${lastQuery.trimToLength(25, "…")}`
     Requests: `${numRequests}` (chat: `${numRequests - inlineRequests}`; inline: `${inlineRequests}`)
     Settings: `${settings?.let { AppContext.json.stringify(UserSettings.serializer(), it).escapeMarkdown() }}`
 """.trimIndent()
@@ -30,9 +30,9 @@ private fun BotUser.toChatString() = """
 suspend fun Message.handleAdminCommand(sender: BotOutputSender): Boolean = when (text) {
     "/reload" -> {
         AppContext.exchangeRates.reloadAll(AppContext.httpClient, AppContext.json)
-        val markdown = AppContext.exchangeRates.whenUpdated.asSequence()
+        val markdown = AppContext.exchangeRates.ratesStatus.asSequence()
             .map { (api, updated) ->
-                "${api.name}: ${updated.withZoneSameInstant(ZoneId.of("UTC+3")).toSimpleString()}"
+                "${api.name}: ${updated.lastChecked.withZoneSameInstant(ZoneId.of("UTC+3")).toSimpleString()}"
             }
             .joinToString(separator = "\n", prefix = "Last updated:\n```\n", postfix = "\n```")
         sender.sendChatMessage(AppContext.creatorId, BotTextOutput(markdown))
@@ -73,10 +73,10 @@ suspend fun Message.handleAdminCommand(sender: BotOutputSender): Boolean = when 
             val rateApi = AliasMatcher(AppContext.supportedApis).matchOrNull(apiAlias)
             val markdown = if (rateApi != null) {
                 AppContext.exchangeRates.reloadOne(rateApi, AppContext.httpClient, AppContext.json)
-                AppContext.exchangeRates.whenUpdated.asSequence()
+                AppContext.exchangeRates.ratesStatus.asSequence()
                     .filter { it.key == rateApi }
                     .map { (api, updated) ->
-                        "${api.name}: ${updated.withZoneSameInstant(ZoneId.of("UTC+3")).toSimpleString()}"
+                        "${api.name}: ${updated.lastChecked.withZoneSameInstant(ZoneId.of("UTC+3")).toSimpleString()}"
                     }
                     .ifEmpty { sequenceOf("API was never updated") }
                     .joinToString(separator = "\n", prefix = "Last updated:\n```\n", postfix = "\n```")

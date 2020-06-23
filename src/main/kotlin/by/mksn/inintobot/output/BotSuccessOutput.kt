@@ -21,7 +21,7 @@ data class BotSuccessOutput(
             ExpressionType.ONE_UNIT -> strings.headers.rate.format(expression.baseCurrency.code)
             ExpressionType.SINGLE_VALUE -> ""
             ExpressionType.SINGLE_CURRENCY_EXPR -> strings.headers.singleCurrencyExpression
-                .format(expression.stringRepr, expression.involvedCurrencies.first().code)
+                .format(expression.stringRepr, exchanges.joinToString { it.currency.code })
             ExpressionType.MULTI_CURRENCY_EXPR -> strings.headers.multiCurrencyExpression.format(expression.stringRepr)
         }
         val apiHeader = apiName?.let { strings.headers.api.format(it) } ?: ""

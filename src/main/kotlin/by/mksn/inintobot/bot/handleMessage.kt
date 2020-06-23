@@ -8,9 +8,11 @@ import by.mksn.inintobot.output.BotTextOutput
 import by.mksn.inintobot.settings.UserSettings
 import by.mksn.inintobot.telegram.Message
 import org.slf4j.LoggerFactory
+import java.time.format.DateTimeFormatter
 
 
 private val logger = LoggerFactory.getLogger("handleMessage")
+private val dateFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")
 
 suspend fun Message.handle(settings: UserSettings, sender: BotOutputSender, deprecatedBot: Boolean) {
     if (chat.id.toString() == AppContext.creatorId) {
@@ -32,6 +34,21 @@ suspend fun Message.handle(settings: UserSettings, sender: BotOutputSender, depr
                     "/start" -> start
                     else -> help
                 }
+            }
+            val formattedMessage = if (deprecatedBot) BotDeprecatedOutput(BotTextOutput(message), settings.language)
+            else BotTextOutput(message)
+            sender.sendChatMessage(chat.id.toString(), formattedMessage)
+        }
+        "/apistatus" -> {
+            val statusFormat = AppContext.commandMessages.of(settings.language).apiStatus
+            val apiDisplayNames = AppContext.apiDisplayNames.of(settings.language)
+            logger.info("Getting api status")
+            val message = AppContext.exchangeRates.ratesStatus.values.joinToString(separator = "\n\n") {
+                statusFormat.format(
+                    apiDisplayNames.getValue(it.api.name),
+                    dateFormat.format(it.ratesUpdated),
+                    dateFormat.format(it.lastChecked)
+                )
             }
             val formattedMessage = if (deprecatedBot) BotDeprecatedOutput(BotTextOutput(message), settings.language)
             else BotTextOutput(message)

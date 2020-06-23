@@ -13,4 +13,5 @@ Available commands:
 /help - extended and verbose description
 /settings - section to change default settings
 /apis - list of supported rate APIs
+/apistatus - get info about last rates update  
 /patterns - all available aliases for all currencies
