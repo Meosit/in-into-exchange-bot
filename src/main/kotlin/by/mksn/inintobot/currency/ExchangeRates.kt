@@ -46,13 +46,14 @@ class ExchangeRates(
                 val rates = ApiRateFetcher.forApi(api, httpClient, json).fetch(currencies)
                 apiToRates[api] = rates
                 val refreshed = ZonedDateTime.now(ZoneOffset.UTC)
-                apiStatuses.compute(api) { _, status ->
-                    status?.let {
-                        it.copy(
-                            lastChecked = refreshed,
-                            ratesUpdated = if (rates == oldRates) it.ratesUpdated else refreshed
-                        )
-                    } ?: ApiStatus(api, refreshed, refreshed)
+                apiStatuses.merge(api, ApiStatus(api, refreshed, refreshed)) { old, new ->
+                    if (rates == oldRates) {
+                        logger.info("Rates were not updated since last check")
+                        new.copy(ratesUpdated = old.ratesUpdated)
+                    } else {
+                        logger.info("New rates were loaded!")
+                        new
+                    }
                 }
                 this.apiStatuses.value = apiStatuses
                 this.apiToRates.value = apiToRates
