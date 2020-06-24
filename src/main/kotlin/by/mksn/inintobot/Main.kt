@@ -27,6 +27,7 @@ import kotlinx.coroutines.launch
 import org.slf4j.LoggerFactory
 import java.io.PrintWriter
 import java.io.StringWriter
+import java.time.LocalDateTime
 import java.util.concurrent.TimeUnit
 
 private val logger = LoggerFactory.getLogger("MainKt")
@@ -98,6 +99,8 @@ fun Application.main() {
     launch {
         var hourCounter = 0
         AppContext.exchangeRates.reloadAll(AppContext.httpClient, AppContext.json)
+        val millisTillNewHourStart = TimeUnit.MINUTES.toMillis(60L - LocalDateTime.now().minute)
+        delay(millisTillNewHourStart)
         while (isActive) {
             delay(RELOAD_RATES_DELAY)
             hourCounter++
