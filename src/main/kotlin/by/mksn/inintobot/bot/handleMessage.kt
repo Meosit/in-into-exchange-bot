@@ -16,16 +16,22 @@ import java.time.temporal.ChronoUnit
 
 private val logger = LoggerFactory.getLogger("handleMessage")
 
-fun TimeUnitNames.nameOfMinutes(value: Long) = when (value % 10) {
-    1L -> minuteOne
-    in 2L..4L -> minuteTwoTillFour
-    else -> minuteFiveTillTen
+fun TimeUnitNames.nameOfMinutes(value: Long) = when (value % 100) {
+    in 11L..20L -> minuteFiveTillTen
+    else -> when (value % 10) {
+        1L -> minuteOne
+        in 2L..4L -> minuteTwoTillFour
+        else -> minuteFiveTillTen
+    }
 }
 
-fun TimeUnitNames.nameOfHours(value: Long) = when (value % 10) {
-    1L -> hourOne
-    in 2L..4L -> hourTwoTillFour
-    else -> hourFiveTillTen
+fun TimeUnitNames.nameOfHours(value: Long) = when (value % 100) {
+    in 11L..20L -> hourFiveTillTen
+    else -> when (value % 10) {
+        1L -> hourOne
+        in 2L..4L -> hourTwoTillFour
+        else -> hourFiveTillTen
+    }
 }
 
 private fun stringifyDuration(time: ZonedDateTime, now: ZonedDateTime?, timeUnitNames: TimeUnitNames): String {
