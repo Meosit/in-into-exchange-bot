@@ -8,11 +8,12 @@ import by.mksn.inintobot.output.BotTextOutput
 import by.mksn.inintobot.settings.UserSettings
 import by.mksn.inintobot.telegram.Message
 import org.slf4j.LoggerFactory
-import java.time.format.DateTimeFormatter
+import java.time.ZoneOffset
+import java.time.ZonedDateTime
+import java.time.temporal.ChronoUnit
 
 
 private val logger = LoggerFactory.getLogger("handleMessage")
-private val dateFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")
 
 suspend fun Message.handle(settings: UserSettings, sender: BotOutputSender, deprecatedBot: Boolean) {
     if (chat.id.toString() == AppContext.creatorId) {
@@ -43,11 +44,16 @@ suspend fun Message.handle(settings: UserSettings, sender: BotOutputSender, depr
             val statusFormat = AppContext.commandMessages.of(settings.language).apiStatus
             val apiDisplayNames = AppContext.apiDisplayNames.of(settings.language)
             logger.info("Getting api status")
+            val now = ZonedDateTime.now(ZoneOffset.UTC)
             val message = AppContext.exchangeRates.ratesStatus.values.joinToString(separator = "\n\n") {
+                val ratesUpdatedHours = ChronoUnit.HOURS.between(it.ratesUpdated, now)
+                val ratesUpdatedMinutes = ChronoUnit.MINUTES.between(it.ratesUpdated, now) - ratesUpdatedHours * 60
+                val lastCheckedHours = ChronoUnit.HOURS.between(it.lastChecked, now)
+                val lastCheckedMinutes = ChronoUnit.MINUTES.between(it.lastChecked, now) - lastCheckedHours * 60
                 statusFormat.format(
                     apiDisplayNames.getValue(it.api.name),
-                    dateFormat.format(it.ratesUpdated),
-                    dateFormat.format(it.lastChecked)
+                    ratesUpdatedHours, ratesUpdatedMinutes,
+                    lastCheckedHours, lastCheckedMinutes
                 )
             }
             val formattedMessage = if (deprecatedBot) BotDeprecatedOutput(BotTextOutput(message), settings.language)
