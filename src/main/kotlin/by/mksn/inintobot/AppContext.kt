@@ -4,6 +4,7 @@ import by.mksn.inintobot.api.RateApi
 import by.mksn.inintobot.currency.Currency
 import by.mksn.inintobot.currency.ExchangeRates
 import by.mksn.inintobot.misc.Localized
+import by.mksn.inintobot.misc.TimeUnitNames
 import by.mksn.inintobot.output.strings.CommandMessages
 import by.mksn.inintobot.output.strings.ErrorMessages
 import by.mksn.inintobot.output.strings.QueryStrings
@@ -43,6 +44,7 @@ private data class AppContextEntity(
     val exchangeRates: ExchangeRates,
     val queryStrings: Localized<QueryStrings>,
     val apiNames: Localized<Map<String, String>>,
+    val timeUnitNames: Localized<TimeUnitNames>,
     val errorMessages: Localized<ErrorMessages>,
     val commandMessages: Localized<CommandMessages>,
     val settingsStrings: Localized<SettingsStrings>
@@ -118,6 +120,11 @@ object AppContext {
                 json.load("message/$language/api-names.json", MapSerializer(String.serializer(), String.serializer()))
             }
 
+        val timeUnitNames =
+            Localized(basicInfo.supportedLanguages.keys) { language ->
+                json.load("message/$language/time-unit-names.json", TimeUnitNames.serializer())
+            }
+
         val settingsStrings =
             Localized(basicInfo.supportedLanguages.keys) { language ->
                 json.load("message/$language/settings.json", SettingsStrings.serializer())
@@ -127,7 +134,7 @@ object AppContext {
 
         context = AppContextEntity(
             basicInfo, json, httpClient, supportedApis, supportedCurrencies, exchangeRates,
-            outputStrings, apiNames, errorMessages, commandMessages, settingsStrings
+            outputStrings, apiNames, timeUnitNames, errorMessages, commandMessages, settingsStrings
         )
         logger.info("AppContext initialized")
     }
@@ -146,6 +153,7 @@ object AppContext {
 
     val queryStrings get() = context.queryStrings
     val apiDisplayNames get() = context.apiNames
+    val timeUnitNames get() = context.timeUnitNames
     val errorMessages get() = context.errorMessages
     val commandMessages get() = context.commandMessages
     val settingsStrings get() = context.settingsStrings

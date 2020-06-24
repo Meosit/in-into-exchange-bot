@@ -2,6 +2,7 @@ package by.mksn.inintobot.bot
 
 import by.mksn.inintobot.AppContext
 import by.mksn.inintobot.bot.settings.Setting
+import by.mksn.inintobot.misc.TimeUnitNames
 import by.mksn.inintobot.output.BotDeprecatedOutput
 import by.mksn.inintobot.output.BotOutputSender
 import by.mksn.inintobot.output.BotTextOutput
@@ -14,6 +15,28 @@ import java.time.temporal.ChronoUnit
 
 
 private val logger = LoggerFactory.getLogger("handleMessage")
+
+fun TimeUnitNames.nameOfMinutes(value: Long) = when (value % 10) {
+    1L -> minuteOne
+    in 2L..4L -> minuteTwoTillFour
+    else -> minuteFiveTillTen
+}
+
+fun TimeUnitNames.nameOfHours(value: Long) = when (value % 10) {
+    1L -> hourOne
+    in 2L..4L -> hourTwoTillFour
+    else -> hourFiveTillTen
+}
+
+private fun stringifyDuration(time: ZonedDateTime, now: ZonedDateTime?, timeUnitNames: TimeUnitNames): String {
+    val hours = ChronoUnit.HOURS.between(time, now)
+    val minutes = ChronoUnit.MINUTES.between(time, now) - hours * 60
+    return when {
+        hours == 0L && minutes != 0L -> "`$minutes` ${timeUnitNames.nameOfMinutes(minutes)}"
+        hours != 0L && minutes == 0L -> "`$hours` ${timeUnitNames.nameOfHours(hours)}"
+        else -> "`$hours`${timeUnitNames.hourShort} `$minutes`${timeUnitNames.minuteShort}"
+    }
+}
 
 suspend fun Message.handle(settings: UserSettings, sender: BotOutputSender, deprecatedBot: Boolean) {
     if (chat.id.toString() == AppContext.creatorId) {
@@ -43,18 +66,13 @@ suspend fun Message.handle(settings: UserSettings, sender: BotOutputSender, depr
         "/apistatus" -> {
             val statusFormat = AppContext.commandMessages.of(settings.language).apiStatus
             val apiDisplayNames = AppContext.apiDisplayNames.of(settings.language)
+            val timeUnitNames = AppContext.timeUnitNames.of(settings.language)
             logger.info("Getting api status")
             val now = ZonedDateTime.now(ZoneOffset.UTC)
             val message = AppContext.exchangeRates.ratesStatus.values.joinToString(separator = "\n\n") {
-                val ratesUpdatedHours = ChronoUnit.HOURS.between(it.ratesUpdated, now)
-                val ratesUpdatedMinutes = ChronoUnit.MINUTES.between(it.ratesUpdated, now) - ratesUpdatedHours * 60
-                val lastCheckedHours = ChronoUnit.HOURS.between(it.lastChecked, now)
-                val lastCheckedMinutes = ChronoUnit.MINUTES.between(it.lastChecked, now) - lastCheckedHours * 60
-                statusFormat.format(
-                    apiDisplayNames.getValue(it.api.name),
-                    ratesUpdatedHours, ratesUpdatedMinutes,
-                    lastCheckedHours, lastCheckedMinutes
-                )
+                val ratesUpdatedString = stringifyDuration(it.ratesUpdated, now, timeUnitNames)
+                val lastCheckedString = stringifyDuration(it.lastChecked, now, timeUnitNames)
+                statusFormat.format(apiDisplayNames.getValue(it.api.name), ratesUpdatedString, lastCheckedString)
             }
             val formattedMessage = if (deprecatedBot) BotDeprecatedOutput(BotTextOutput(message), settings.language)
             else BotTextOutput(message)
