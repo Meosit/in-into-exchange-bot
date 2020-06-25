@@ -1,0 +1,10 @@
+{
+  "hourShort": "г",
+  "hourOne": "година",
+  "hourTwoTillFour": "години",
+  "hourFiveTillTen": "годин",
+  "minuteShort": "хв",
+  "minuteOne": "хвилина",
+  "minuteTwoTillFour": "хвилини",
+  "minuteFiveTillTen": "хвилин"
+}

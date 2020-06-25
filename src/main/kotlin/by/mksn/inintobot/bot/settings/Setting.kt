@@ -6,14 +6,16 @@ import by.mksn.inintobot.telegram.CallbackQuery
 import by.mksn.inintobot.telegram.Message
 
 enum class Setting(private val handler: SettingHandler) {
-    CONTROL(ControlButtonHandler),
     ROOT(RootSettingHandler),
     LANGUAGE(LanguageSettingHandler),
     DEFAULT_CURRENCY(DefaultCurrencySettingHandler),
     DEFAULT_API(DefaultApiSettingHandler),
     OUTPUT_CURRENCIES(OutputCurrenciesSettingHandler),
     DASHBOARD_CURRENCIES(DashboardCurrenciesSettingHandler),
-    DECIMAL_DIGITS(DigitsSettingHandler);
+    DECIMAL_DIGITS(DigitsSettingHandler),
+
+    START_COMMAND(StartCommandSettingHandler)
+    ;
 
     suspend fun handle(data: String?, message: Message, current: UserSettings, sender: BotOutputSender) {
         handler.handle(data, message, current, sender)

@@ -45,7 +45,10 @@ abstract class SettingHandler(id: Int) {
                 yield((0 until buttonsPerRow).mapNotNull { buttons.getOrNull(i + it) })
             }
         }.toMutableList()
-        keyboard.add(controlButtons(settingsStrings.buttons))
+        val controlButtons = controlButtons(settingsStrings.buttons)
+        if (controlButtons.isNotEmpty()) {
+            keyboard.add(controlButtons)
+        }
         val markdown = messageMarkdown(settings, settingsStrings.messages)
         val keyboardJson = AppContext.json.stringify(InlineKeyboardMarkup.serializer(), InlineKeyboardMarkup(keyboard))
         return BotTextOutput(markdown, keyboardJson)

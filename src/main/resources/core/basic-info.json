@@ -3,7 +3,8 @@
   "maxOutputLength": 4096,
   "maxErrorLineLength": 32,
   "supportedLanguages": {
+    "en": "English",
     "ru": "Русский",
-    "en": "English"
+    "ua": "Українська"
   }
 }

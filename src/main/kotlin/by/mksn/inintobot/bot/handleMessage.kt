@@ -55,13 +55,16 @@ suspend fun Message.handle(settings: UserSettings, sender: BotOutputSender, depr
             val errorMessages = AppContext.errorMessages.of(settings.language)
             sender.sendChatMessage(chat.id.toString(), BotTextOutput(errorMessages.queryExpected))
         }
-        "/start", "/help", "/patterns", "/apis" -> {
+        "/start" -> {
+            logger.info("Handling /start command")
+            Setting.START_COMMAND.handle(null, this, settings, sender)
+        }
+        "/help", "/patterns", "/apis" -> {
             logger.info("Handling bot command $text")
             val message = with(AppContext.commandMessages.of(settings.language)) {
                 when (text) {
                     "/patterns" -> patterns
                     "/apis" -> apis
-                    "/start" -> start
                     else -> help
                 }
             }

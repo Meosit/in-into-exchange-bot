@@ -4,7 +4,7 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class UserSettings(
-    val language: String = "ru",
+    val language: String = "en",
     val decimalDigits: Int = 2,
     val defaultCurrency: String = "BYN",
     val apiName: String = "OpenExchangeRates",
