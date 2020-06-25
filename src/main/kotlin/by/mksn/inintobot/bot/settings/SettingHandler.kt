@@ -1,6 +1,7 @@
 package by.mksn.inintobot.bot.settings
 
 import by.mksn.inintobot.AppContext
+import by.mksn.inintobot.misc.lettersDiffer
 import by.mksn.inintobot.output.BotOutput
 import by.mksn.inintobot.output.BotOutputSender
 import by.mksn.inintobot.output.BotTextOutput
@@ -66,14 +67,19 @@ abstract class SettingHandler(id: Int) {
         val payload = data?.trimType()
         if (payload == null) {
             val output = createOutputWithKeyboard(current)
-            sender.editChatMessage(message.chat.id.toString(), message.messageId, output)
+            if (output.markdown() lettersDiffer message.text) {
+                sender.editChatMessage(message.chat.id.toString(), message.messageId, output)
+            }
         } else {
             if (isValidPayload(payload)) {
                 val newSettings = createNewSettings(current, payload)
                 try {
                     UserStore.updateSettings(message.chat.id, newSettings)
                     logger.info("Settings successfully updated: $newSettings")
-                    sender.editChatMessage(message.chat.id.toString(), message.messageId, createOutputWithKeyboard(newSettings))
+                    val output = createOutputWithKeyboard(newSettings)
+                    if (output.markdown() lettersDiffer message.text) {
+                        sender.editChatMessage(message.chat.id.toString(), message.messageId, output)
+                    }
                 } catch (e: Exception) {
                     val error = AppContext.errorMessages.of(current.language).unableToSave
                     sender.editChatMessage(message.chat.id.toString(), message.messageId, BotTextOutput(error))

@@ -15,3 +15,9 @@ fun String.trimToLength(length: Int, tail: String = ""): String {
 fun String.escapeMarkdown() = replace("*", "\\*")
     .replace("_", "\\_")
     .replace("`", "\\`")
+
+/**
+ * Checks that two strings has different set of letters (or in different order)
+ */
+infix fun String?.lettersDiffer(string: String?): Boolean =
+    this?.filter(Char::isLetterOrDigit) != string?.filter(Char::isLetterOrDigit)

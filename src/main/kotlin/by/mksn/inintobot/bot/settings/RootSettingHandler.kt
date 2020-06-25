@@ -1,6 +1,7 @@
 package by.mksn.inintobot.bot.settings
 
 import by.mksn.inintobot.AppContext
+import by.mksn.inintobot.misc.lettersDiffer
 import by.mksn.inintobot.output.BotOutputSender
 import by.mksn.inintobot.output.strings.ButtonSettingsStrings
 import by.mksn.inintobot.output.strings.MessagesSettingsStrings
@@ -41,7 +42,9 @@ object RootSettingHandler : SettingHandler(1) {
                 if (data == null) {
                     sender.sendChatMessage(message.chat.id.toString(), output)
                 } else {
-                    sender.editChatMessage(message.chat.id.toString(), message.messageId, output)
+                    if (output.markdown() lettersDiffer message.text) {
+                        sender.editChatMessage(message.chat.id.toString(), message.messageId, output)
+                    }
                 }
             }
         }
