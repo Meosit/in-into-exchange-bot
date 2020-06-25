@@ -6,6 +6,8 @@ import by.mksn.inintobot.telegram.CallbackQuery
 import by.mksn.inintobot.telegram.Message
 
 enum class Setting(private val handler: SettingHandler) {
+    @Suppress("unused")
+    CONTROL(ControlButtonHandler),
     ROOT(RootSettingHandler),
     LANGUAGE(LanguageSettingHandler),
     DEFAULT_CURRENCY(DefaultCurrencySettingHandler),
