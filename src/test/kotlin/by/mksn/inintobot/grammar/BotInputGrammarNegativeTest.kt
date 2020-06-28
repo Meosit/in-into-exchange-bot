@@ -131,6 +131,17 @@ class BotInputGrammarNegativeTest {
         assertEquals(8, result.startsWith.column)
     }
 
+
+    @Test
+    fun native_union_with_currency_alias_collision() {
+        val input = "18 в + 11 euro"
+
+        val result = grammar.tryParseToEnd(input)
+
+        assertTrue(result is UnparsedRemainder)
+        assertEquals(4, result.startsWith.column)
+    }
+
     @Test
     fun invalid_alias_in_multi_currency_expression() {
         val input = "10 долларов + 10 asdf"

@@ -38,9 +38,16 @@ class TokenDictionary(currencyOrApiRegex: Regex) {
     val plus = token("'+'", "\\+")
 
     val allTokens: List<Token> = listOf(
-        number, currencyOrApi,
+        number,
+        // inIntoUnion must be placed before currency or API token to avoid 'в' letter
+        // to be treated as dollar alias rather than additional currency union.
+        // There is a drawback that ' в ' will always be treated as additional currency
+        // union but the cases where this is not expected are extremely rare so it's OK
+        // to live with that
+        inIntoUnion,
+        currencyOrApi,
         kilo, mega,
-        exclamation, ampersand, inIntoUnion,
+        exclamation, ampersand,
         decimalDigitsOption,
         whitespace,
         leftPar, rightPar,

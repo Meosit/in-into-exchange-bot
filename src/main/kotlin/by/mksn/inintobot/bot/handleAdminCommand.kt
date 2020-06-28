@@ -45,7 +45,7 @@ suspend fun Message.handleAdminCommand(sender: BotOutputSender): Boolean = when 
         true
     }
     "/last5" -> {
-        val users = UserStore.lastUsed(5).drop(1)
+        val users = UserStore.lastUsed(6).drop(1)
         val markdown = users
             .joinToString(separator = "\n---\n", prefix = "Last 5 users except admin:\n") { it.toChatString() }
         sender.sendChatMessage(AppContext.creatorId, BotTextOutput(markdown))

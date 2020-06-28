@@ -116,6 +116,17 @@ class BotInputGrammarPositiveTest {
     }
 
     @Test
+    fun value_with_different_currency_and_union_collision() {
+        val input = "1в"
+        val expectedExpr = CurrenciedExpression(1.asConst, "USD".toCurrency())
+
+        val (actualExpr, additionalCurrencies) = grammar.parseToEnd(input)
+
+        assertTrue(additionalCurrencies.isEmpty())
+        assertEquals(expectedExpr, actualExpr)
+    }
+
+    @Test
     fun simple_expression_with_different_currency() {
         val input = "1 + 1 гривна"
         val expectedExpr = CurrenciedExpression(Add(1.asConst, 1.asConst), "UAH".toCurrency())
@@ -141,6 +152,20 @@ class BotInputGrammarPositiveTest {
     }
 
     @Test
+    fun multiple_currencies_wrong_layout_union_collision() {
+        val input = "1.583в + 1,417 ,ey"
+        val expectedExpr = Add(
+            CurrenciedExpression(1.583.asConst, "USD".toCurrency()),
+            CurrenciedExpression(1.417.asConst, "BYN".toCurrency())
+        )
+
+        val (actualExpr, additionalCurrencies) = grammar.parseToEnd(input)
+
+        assertTrue(additionalCurrencies.isEmpty())
+        assertEquals(expectedExpr, actualExpr)
+    }
+
+    @Test
     fun additional_currencies_ininto_unions() {
         val input = "10 euro into бр IN dollars"
         val expectedAdditionalCurrencies = setOf(
@@ -148,6 +173,22 @@ class BotInputGrammarPositiveTest {
             "USD".toCurrency()
         )
         val expectedExpr = CurrenciedExpression(10.asConst, "EUR".toCurrency())
+
+        val (actualExpr, additionalCurrencies) = grammar.parseToEnd(input)
+
+        assertEquals(expectedExpr, actualExpr)
+
+        assertEqualsUnordered(expectedAdditionalCurrencies, additionalCurrencies)
+    }
+
+    @Test
+    fun additional_currencies_russian_unions() {
+        val input = "10 бун в доллар на евро"
+        val expectedAdditionalCurrencies = setOf(
+            "USD".toCurrency(),
+            "EUR".toCurrency()
+        )
+        val expectedExpr = CurrenciedExpression(10.asConst, "BYN".toCurrency())
 
         val (actualExpr, additionalCurrencies) = grammar.parseToEnd(input)
 
