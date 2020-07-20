@@ -25,7 +25,7 @@ class TokenDictionary(currencyOrApiRegex: Regex) {
     val decimalDigitsOption = token("decimal digits option '#'", "#")
 
     // currency can be added with this prefix to allow expressions like '1 dollar into euro'
-    val inIntoUnion = token("union 'в'/'на'/'in'/'into'", "(?<=\\s)(?iu)(into|in|в|на)(?-iu)(?=\\s)")
+    val inIntoUnion = token("union 'в'/'на'/'in'/'into'", "(?<=\\s)(?iu)(into|in|to|в|на)(?-iu)(?=\\s)")
 
     val whitespace = token("space", "\\s+", ignore = true)
 

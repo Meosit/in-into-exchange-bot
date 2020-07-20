@@ -48,9 +48,21 @@ suspend fun Message.handleAdminCommand(sender: BotOutputSender): Boolean = when 
     }
     else -> when {
         text != null && text matches "/last\\d+".toRegex() -> {
-            val users = UserStore.lastUsed(text.removePrefix("/last").toInt()).drop(1)
+            val limit = text.removePrefix("/last").toInt()
+            val users = UserStore.lastUsed(limit + 1).drop(1)
             val markdown = if (users.isNotEmpty())
-                users.joinToString(separator = "\n---\n", prefix = "Last 5 users except admin:\n") { it.toChatString() }
+                users.joinToString(separator = "\n---\n", prefix = "Last ${limit} users except admin:\n") { it.toChatString() }
+            else "No users"
+            sender.sendChatMessage(AppContext.creatorId, BotTextOutput(markdown))
+            true
+        }
+        text != null && text matches "/names\\d*".toRegex() -> {
+            val limit = text.removePrefix("/names").toIntOrNull() ?: 100
+            val users = UserStore.lastUsed(limit + 1).drop(1)
+            val markdown = if (users.isNotEmpty())
+                users.joinToString(separator = "- \n", prefix = "Last ${limit} user names except admin:\n") {
+                    "${if (it.name.contains(" ")) "`${it.name.escapeMarkdown()}`" else "@${it.name.escapeMarkdown()}"} (`${it.id}`)"
+                }
             else "No users"
             sender.sendChatMessage(AppContext.creatorId, BotTextOutput(markdown))
             true

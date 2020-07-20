@@ -19,6 +19,7 @@ data class ErrorMessages(
     val ratesUnavailable: String,
     val deprecatedBot: String,
     val staleApiRates: String,
+    val inlineOutputAsChatInput: String,
     val unableToSave: String,
     val unexpectedError: String
 )

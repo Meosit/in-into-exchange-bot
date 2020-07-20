@@ -206,4 +206,20 @@ class BotInputGrammarNegativeTest {
         assertEquals(14, result.startsWith.column)
         assertEquals("nbrb", result.startsWith.text)
     }
+
+    @Test
+    fun output_as_input() {
+        val input = """
+            🇧🇾BYN  5.68
+            🇺🇸USD  2.37
+            🇪🇺EUR  2.07
+            🇷🇺RUB  170
+        """.trimIndent()
+
+        val result = grammar.tryParseToEnd(input)
+        println(result)
+        assertTrue(result is NoMatchingToken)
+        assertEquals(1, result.tokenMismatch.column)
+        assertEquals("\uD83C\uDDE7\uD83C\uDDFEBYN  5.68 \uD83C\uDDFA\uD83C\uDDF8USD  2.37 \uD83C\uDDEA\uD83C\uDDFAEUR  2.07 \uD83C\uDDF7\uD83C\uDDFARUB  170", result.tokenMismatch.text)
+    }
 }

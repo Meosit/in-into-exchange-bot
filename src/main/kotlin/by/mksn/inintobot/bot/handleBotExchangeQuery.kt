@@ -17,6 +17,8 @@ import org.slf4j.LoggerFactory
 
 private val logger = LoggerFactory.getLogger("handleBotQuery")
 
+val botOutputRegex = "([\uD83C-\uDBFF\uDC00-\uDFFF]{2}[A-Z]{3} {2}\\d+(\\.\\d+)? ?)+".toRegex()
+
 fun handleBotExchangeQuery(query: String, settings: UserSettings): Array<BotOutput> {
     val currencies = AppContext.supportedCurrencies
     val apis = AppContext.supportedApis
@@ -91,9 +93,15 @@ fun handleBotExchangeQuery(query: String, settings: UserSettings): Array<BotOutp
             }
         }
         is ErrorResult -> {
-            val output = result.toBotOutput(query, AppContext.errorMessages.of(settings.language))
-            logger.info("Invalid query provided: ${output.errorMessage} (at ${output.errorPosition})")
-            return arrayOf(output)
+            val messages = AppContext.errorMessages.of(settings.language)
+            val output = result.toBotOutput(query, messages)
+            return if (botOutputRegex.containsMatchIn(output.rawInput)) {
+                logger.info("Bot inline query output used as chat input")
+                arrayOf(BotSimpleErrorOutput(messages.inlineOutputAsChatInput))
+            } else{
+                logger.info("Invalid query provided: ${output.errorMessage} (at ${output.errorPosition})")
+                arrayOf(output)
+            }
         }
     }
 }

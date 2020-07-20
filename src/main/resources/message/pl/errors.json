@@ -12,5 +12,6 @@
   "deprecatedBot": "⚠️ Ten bot nie jest już obsługiwany i może wkrótce zostać usunięty, użyj @inintobot, który działa podobnie, a ponadto oferuje zaawansowane funkcje, w tym personalizację. W razie pytań, proszę pisać @meosit",
   "staleApiRates": "⚠️ Kursy wymian dla API %s są nieaktualne z przyczyn zewnętrznych, rozważ użycie innego API, zobacz /apis",
   "unableToSave": "❗Błąd zapisu ustawień",
+  "inlineOutputAsChatInput": "Wydaję się, że już dostałeś niezbędną odpowiedź \uD83D\uDE43",
   "unexpectedError": "❗Nieznany błąd"
 }
