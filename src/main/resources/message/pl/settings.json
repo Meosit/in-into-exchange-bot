@@ -1,0 +1,24 @@
+{
+  "messages": {
+    "root": "Proszę o wybór ustawienia, którego chciałoby się zmodyfikować",
+    "language": "Proszę o wybór dogodnego języka, domyślnie używa się języka ustawień telefonu.\n\nAktualnyjęzyk: *%s* (`%s`)",
+    "defaultCurrency": "Proszę o wybranie waluty domyślnej, jeżeli w wyrażeniu nie ma żadnej innej waluty. Pełna lista walut zależy od wybranego API (%s), Zobacz /apis\n\nAktualna domyślna waluta: *%s*",
+    "defaultApi": "Proszę o wybór API domyślnej wymiany walut dla obliczeń, zobacz /apis jeżeli szukasz dodatkowych info.\n\nAktualne API: *%s* (`%s`)\nWaluty niedopuszczalne: %s",
+    "outputCurrencies": "Proszę o wybór listy walut rozwijanych domyślnie, jeżeli waluta jest już na liście, po wciśnieniu zostanie skasowana. Lista walut zależy od wybranego API (%s), zobacz /apis\n\n*Aktualne waluty:\n* %s",
+    "dashboardCurrencies": "Proszę o wskazanie listy walut wyświetlanej jako pełna lista kursów wymiany w razie pustego inline zapytania, jeżeli waluta jest już na liście, po wciśnieniu zostanie skasowana. Lista walut zależy od wybranego API (%s), zobacz /apis. \n\n*Aktualne waluty:*\n %s",
+    "decimalDigits": "Proszę o wskazanie liczby miejsc po przecinku do wyświetlenia.\n\nAktualna liczba: *%d* (`%s`)"
+  },
+  "rootButtons": {
+    "language": "Język wiadomości",
+    "defaultApi": "Domyślne API",
+    "defaultCurrency": "Domyślna waluta",
+    "outputCurrencies": "Wyświetlane waluty",
+    "dashboardCurrencies": "Wyświetlane waluty w razie pustego inline zapytania",
+    "decimalDigits": "Liczba miejsc po przecinku"
+  },
+  "buttons": {
+    "checked": "✅ %s",
+    "back": "↩️️ Powrót",
+    "close": "⏹ Zamknij"
+  }
+}

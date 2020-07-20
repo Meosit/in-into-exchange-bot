@@ -1,0 +1,16 @@
+{
+  "illegalCurrencyPlacement": "❗Waluta nie jest tutaj dozwolona",
+  "unparsedReminder": "❗Wyraz prawidłowy kończy się tutaj",
+  "mismatchedToken": "❗'%s' nie spodziewany tutaj",
+  "noMatchingToken": "❗Nieznane dane wejściowe '%s'",
+  "currencyUnexpected": "❗Waluta '%s' nie jest dozwolona",
+  "rateApiUnexpected": "❗Imię API '%s' nie jest dozwolone",
+  "divisionByZero": "❗Wyraz zawiera dzielenie przez 0",
+  "queryExpected": "❗Oczekiwano niepustego zapytania",
+  "unsupportedCurrency": "❗Waluta %s nie jest obsługiwana przez API %s",
+  "ratesUnavailable": "❗Kurs wymiany dla API jest czasowo niedostępny, proszę spróbować później",
+  "deprecatedBot": "⚠️ Ten bot nie jest już obsługiwany i może wkrótce zostać usunięty, użyj @inintobot, który działa podobnie, a ponadto oferuje zaawansowane funkcje, w tym personalizację. W razie pytań, proszę pisać @meosit",
+  "staleApiRates": "⚠️ Kursy wymian dla API %s są nieaktualne z przyczyn zewnętrznych, rozważ użycie innego API, zobacz /apis",
+  "unableToSave": "❗Błąd zapisu ustawień",
+  "unexpectedError": "❗Nieznany błąd"
+}
