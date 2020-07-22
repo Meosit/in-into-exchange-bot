@@ -14,7 +14,7 @@ Przykład:
 
 Właściwości:
 - Waluty obsługiwane (❗zależy od wybranego API): `BYN`, `USD`, `EUR`, `RUB`, `UAH`, `PLN`, `CZK`, `GBP`, `JPY`, `CNY`, `KZT`, `CHF`, `BGN`, `TRY`, `CAD`, `ISK`, `DKK`, `SEK`, `NOK`, `ILS`, `BTC`, `ETH`
-- Obsługiwane API wraz z kursami wymiany walut (zobacz /apis): [Bank Białorusi](http://www.nbrb.by/), [ЦБ РФ](http://cbr.ru/), [Bank Ukrainy](https://bank.gov.ua/), [European Central Bank](https://www.ecb.europa.eu/home/html/index.en.html), [Fixer.io](https://fixer.io/), [OpenExchangeRates.org](https://openexchangerates.org/), [TraderMade.com](https://tradermade.com), [Forex API](https://fcsapi.com/)
+- Obsługiwane API wraz z kursami wymiany walut (zobacz /apis): [Bank Białorusi](http://www.nbrb.by/), [Bank Rosji](http://cbr.ru/), [Bank Ukrainy](https://bank.gov.ua/), [European Central Bank](https://www.ecb.europa.eu/home/html/index.en.html), [Fixer.io](https://fixer.io/), [OpenExchangeRates.org](https://openexchangerates.org/), [TraderMade.com](https://tradermade.com), [Forex API](https://fcsapi.com/)
 - Domyślnie się używa `OpenExchangeRates` API, wyświetla się 4 waluty: `BYN`, `USD`, `EUR`, `RUB`
 - Waluta `BYN` się używa domyślnie; jeżeli nie jest obsługiwana, używa się waluty podstawowej wybranego API 
 - Liczby się wyświetlają do dwóch miejsc po przecinku (1.99), można to zmienić opcją `#<znaków po przecinku>`  
