@@ -5,10 +5,7 @@ import by.mksn.inintobot.currency.CurrencyRateExchanger
 import by.mksn.inintobot.expression.EvaluatedExpression
 import by.mksn.inintobot.expression.ExpressionType
 import by.mksn.inintobot.misc.toFixedScaleBigDecimal
-import by.mksn.inintobot.output.BotDeprecatedOutput
-import by.mksn.inintobot.output.BotOutputSender
-import by.mksn.inintobot.output.BotSimpleErrorOutput
-import by.mksn.inintobot.output.BotSuccessOutput
+import by.mksn.inintobot.output.*
 import by.mksn.inintobot.settings.UserSettings
 import by.mksn.inintobot.telegram.InlineQuery
 import org.slf4j.LoggerFactory
@@ -38,7 +35,7 @@ suspend fun InlineQuery.handle(settings: UserSettings, sender: BotOutputSender, 
                 .map { (expression, exchanged) ->
                     BotSuccessOutput(expression, exchanged, queryStrings, settings.decimalDigits, apiDisplayNames[settings.apiName])
                 }
-                .map { if (isStaleRates) it else it }
+                .map { if (isStaleRates) BotStaleRatesOutput(it, api.name, settings.language) else it }
                 .toList().toTypedArray()
         } else {
             logger.error("Rates unavailable for API ${api.name}")

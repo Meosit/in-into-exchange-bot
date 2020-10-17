@@ -44,4 +44,4 @@ class CurrencyRateExchanger(
 
 }
 
-class UnknownCurrencyException(val currency: Currency) : RuntimeException()
+class UnknownCurrencyException(val currency: Currency) : RuntimeException("Currency ${currency.code} not found for the API")
