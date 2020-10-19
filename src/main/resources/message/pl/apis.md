@@ -10,7 +10,7 @@ __Bank Narodowy Ukrainy__
 - Strona WWW: https://bank.gov.ua/
 - Skróty: `NBU`, `НБУ`
 - Waluta podstawowa: `UAH`
-- Waluty nieobsługiwane: `BTC`, `ETH`
+- Waluty nieobsługiwane: `ISK`, `BTC`, `ETH`
 
 __Centralny Bank Federacji Rosyjskiej__
 - Strona WWW: http://cbr.ru/
@@ -39,12 +39,6 @@ __TraderMade.com__
 - Skróty: `TraderMade`, `tm`, `тм`
 - Waluta podstawowa: `USD`
 - Waluty nieobsługiwane: `BYN`, `BGN`, `KZT`, `ETH`
-
-__TraderMade.com__
-- Strona WWW: https://tradermade.com/
-- Skróty: `TraderMade`, `tm`, `тм`
-- Waluta podstawowa: `USD`
-- Waluty nieobsługiwane: `BYN`, `BGN`, `KZT`
 
 __Forex API__
 - Strona WWW: https://fcsapi.com/

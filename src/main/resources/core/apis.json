@@ -24,7 +24,8 @@
     "url": "https://bank.gov.ua/NBUStatService/v1/statdirectory/exchange?json",
     "unsupported": [
       "BTC",
-      "ETH"
+      "ETH",
+      "ISK"
     ],
     "refreshHours": 1
   },
