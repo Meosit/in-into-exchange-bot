@@ -124,6 +124,21 @@ RETURNING id, name, last_used, last_query, requests, inline_requests, settings
         }
     }
 
+    fun userStats(afterFromClause: String): UserStats = usingDefault { session ->
+        val query = """
+            SELECT count(*) AS cnt, sum(requests) as req, sum(inline_requests) as in_req
+            FROM users
+            $afterFromClause
+        """.trimIndent()
+        session.query(sqlQuery(query)) { rs ->
+            if (rs.next()) {
+                UserStats(rs.getLong(1), rs.getLong(2), rs.getLong(3))
+            } else {
+                UserStats(-1, -1, -1)
+            }
+        }
+    }
+
     private fun Row.toBotUser() = BotUser(
         long("id"),
         string("name"),

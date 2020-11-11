@@ -38,14 +38,6 @@ suspend fun Message.handleAdminCommand(sender: BotOutputSender): Boolean = when 
         sender.sendChatMessage(AppContext.creatorId, BotTextOutput(markdown))
         true
     }
-    "/lasthour" -> {
-        val users = UserStore.lastUsed(10, 1).drop(1)
-        val markdown = if (users.isNotEmpty()) users
-            .joinToString(separator = "\n---\n", prefix = "Users for the last hour:\n") { it.toChatString() }
-        else "No users for the last hour"
-        sender.sendChatMessage(AppContext.creatorId, BotTextOutput(markdown))
-        true
-    }
     else -> when {
         text != null && text matches "/last\\d+".toRegex() -> {
             val limit = text.removePrefix("/last").toInt()
@@ -107,11 +99,11 @@ suspend fun Message.handleAdminCommand(sender: BotOutputSender): Boolean = when 
             sender.sendChatMessage(AppContext.creatorId, BotTextOutput(markdown))
             true
         }
-        text != null && text.startsWith("/count") -> {
-            val whereClause = text.removePrefix("/count")
+        text != null && text.startsWith("/stats") -> {
+            val whereClause = text.removePrefix("/stats")
             val markdown = try {
-                val count = UserStore.usersCount(whereClause)
-                "Count is $count"
+                val stats = UserStore.userStats(whereClause)
+                "Count: `${stats.count}`\nRequests: `${stats.requests}` (chat: `${stats.requests - stats.inlineRequests}`; inline: `${stats.inlineRequests}`)"
             } catch (e: Exception) {
                 "Unable to select: ${e::class.simpleName} ${e.message ?: e.cause?.message}"
             }

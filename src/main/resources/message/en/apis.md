@@ -16,7 +16,7 @@ __Central Bank of Russia__
 - Site: http://cbr.ru/eng/
 - Names: `CBR`, `ЦБР`, `ЦБРФ`
 - Base currency: `RUB`
-- NOT supported: `ILS`, `BTC`, `ETH`
+- NOT supported: `ISK`, `ILS`, `BTC`, `ETH`
 
 __European Central Bank__
 - Site: https://www.ecb.europa.eu/home/html/index.en.html

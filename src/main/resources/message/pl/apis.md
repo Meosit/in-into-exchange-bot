@@ -16,7 +16,7 @@ __Centralny Bank Federacji Rosyjskiej__
 - Strona WWW: http://cbr.ru/
 - Skróty: `CBR`, `ЦБР`, `ЦБРФ`
 - Waluta podstawowa: `RUB`
-- Waluty nieobsługiwane: `ILS`, `BTC`, `ETH`
+- Waluty nieobsługiwane: `ISK`, `ILS`, `BTC`, `ETH`
 
 __Europejski Bank Centralny__
 - Strona WWW: https://www.ecb.europa.eu/home/html/index.en.html
