@@ -6,4 +6,5 @@ interface BotOutput {
     fun inlineThumbUrl(): String
     fun markdown(): String
     fun keyboardJson(): String? = null
+    fun toApiResponse(): ApiResponse = throw IllegalStateException("Api response not supported for this output")
 }

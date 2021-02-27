@@ -9,4 +9,6 @@ data class BotSimpleErrorOutput(
     override fun inlineDescription() = errorMessage
 
     override fun markdown() = errorMessage
+
+    override fun toApiResponse() = ApiErrorResponse(errorMessage)
 }

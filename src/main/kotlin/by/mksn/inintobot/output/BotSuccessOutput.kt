@@ -16,14 +16,15 @@ data class BotSuccessOutput(
     val apiName: String? = null
 ) : BotOutput {
 
+    val expressionHeader = when (expression.type) {
+        ExpressionType.ONE_UNIT -> strings.headers.rate.format(expression.baseCurrency.code)
+        ExpressionType.SINGLE_VALUE -> ""
+        ExpressionType.SINGLE_CURRENCY_EXPR -> strings.headers.singleCurrencyExpression
+            .format(expression.stringRepr, expression.involvedCurrencies.first().code)
+        ExpressionType.MULTI_CURRENCY_EXPR -> strings.headers.multiCurrencyExpression.format(expression.stringRepr)
+    }
+
     private val markdown by lazy {
-        val expressionHeader = when (expression.type) {
-            ExpressionType.ONE_UNIT -> strings.headers.rate.format(expression.baseCurrency.code)
-            ExpressionType.SINGLE_VALUE -> ""
-            ExpressionType.SINGLE_CURRENCY_EXPR -> strings.headers.singleCurrencyExpression
-                .format(expression.stringRepr, expression.involvedCurrencies.first().code)
-            ExpressionType.MULTI_CURRENCY_EXPR -> strings.headers.multiCurrencyExpression.format(expression.stringRepr)
-        }
         val apiHeader = apiName?.let { strings.headers.api.format(it) } ?: ""
         val exchangeBody = exchanges
             .joinToString("\n") { "`${it.currency.emoji}${it.currency.code}`  `${it.value.toStr(decimalDigits)}`" }
@@ -61,4 +62,10 @@ data class BotSuccessOutput(
     }
 
     override fun markdown() = markdown
+
+    override fun toApiResponse() = ApiSuccessResponse(
+        header = expressionHeader,
+        apiName = apiName?.let { strings.headers.api.format(it) },
+        exchanges = exchanges.map { ExchangeRow(it.currency.emoji, it.currency.code, it.value.toStr(decimalDigits)) }
+    )
 }

@@ -21,4 +21,6 @@ data class BotStaleRatesOutput(
         return "${botOutput.markdown()}\n\n_${message}_"
             .trimToLength(AppContext.maxOutputLength, "…")
     }
+
+    override fun toApiResponse() = botOutput.toApiResponse()
 }

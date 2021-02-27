@@ -39,7 +39,8 @@ suspend fun Message.handleAdminCommand(sender: BotOutputSender): Boolean = when 
         true
     }
     else -> when {
-        text != null && text matches "/last\\d+".toRegex() -> {
+        text == null -> false
+        text matches "/last\\d+".toRegex() -> {
             val limit = text.removePrefix("/last").toInt()
             val users = UserStore.lastUsed(limit + 1).drop(1)
             val markdown = if (users.isNotEmpty())
@@ -48,7 +49,7 @@ suspend fun Message.handleAdminCommand(sender: BotOutputSender): Boolean = when 
             sender.sendChatMessage(AppContext.creatorId, BotTextOutput(markdown))
             true
         }
-        text != null && text matches "/names\\d*".toRegex() -> {
+        text matches "/names\\d*".toRegex() -> {
             val limit = text.removePrefix("/names").toIntOrNull() ?: 100
             val users = UserStore.lastUsed(limit + 1).drop(1)
             val markdown = if (users.isNotEmpty())
@@ -59,7 +60,7 @@ suspend fun Message.handleAdminCommand(sender: BotOutputSender): Boolean = when 
             sender.sendChatMessage(AppContext.creatorId, BotTextOutput(markdown))
             true
         }
-        text != null && text.startsWith("/reload") -> {
+        text.startsWith("/reload") -> {
             val apiAlias = text.removePrefix("/reload")
             if (apiAlias.isEmpty()) {
                 AppContext.exchangeRates.reloadAll(AppContext.httpClient, AppContext.json)
@@ -88,7 +89,7 @@ suspend fun Message.handleAdminCommand(sender: BotOutputSender): Boolean = when 
             }
             true
         }
-        text != null && text.startsWith("/select") -> {
+        text.startsWith("/select") -> {
             val whereClause = text.removePrefix("/select")
             val markdown = try {
                 val users = UserStore.usersGenericSelect(whereClause)
@@ -99,7 +100,7 @@ suspend fun Message.handleAdminCommand(sender: BotOutputSender): Boolean = when 
             sender.sendChatMessage(AppContext.creatorId, BotTextOutput(markdown))
             true
         }
-        text != null && text.startsWith("/stats") -> {
+        text.startsWith("/stats") -> {
             val whereClause = text.removePrefix("/stats")
             val markdown = try {
                 val stats = UserStore.userStats(whereClause)

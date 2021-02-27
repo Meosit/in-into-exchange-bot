@@ -34,6 +34,7 @@ fun handleBotExchangeQuery(query: String, settings: UserSettings): Array<BotOutp
             val decimalDigits = when {
                 decimalDigits == null -> settings.decimalDigits
                 decimalDigits >= DEFAULT_DECIMAL_DIGITS -> DEFAULT_DECIMAL_DIGITS
+                decimalDigits <= 0 -> 0
                 else -> decimalDigits
             }
             logger.info("New precision is $decimalDigits")

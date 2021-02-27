@@ -28,6 +28,12 @@ data class BotQueryErrorOutput(
         > $trimmedRawInput
           ${"▲".padStart(if (errorPosition > trimmedRawInput.length) trimmedRawInput.length else errorPosition)}```
     """.trimIndent()
+
+    override fun toApiResponse() = ApiErrorResponse(
+        message = errorMessage,
+        rawInput = trimmedRawInput,
+        position = if (errorPosition > trimmedRawInput.length) trimmedRawInput.length else errorPosition
+    )
 }
 
 fun ErrorResult.toBotOutput(rawInput: String, messages: ErrorMessages) = when (this) {
