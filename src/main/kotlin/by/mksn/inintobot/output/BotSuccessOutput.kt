@@ -7,6 +7,7 @@ import by.mksn.inintobot.expression.ExpressionType
 import by.mksn.inintobot.misc.toStr
 import by.mksn.inintobot.misc.trimToLength
 import by.mksn.inintobot.output.strings.QueryStrings
+import by.mksn.inintobot.settings.UserDefaultSettings
 
 data class BotSuccessOutput(
     val expression: EvaluatedExpression,
@@ -65,7 +66,7 @@ data class BotSuccessOutput(
 
     override fun toApiResponse() = ApiSuccessResponse(
         header = expressionHeader,
-        apiName = apiName?.let { strings.headers.api.format(it) },
+        apiName = strings.headers.api.format(apiName ?: UserDefaultSettings.API_NAME),
         exchanges = exchanges.map { ExchangeRow(it.currency.emoji, it.currency.code, it.value.toStr(decimalDigits)) }
     )
 }

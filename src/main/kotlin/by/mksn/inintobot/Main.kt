@@ -30,6 +30,7 @@ import kotlinx.coroutines.launch
 import kotlinx.serialization.builtins.ListSerializer
 import kotlinx.serialization.builtins.MapSerializer
 import kotlinx.serialization.builtins.serializer
+import kotlinx.serialization.json.JsonException
 import org.slf4j.LoggerFactory
 import java.io.PrintWriter
 import java.io.StringWriter
@@ -87,21 +88,19 @@ fun Application.main() {
             call.respondText("What are you looking here?", ContentType.Text.Html)
         }
         post("/exchange") {
-            val (query, settings) = call.receive<ApiExchangeRequest>()
-            if (query.isBlank()) {
-                call.respond(HttpStatusCode.BadRequest, ApiErrorResponse("No query found"))
-            } else {
-                val output = handleBotExchangeQuery(query, settings).first().toApiResponse()
+            try {
+                val (query, settings) = call.receive<ApiExchangeRequest>()
+                if (query.isBlank()) {
+                    call.respond(HttpStatusCode.BadRequest, ApiErrorResponse("No query found"))
+                } else {
+                    val output = handleBotExchangeQuery(query, settings).first().toApiResponse()
 
-                val response = AppContext.json.stringify(ApiResponse.serializer(), output)
-                call.respondText(response, ContentType.Application.Json, status = output.code)
+                    val response = AppContext.json.stringify(ApiResponse.serializer(), output)
+                    call.respondText(response, ContentType.Application.Json, status = output.code)
+                }
+            } catch (e: JsonException) {
+                call.respond(HttpStatusCode.BadRequest, ApiErrorResponse("Invalid request format"))
             }
-        }
-        get("/settings/apis") {
-            val settings = call.receiveOrNull() ?: UserSettings()
-            val response = AppContext.json.stringify(
-                MapSerializer(String.serializer(), String.serializer()), AppContext.apiDisplayNames.of(settings.language))
-            call.respondText(response, ContentType.Application.Json)
         }
         get("/settings/currencies") {
             val response = AppContext.json.stringify(ListSerializer(String.serializer()), AppContext.supportedCurrencies.map { it.code })
@@ -109,6 +108,12 @@ fun Application.main() {
         }
         get("/settings/languages") {
             val response = AppContext.json.stringify(MapSerializer(String.serializer(), String.serializer()), AppContext.supportedLanguages)
+            call.respondText(response, ContentType.Application.Json)
+        }
+        get("/settings/apis") {
+            val settings = call.receiveOrNull() ?: UserSettings()
+            val response = AppContext.json.stringify(
+                MapSerializer(String.serializer(), String.serializer()), AppContext.apiDisplayNames.of(settings.language))
             call.respondText(response, ContentType.Application.Json)
         }
         get("/messages/help") {
