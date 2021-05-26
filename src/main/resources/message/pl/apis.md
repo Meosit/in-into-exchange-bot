@@ -4,7 +4,7 @@ __Bank Narodowy Republiki Białorusi__
 - Strona WWW: http://www.nbrb.by/
 - Skróty: `NBRB`, `НБРБ`
 - Waluta podstawowa: `BYN`
-- Waluty nieobsługiwane: `ILS`, `BTC`, `ETH`
+- Waluty nieobsługiwane: `ILS`, `GEL`, `BTC`, `ETH`
 
 __Bank Narodowy Ukrainy__
 - Strona WWW: https://bank.gov.ua/
@@ -16,13 +16,13 @@ __Centralny Bank Federacji Rosyjskiej__
 - Strona WWW: http://cbr.ru/
 - Skróty: `CBR`, `ЦБР`, `ЦБРФ`
 - Waluta podstawowa: `RUB`
-- Waluty nieobsługiwane: `ISK`, `ILS`, `BTC`, `ETH`
+- Waluty nieobsługiwane: `ISK`, `ILS`, `GEL`, `BTC`, `ETH`
 
 __Europejski Bank Centralny__
 - Strona WWW: https://www.ecb.europa.eu/home/html/index.en.html
 - Skróty: `ECB`, `ЕЦБ`
 - Waluta podstawowa: `EUR`
-- Waluty nieobsługiwane: `BYN`, `UAH`, `KZT`, `BTC`, `ETH`
+- Waluty nieobsługiwane: `BYN`, `UAH`, `KZT`, `GEL`, `BTC`, `ETH`
 
 __Fixer.io__
 - Strona WWW: https://fixer.io/
@@ -38,7 +38,7 @@ __TraderMade.com__
 - Strona WWW: https://tradermade.com/
 - Skróty: `TraderMade`, `tm`, `тм`
 - Waluta podstawowa: `USD`
-- Waluty nieobsługiwane: `BYN`, `BGN`, `KZT`, `ETH`
+- Waluty nieobsługiwane: `BYN`, `BGN`, `KZT`, `GEL`, `ETH`
 
 __Forex API__
 - Strona WWW: https://fcsapi.com/

@@ -9,6 +9,7 @@
     "url": "http://www.nbrb.by/API/ExRates/Rates?Periodicity=0",
     "unsupported": [
       "ILS",
+      "GEL",
       "BTC",
       "ETH"
     ],
@@ -40,6 +41,7 @@
     "url": "http://www.cbr.ru/scripts/XML_daily.asp",
     "unsupported": [
       "ILS",
+      "GEL",
       "ISK",
       "BTC",
       "ETH"
@@ -58,6 +60,7 @@
       "BYN",
       "UAH",
       "KZT",
+      "GEL",
       "BTC",
       "ETH"
     ],
@@ -104,6 +107,7 @@
     "unsupported": [
       "BYN",
       "BGN",
+      "GEL",
       "KZT"
     ],
     "refreshHours": 1

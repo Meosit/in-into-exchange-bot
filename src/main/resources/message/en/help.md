@@ -1,4 +1,4 @@
-Money conversion with support of 21 currencies, math and multi currency math expressions
+Money conversion with support of 22 currencies, math and multi currency math expressions
 
 Query syntax:
 1) `<number/expr> [<currency>] [<API name>] [<extra currencies>...] [#<decimal digits>]`
@@ -13,7 +13,7 @@ Examples:
 - `(12keuro + 8k bucks)*2 !pounds`
 
 Features:
-- Supported currencies (❗support depends on chosen API): `BYN`, `USD`, `EUR`, `RUB`, `UAH`, `PLN`, `CZK`, `GBP`, `JPY`, `CNY`, `KZT`, `CHF`, `BGN`, `TRY`, `CAD`, `ISK`, `DKK`, `SEK`, `NOK`, `ILS`, `BTC`, `ETH`
+- Supported currencies (❗support depends on chosen API): `BYN`, `USD`, `EUR`, `RUB`, `UAH`, `PLN`, `CZK`, `GBP`, `JPY`, `CNY`, `KZT`, `CHF`, `BGN`, `TRY`, `CAD`, `ISK`, `DKK`, `SEK`, `NOK`, `ILS`, `GEL`, `BTC`, `ETH`
 - Supported rate APIs (см. /apis): [NBRB](http://www.nbrb.by/), [CBR](http://cbr.ru/), [NBU](https://bank.gov.ua/), [European Central Bank](https://www.ecb.europa.eu/home/html/index.en.html), [Fixer.io](https://fixer.io/), [OpenExchangeRates.org](https://openexchangerates.org/), [TraderMade.com](https://tradermade.com), [Forex API](https://fcsapi.com/) 
 - Default API is `OpenExchangeRates`, also 4 currencies displayed: `BYN`, `USD`, `EUR`, `RUB`
 - Currency `BYN` used by default, if it is not supported by the API, the API base currency used 

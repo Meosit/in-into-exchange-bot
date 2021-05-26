@@ -4,7 +4,7 @@ __National Bank of Belarus__
 - Site: http://www.nbrb.by/engl
 - Names: `NBRB`, `НБРБ`
 - Base currency: `BYN`
-- NOT supported: `ILS`, `BTC`, `ETH`
+- NOT supported: `ILS`, `GEL`, `BTC`, `ETH`
 
 __National Bank of Ukraine__
 - Site: https://bank.gov.ua/en/
@@ -16,13 +16,13 @@ __Central Bank of Russia__
 - Site: http://cbr.ru/eng/
 - Names: `CBR`, `ЦБР`, `ЦБРФ`
 - Base currency: `RUB`
-- NOT supported: `ISK`, `ILS`, `BTC`, `ETH`
+- NOT supported: `ISK`, `ILS`, `GEL`, `BTC`, `ETH`
 
 __European Central Bank__
 - Site: https://www.ecb.europa.eu/home/html/index.en.html
 - Names: `ECB`, `ЕЦБ`
 - Base currency: `EUR`
-- NOT supported: `BYN`, `UAH`, `KZT`, `BTC`, `ETH`
+- NOT supported: `BYN`, `UAH`, `KZT`, `GEL`, `BTC`, `ETH`
 
 __Fixer.io__
 - Site: https://fixer.io/
@@ -38,7 +38,7 @@ __TraderMade.com__
 - Site: https://tradermade.com/
 - Names: `TraderMade`, `tm`, `тм`
 - Base currency: `USD`
-- Unsupported: `BYN`, `BGN`, `KZT`
+- Unsupported: `BYN`, `BGN`, `KZT`, `GEL`, `ETH`
 
 __Forex API__
 - Site: https://fcsapi.com/

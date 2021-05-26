@@ -45,6 +45,8 @@ Każdą walutę można opisać używając nie tylko oficjalnego symbolu, zaś r�
 `NOK`, `norway`, `no`, `норвегия`, `норвегии`
 - Izraelski szekel:
 `ILS`, `shekel`, `il`, `шекель` + przypadki
+- Gruzińskie lari:
+`GEL`,`georgia`,`lari`,`грузия`,`лари`,`₾`
 - Bitcoin:
 `BTC`, `bitcoin`, `биткоин`, `биток` + przypadki
 - Ethereum:

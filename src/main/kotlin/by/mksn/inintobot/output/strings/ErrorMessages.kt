@@ -16,6 +16,7 @@ data class ErrorMessages(
     val divisionByZero: String,
     val queryExpected: String,
     val unsupportedCurrency: String,
+    val unsupportedCurrencyWithAlternative: String,
     val ratesUnavailable: String,
     val deprecatedBot: String,
     val staleApiRates: String,

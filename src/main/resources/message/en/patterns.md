@@ -45,6 +45,8 @@ All currencies can be referenced through their official 3-letter codes and some 
 `NOK`, `norway`, `no`, `норвегия`, `норвегии`
 - Israel shekel:
 `ILS`, `shekel`, `il`, `шекель` + russian forms
+- Georgia lari:
+`GEL`,`georgia`,`lari`,`грузия`,`лари`,`₾`
 - Bitcoin:
 `BTC`, `bitcoin`, `биткоин`, `биток` + russian forms
 - Ethereum:

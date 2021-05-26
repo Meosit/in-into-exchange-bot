@@ -8,6 +8,7 @@
   "divisionByZero": "❗Wyraz zawiera dzielenie przez 0",
   "queryExpected": "❗Oczekiwano niepustego zapytania",
   "unsupportedCurrency": "❗Waluta %s nie jest obsługiwana przez API %s, rozważ użycie innego API, zobacz /apis",
+  "unsupportedCurrencyWithAlternative": "❗Waluta %s nie jest obsługiwana przez API %s, rozważ użycie innego API: `%s`",
   "ratesUnavailable": "❗Kurs wymiany dla API jest czasowo niedostępny, rozważ użycie innego API, zobacz /apis",
   "deprecatedBot": "⚠️ Ten bot nie jest już obsługiwany i może wkrótce zostać usunięty, użyj @inintobot, który działa podobnie, a ponadto oferuje zaawansowane funkcje, w tym personalizację. W razie pytań, proszę pisać @meosit",
   "staleApiRates": "⚠️ Kursy wymian dla API %s są nieaktualne z przyczyn zewnętrznych, rozważ użycie innego API, zobacz /apis",

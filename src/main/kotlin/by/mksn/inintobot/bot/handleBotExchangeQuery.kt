@@ -1,6 +1,7 @@
 package by.mksn.inintobot.bot
 
 import by.mksn.inintobot.AppContext
+import by.mksn.inintobot.api.RateApi
 import by.mksn.inintobot.currency.CurrencyRateExchanger
 import by.mksn.inintobot.currency.UnknownCurrencyException
 import by.mksn.inintobot.expression.ExpressionEvaluator
@@ -62,10 +63,8 @@ fun handleBotExchangeQuery(query: String, settings: UserSettings): Array<BotOutp
                 val messages = AppContext.errorMessages.of(settings.language)
                 return arrayOf(BotSimpleErrorOutput(messages.divisionByZero))
             } catch (e: UnknownCurrencyException) {
-                logger.info("Unsupported currency ${e.currency.code} for ${api.name} api used")
-                val messages = AppContext.errorMessages.of(settings.language)
-                val apiDisplayName = AppContext.apiDisplayNames.of(settings.language).getValue(api.name)
-                return arrayOf(BotSimpleErrorOutput(messages.unsupportedCurrency.format(e.currency.code, apiDisplayName)))
+                val message = makeUnsupportedCurrencyMessage(e, api, settings)
+                return arrayOf(BotSimpleErrorOutput(message))
             }
 
             val outputCurrencies = apiCurrencies.filter {
@@ -76,10 +75,8 @@ fun handleBotExchangeQuery(query: String, settings: UserSettings): Array<BotOutp
             val exchanged = try {
                 rateExchanger.exchangeAll(evaluated.result, evaluated.baseCurrency, outputCurrencies)
             } catch (e: UnknownCurrencyException) {
-                logger.info("Unsupported currency ${e.currency.code} for ${api.name} api used")
-                val messages = AppContext.errorMessages.of(settings.language)
-                val apiDisplayName = AppContext.apiDisplayNames.of(settings.language).getValue(api.name)
-                return arrayOf(BotSimpleErrorOutput(messages.unsupportedCurrency.format(e.currency.code, apiDisplayName)))
+                val message = makeUnsupportedCurrencyMessage(e, api, settings)
+                return arrayOf(BotSimpleErrorOutput(message))
             }
             val queryStrings = AppContext.queryStrings.of(settings.language)
             val nonDefaultApiName = if (api.name == settings.apiName && evaluated.type != ExpressionType.ONE_UNIT)
@@ -109,4 +106,24 @@ fun handleBotExchangeQuery(query: String, settings: UserSettings): Array<BotOutp
             }
         }
     }
+}
+
+private fun makeUnsupportedCurrencyMessage(
+    e: UnknownCurrencyException,
+    api: RateApi,
+    settings: UserSettings
+): String {
+    logger.info("Unsupported currency ${e.currency.code} for ${api.name} api used")
+    val displayNames = AppContext.apiDisplayNames.of(settings.language)
+    val alternativeApiName = AppContext.supportedApis
+        .findLast { !it.unsupported.contains(e.currency.code) }
+        ?.let { displayNames.getValue(it.name) }
+    val messages = AppContext.errorMessages.of(settings.language)
+    val apiDisplayName = displayNames.getValue(api.name)
+    val message = if (alternativeApiName != null) {
+        messages.unsupportedCurrencyWithAlternative.format(e.currency.code, apiDisplayName, alternativeApiName)
+    } else {
+        messages.unsupportedCurrency.format(e.currency.code, apiDisplayName)
+    }
+    return message
 }
