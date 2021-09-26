@@ -12,16 +12,15 @@ import by.mksn.inintobot.output.strings.SettingsStrings
 import by.mksn.inintobot.settings.UserStore
 import com.vladsch.kotlin.jdbc.HikariCP
 import com.vladsch.kotlin.jdbc.SessionImpl
-import io.ktor.client.HttpClient
-import io.ktor.client.features.json.JsonFeature
-import io.ktor.client.features.json.serializer.KotlinxSerializer
+import io.ktor.client.*
+import io.ktor.client.features.json.*
+import io.ktor.client.features.json.serializer.*
 import kotlinx.serialization.DeserializationStrategy
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.builtins.ListSerializer
 import kotlinx.serialization.builtins.MapSerializer
-import kotlinx.serialization.builtins.list
 import kotlinx.serialization.builtins.serializer
 import kotlinx.serialization.json.Json
-import kotlinx.serialization.json.JsonConfiguration
 import org.slf4j.LoggerFactory
 import java.io.InputStreamReader
 import java.net.URI
@@ -76,10 +75,10 @@ object AppContext {
     }
 
     private fun <T> Json.load(resourceBaseName: String, deserializer: DeserializationStrategy<T>): T =
-        this.parse(deserializer, loadResourceAsString(resourceBaseName))
+        this.decodeFromString(deserializer, loadResourceAsString(resourceBaseName))
 
     fun initialize(dbUrl: String, apiAccessKeys: Map<String, String>) {
-        val json = Json(JsonConfiguration.Stable.copy(ignoreUnknownKeys = true))
+        val json = Json { ignoreUnknownKeys = true; isLenient = true }
         val httpClient = HttpClient {
             install(JsonFeature) {
                 serializer = KotlinxSerializer(json)
@@ -89,8 +88,8 @@ object AppContext {
         initializeDataSource(dbUrl)
 
         val basicInfo = json.load("core/basic-info.json", BasicInfoEntity.serializer())
-        val supportedCurrencies = json.load("core/currencies.json", Currency.serializer().list)
-        val supportedApis = json.parse(RateApi.serializer().list, loadResourceAsString("core/apis.json")
+        val supportedCurrencies = json.load("core/currencies.json", ListSerializer(Currency.serializer()))
+        val supportedApis = json.decodeFromString(ListSerializer(RateApi.serializer()), loadResourceAsString("core/apis.json")
             .let {
                 var replaced = it
                 apiAccessKeys.forEach { (key, token) -> replaced = replaced.replace(key, token) }

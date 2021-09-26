@@ -2,10 +2,10 @@ package by.mksn.inintobot.api.fetch
 
 import by.mksn.inintobot.api.RateApi
 import by.mksn.inintobot.misc.BigDecimalSerializer
-import io.ktor.client.HttpClient
+import io.ktor.client.*
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.Serializable
-import kotlinx.serialization.builtins.list
+import kotlinx.serialization.builtins.ListSerializer
 import kotlinx.serialization.json.Json
 import java.math.BigDecimal
 
@@ -35,7 +35,7 @@ class EcbRateFetcher(rateApi: RateApi, client: HttpClient, json: Json) :
         return result.replace(trailingCommaRegex, "}]")
     }
 
-    override val serializer: KSerializer<List<EcbResponseEntry>> = EcbResponseEntry.serializer().list
+    override val serializer: KSerializer<List<EcbResponseEntry>> = ListSerializer(EcbResponseEntry.serializer())
 
     override suspend fun parseResponse(response: List<EcbResponseEntry>) =
         response.asSequence().associateBy({ it.code }, { it.rate })

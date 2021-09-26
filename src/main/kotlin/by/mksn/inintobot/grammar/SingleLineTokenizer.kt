@@ -1,6 +1,6 @@
 package by.mksn.inintobot.grammar
 
-import com.github.h0tk3y.betterParse.lexer.TokenMatch
+import com.github.h0tk3y.betterParse.lexer.TokenMatchesSequence
 import com.github.h0tk3y.betterParse.lexer.Tokenizer
 
 /**
@@ -11,7 +11,7 @@ import com.github.h0tk3y.betterParse.lexer.Tokenizer
 class SingleLineTokenizer(private val delegate: Tokenizer) : Tokenizer {
     override val tokens = delegate.tokens
 
-    override fun tokenize(input: String): Sequence<TokenMatch> {
+    override fun tokenize(input: String): TokenMatchesSequence {
         return delegate.tokenize(input.trim().replace('\n', ' '))
     }
 

@@ -26,7 +26,7 @@ private fun BotUser.toChatString() = """
     Requests: `${numRequests}` (chat: `${numRequests - inlineRequests}`; inline: `${inlineRequests}`)
     Settings: `${settings?.let {
     if (settings != UserSettings(language = settings.language))
-        AppContext.json.stringify(UserSettings.serializer(), it).escapeMarkdown()
+        AppContext.json.encodeToString(UserSettings.serializer(), it).escapeMarkdown()
     else "<same as default (${settings.language})>"
 }}`
 """.trimIndent()

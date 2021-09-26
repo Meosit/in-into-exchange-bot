@@ -17,16 +17,16 @@ class AliasMatcher<T : Aliasable>(available: List<T>) {
         // have to reverse as the `toMap` method takes last key collision over the first
         available.asReversed().forEach { aliasable ->
             aliasable.aliases.forEach { alias ->
-                yield(alias.switchKeyboardEnglishToRussian().toLowerCase() to aliasable)
-                yield(alias.switchKeyboardRussianToEnglish().toLowerCase() to aliasable)
-                yield(alias.toUpperCase().switchKeyboardEnglishToRussian().toLowerCase() to aliasable)
-                yield(alias.toUpperCase().switchKeyboardRussianToEnglish().toLowerCase() to aliasable)
+                yield(alias.switchKeyboardEnglishToRussian().lowercase() to aliasable)
+                yield(alias.switchKeyboardRussianToEnglish().lowercase() to aliasable)
+                yield(alias.uppercase().switchKeyboardEnglishToRussian().lowercase() to aliasable)
+                yield(alias.uppercase().switchKeyboardRussianToEnglish().lowercase() to aliasable)
             }
         }
 
         // the original name is a top priority
         available.asReversed().forEach { aliasable ->
-            aliasable.aliases.forEach { alias -> yield(alias.toLowerCase() to aliasable) }
+            aliasable.aliases.forEach { alias -> yield(alias.lowercase() to aliasable) }
         }
     }.filterNot { it.first.length == 1 && it.first in KILO_MEGA_CHARS }.toMap()
 
@@ -42,13 +42,13 @@ class AliasMatcher<T : Aliasable>(available: List<T>) {
      * @throws IllegalArgumentException in case of unknown alias
      */
     fun match(alias: String): T =
-        aliases[alias.toLowerCase()] ?: throw IllegalArgumentException("Invalid alias '$alias'")
+        aliases[alias.lowercase()] ?: throw IllegalArgumentException("Invalid alias '$alias'")
 
     /**
      * Returns the corresponding object of the provided alias or null if the [alias] do not represent any available currency
      */
     fun matchOrNull(alias: String): T? =
-        aliases[alias.toLowerCase()]
+        aliases[alias.lowercase()]
 
     /**
      * Returns a string, contained of chars from the **russian** keyboard layout using the same *physical button* as a comparison criteria.

@@ -51,7 +51,7 @@ abstract class SettingHandler(id: Int) {
             keyboard.add(controlButtons)
         }
         val markdown = messageMarkdown(settings, settingsStrings.messages)
-        val keyboardJson = AppContext.json.stringify(InlineKeyboardMarkup.serializer(), InlineKeyboardMarkup(keyboard))
+        val keyboardJson = AppContext.json.encodeToString(InlineKeyboardMarkup.serializer(), InlineKeyboardMarkup(keyboard))
         return BotTextOutput(markdown, keyboardJson)
     }
 

@@ -1,10 +1,8 @@
 package by.mksn.inintobot.output
 
-import io.ktor.client.HttpClient
-import io.ktor.client.request.parameter
-import io.ktor.client.request.post
-import io.ktor.client.request.url
-import kotlinx.serialization.json.JsonLiteral
+import io.ktor.client.*
+import io.ktor.client.request.*
+import kotlinx.serialization.json.JsonPrimitive
 import java.util.*
 
 class BotOutputSender(private val httpClient: HttpClient, apiToken: String) {
@@ -66,11 +64,11 @@ class BotOutputSender(private val httpClient: HttpClient, apiToken: String) {
     {
       "type": "article",
       "id": "${UUID.randomUUID()}",
-      "title": ${JsonLiteral(inlineTitle())},
-      "description": ${JsonLiteral(inlineDescription())},
-      "thumb_url": ${JsonLiteral(inlineThumbUrl())},
+      "title": ${JsonPrimitive(inlineTitle())},
+      "description": ${JsonPrimitive(inlineDescription())},
+      "thumb_url": ${JsonPrimitive(inlineThumbUrl())},
       "input_message_content": {
-        "message_text": ${JsonLiteral(markdown())},
+        "message_text": ${JsonPrimitive(markdown())},
         "parse_mode": "Markdown",
         "disable_web_page_preview": true
       }

@@ -34,7 +34,7 @@ fun TimeUnitNames.nameOfHours(value: Long) = when (value % 100) {
     }
 }
 
-private fun stringifyDuration(time: ZonedDateTime, now: ZonedDateTime?, timeUnitNames: TimeUnitNames): String {
+private fun encodeToStringDuration(time: ZonedDateTime, now: ZonedDateTime?, timeUnitNames: TimeUnitNames): String {
     val hours = ChronoUnit.HOURS.between(time, now)
     val minutes = ChronoUnit.MINUTES.between(time, now) - hours * 60
     return when {
@@ -79,8 +79,8 @@ suspend fun Message.handle(settings: UserSettings, sender: BotOutputSender, depr
             logger.info("Getting api status")
             val now = ZonedDateTime.now(ZoneOffset.UTC)
             val message = AppContext.exchangeRates.ratesStatus.values.joinToString(separator = "\n\n") {
-                val ratesUpdatedString = stringifyDuration(it.ratesUpdated, now, timeUnitNames)
-                val lastCheckedString = stringifyDuration(it.lastChecked, now, timeUnitNames)
+                val ratesUpdatedString = encodeToStringDuration(it.ratesUpdated, now, timeUnitNames)
+                val lastCheckedString = encodeToStringDuration(it.lastChecked, now, timeUnitNames)
                 statusFormat.format(apiDisplayNames.getValue(it.api.name), ratesUpdatedString, lastCheckedString)
             }
             val formattedMessage = if (deprecatedBot) BotDeprecatedOutput(BotTextOutput(message), settings.language)

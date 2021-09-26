@@ -5,14 +5,11 @@ import by.mksn.inintobot.misc.toFixedScaleBigDecimal
 import by.mksn.inintobot.test.assertEqualsUnordered
 import by.mksn.inintobot.test.fullUrl
 import by.mksn.inintobot.test.testCurrencies
-import io.ktor.client.HttpClient
-import io.ktor.client.engine.mock.MockEngine
-import io.ktor.client.engine.mock.respond
-import io.ktor.http.ContentType
-import io.ktor.http.headersOf
+import io.ktor.client.*
+import io.ktor.client.engine.mock.*
+import io.ktor.http.*
 import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.json.Json
-import kotlinx.serialization.json.JsonConfiguration
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 
@@ -71,7 +68,7 @@ class RatesMapRateFetcherTest {
 
     @Test
     fun successful_fetch_and_parse() {
-        val json = Json(JsonConfiguration.Stable.copy(ignoreUnknownKeys = true))
+        val json = Json { ignoreUnknownKeys = true; isLenient = true }
         val apiConfig = RateApi("Fixer", setOf(), "USD", testUrl, setOf(), 1)
         val fetcher = RatesMapRateFetcher(apiConfig, httpClient, json)
         val expectedRates = mapOf(

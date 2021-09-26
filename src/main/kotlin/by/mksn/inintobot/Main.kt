@@ -8,28 +8,23 @@ import by.mksn.inintobot.output.ApiResponse
 import by.mksn.inintobot.settings.UserSettings
 import by.mksn.inintobot.telegram.Update
 import io.ktor.application.*
-import io.ktor.client.features.ClientRequestException
-import io.ktor.client.request.get
-import io.ktor.features.CallLogging
-import io.ktor.features.ContentNegotiation
-import io.ktor.features.DefaultHeaders
+import io.ktor.client.features.*
+import io.ktor.client.request.*
+import io.ktor.features.*
 import io.ktor.http.*
 import io.ktor.request.*
-import io.ktor.response.respond
-import io.ktor.response.respondText
-import io.ktor.routing.Routing
-import io.ktor.routing.get
-import io.ktor.routing.post
-import io.ktor.serialization.json
-import io.ktor.server.netty.EngineMain
-import io.ktor.utils.io.readUTF8Line
+import io.ktor.response.*
+import io.ktor.routing.*
+import io.ktor.serialization.*
+import io.ktor.server.netty.*
+import io.ktor.utils.io.*
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
+import kotlinx.serialization.SerializationException
 import kotlinx.serialization.builtins.ListSerializer
 import kotlinx.serialization.builtins.MapSerializer
 import kotlinx.serialization.builtins.serializer
-import kotlinx.serialization.json.JsonException
 import org.slf4j.LoggerFactory
 import java.io.PrintWriter
 import java.io.StringWriter
@@ -94,24 +89,24 @@ fun Application.main() {
                 } else {
                     val output = handleBotExchangeQuery(query, settings).first().toApiResponse()
 
-                    val response = AppContext.json.stringify(ApiResponse.serializer(), output)
+                    val response = AppContext.json.encodeToString(ApiResponse.serializer(), output)
                     call.respondText(response, ContentType.Application.Json, status = output.code)
                 }
-            } catch (e: JsonException) {
+            } catch (e: SerializationException) {
                 call.respond(HttpStatusCode.BadRequest, ApiErrorResponse("Invalid request format"))
             }
         }
         get("/settings/currencies") {
-            val response = AppContext.json.stringify(ListSerializer(String.serializer()), AppContext.supportedCurrencies.map { it.code })
+            val response = AppContext.json.encodeToString(ListSerializer(String.serializer()), AppContext.supportedCurrencies.map { it.code })
             call.respondText(response, ContentType.Application.Json)
         }
         get("/settings/languages") {
-            val response = AppContext.json.stringify(MapSerializer(String.serializer(), String.serializer()), AppContext.supportedLanguages)
+            val response = AppContext.json.encodeToString(MapSerializer(String.serializer(), String.serializer()), AppContext.supportedLanguages)
             call.respondText(response, ContentType.Application.Json)
         }
         get("/settings/apis") {
             val settings = call.receiveOrNull() ?: UserSettings()
-            val response = AppContext.json.stringify(
+            val response = AppContext.json.encodeToString(
                 MapSerializer(String.serializer(), String.serializer()), AppContext.apiDisplayNames.of(settings.language))
             call.respondText(response, ContentType.Application.Json)
         }

@@ -14,6 +14,7 @@ import com.github.h0tk3y.betterParse.combinators.*
 import com.github.h0tk3y.betterParse.grammar.Grammar
 import com.github.h0tk3y.betterParse.lexer.DefaultTokenizer
 import com.github.h0tk3y.betterParse.lexer.TokenMatch
+import com.github.h0tk3y.betterParse.lexer.TokenMatchesSequence
 import com.github.h0tk3y.betterParse.lexer.Tokenizer
 import com.github.h0tk3y.betterParse.parser.AlternativesFailure
 import com.github.h0tk3y.betterParse.parser.ErrorResult
@@ -71,8 +72,8 @@ class BotInputGrammar(
     override val tokenizer: Tokenizer by lazy { SingleLineTokenizer(DefaultTokenizer(tokens)) }
 
     override val rootParser = object : Parser<BotInput> {
-        override fun tryParse(tokens: Sequence<TokenMatch>) =
-            when (val result = botInputParser.tryParse(tokens)) {
+        override fun tryParse(tokens: TokenMatchesSequence, fromPosition: Int) =
+            when (val result = botInputParser.tryParse(tokens, fromPosition)) {
                 // unwrap and keep the last added error as most adequate
                 is AlternativesFailure -> {
                     fun find(errors: List<ErrorResult>): ErrorResult {

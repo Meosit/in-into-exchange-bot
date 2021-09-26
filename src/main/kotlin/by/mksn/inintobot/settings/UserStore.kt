@@ -58,7 +58,7 @@ RETURNING id, name, last_used, last_query, requests, inline_requests, settings
                         result.getString("last_query"),
                         result.getInt("requests"),
                         result.getInt("inline_requests"),
-                        result.getString("settings")?.let { AppContext.json.parse(UserSettings.serializer(), it) }
+                        result.getString("settings")?.let { AppContext.json.decodeFromString(UserSettings.serializer(), it) }
                     )
                 } else {
                     null
@@ -68,7 +68,7 @@ RETURNING id, name, last_used, last_query, requests, inline_requests, settings
     }
 
     fun updateSettings(id: Long, settings: UserSettings) {
-        val settingsString = AppContext.json.stringify(UserSettings.serializer(), settings)
+        val settingsString = AppContext.json.encodeToString(UserSettings.serializer(), settings)
         usingDefault { session -> session.update(sqlQuery(UPDATE_SETTINGS, settingsString, id)) }
     }
 
@@ -146,7 +146,7 @@ RETURNING id, name, last_used, last_query, requests, inline_requests, settings
         string("last_query"),
         int("requests"),
         int("inline_requests"),
-        stringOrNull("settings")?.let { AppContext.json.parse(UserSettings.serializer(), it) }
+        stringOrNull("settings")?.let { AppContext.json.decodeFromString(UserSettings.serializer(), it) }
     )
 
 }

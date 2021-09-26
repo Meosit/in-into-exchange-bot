@@ -2,9 +2,7 @@ package by.mksn.inintobot.currency
 
 import by.mksn.inintobot.api.RateApi
 import by.mksn.inintobot.api.fetch.ApiRateFetcher
-import io.ktor.client.HttpClient
-import kotlinx.atomicfu.AtomicRef
-import kotlinx.atomicfu.atomic
+import io.ktor.client.*
 import kotlinx.serialization.json.Json
 import org.slf4j.LoggerFactory
 import java.io.PrintWriter
@@ -13,6 +11,7 @@ import java.math.BigDecimal
 import java.time.ZoneOffset
 import java.time.ZonedDateTime
 import java.time.temporal.ChronoUnit
+import java.util.concurrent.atomic.AtomicReference
 
 data class ApiStatus(
     val api: RateApi,
@@ -30,17 +29,17 @@ class ExchangeRates(
         private const val NUM_RETRIES = 3
     }
 
-    private val apiStatuses: AtomicRef<Map<RateApi, ApiStatus>> = atomic(mapOf())
+    private val apiStatuses: AtomicReference<Map<RateApi, ApiStatus>> = AtomicReference(mapOf())
 
-    val ratesStatus get() = apiStatuses.value
+    val ratesStatus get() = apiStatuses.get()
 
-    private val apiToRates: AtomicRef<Map<RateApi, Map<Currency, BigDecimal>>> = atomic(mapOf())
+    private val apiToRates: AtomicReference<Map<RateApi, Map<Currency, BigDecimal>>> = AtomicReference(mapOf())
 
     suspend fun reloadOne(api: RateApi, httpClient: HttpClient, json: Json) {
         for (i in 1..NUM_RETRIES) {
             logger.info("Reloading exchange rates for ${api.name} (try $i)...")
-            val apiStatuses = apiStatuses.value.toMutableMap()
-            val apiToRates = apiToRates.value.toMutableMap()
+            val apiStatuses = apiStatuses.get().toMutableMap()
+            val apiToRates = apiToRates.get().toMutableMap()
             try {
                 val oldRates = apiToRates[api]
                 val rates = ApiRateFetcher.forApi(api, httpClient, json).fetch(currencies)
@@ -55,8 +54,8 @@ class ExchangeRates(
                         new
                     }
                 }
-                this.apiStatuses.value = apiStatuses
-                this.apiToRates.value = apiToRates
+                this.apiStatuses.getAndSet(apiStatuses)
+                this.apiToRates.getAndSet(apiToRates)
                 logger.info("Successfully loaded rates for ${api.name}")
                 break
             } catch (e: Exception) {
@@ -75,10 +74,10 @@ class ExchangeRates(
         logger.info("Exchange rates updated")
     }
 
-    fun of(api: RateApi) = apiToRates.value[api]
+    fun of(api: RateApi) = apiToRates.get()[api]
 
     fun isStale(api: RateApi): Boolean {
-        val status = apiStatuses.value[api]
+        val status = apiStatuses.get()[api]
         return status == null || ChronoUnit.HOURS
             .between(status.lastChecked, ZonedDateTime.now(ZoneOffset.UTC)) >= api.refreshHours * 2
     }

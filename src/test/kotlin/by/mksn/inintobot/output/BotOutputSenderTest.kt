@@ -2,17 +2,13 @@ package by.mksn.inintobot.output
 
 import by.mksn.inintobot.test.fullUrl
 import by.mksn.inintobot.test.fullUrlWithoutQuery
-import io.ktor.client.HttpClient
-import io.ktor.client.engine.mock.MockEngine
-import io.ktor.client.engine.mock.respond
-import io.ktor.client.features.json.JsonFeature
-import io.ktor.client.features.json.serializer.KotlinxSerializer
-import io.ktor.http.ContentType
-import io.ktor.http.Parameters
-import io.ktor.http.headersOf
+import io.ktor.client.*
+import io.ktor.client.engine.mock.*
+import io.ktor.client.features.json.*
+import io.ktor.client.features.json.serializer.*
+import io.ktor.http.*
 import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.json.Json
-import kotlinx.serialization.json.JsonConfiguration
 import java.util.*
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -21,7 +17,7 @@ class BotOutputSenderTest {
 
     private val testToken = "TEST_TOKEN"
     private val apiUrl = "https://api.telegram.org/bot$testToken"
-    private val json = Json(JsonConfiguration.Stable.copy(ignoreUnknownKeys = true))
+    private val json = Json
 
     private fun testEngine(method: String, assertParametersBlock: Parameters.() -> Unit): HttpClient =
         HttpClient(MockEngine) {
