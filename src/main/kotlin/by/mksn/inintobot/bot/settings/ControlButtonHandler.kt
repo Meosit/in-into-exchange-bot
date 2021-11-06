@@ -14,7 +14,7 @@ object ControlButtonHandler : SettingHandler(0) {
     fun closeButton(label: String) = InlineKeyboardButton(label, CLOSE_BUTTON_PAYLOAD)
     fun backButton(label: String) = InlineKeyboardButton(label, BACK_BUTTON_PAYLOAD)
 
-    override fun keyboardButtons(settings: UserSettings, checkedButtonLablel: String) =
+    override fun keyboardButtons(settings: UserSettings, checkedButtonLabel: String) =
         throw IllegalStateException("Control button do not have a keyboard")
 
     override fun isValidPayload(payload: String): Boolean =

@@ -8,9 +8,9 @@ import by.mksn.inintobot.telegram.InlineKeyboardButton
 object DigitsSettingHandler : SettingHandler(7) {
 
     override val buttonsPerRow: Int = 4
-    override fun keyboardButtons(settings: UserSettings, checkedButtonLablel: String): List<InlineKeyboardButton> =
+    override fun keyboardButtons(settings: UserSettings, checkedButtonLabel: String): List<InlineKeyboardButton> =
         (0..DEFAULT_DECIMAL_DIGITS).map {
-            val label = if (settings.decimalDigits == it) checkedButtonLablel.format(it) else it.toString()
+            val label = if (settings.decimalDigits == it) checkedButtonLabel.format(it) else it.toString()
             InlineKeyboardButton(label, callbackData(it.toString()))
         }
 

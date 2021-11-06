@@ -32,7 +32,7 @@ abstract class SettingHandler(id: Int) {
     protected open val buttonsPerRow = 2
     protected abstract fun keyboardButtons(
         settings: UserSettings,
-        checkedButtonLablel: String
+        checkedButtonLabel: String
     ): List<InlineKeyboardButton>
 
     protected abstract fun messageMarkdown(settings: UserSettings, messages: MessagesSettingsStrings): String

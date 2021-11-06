@@ -7,9 +7,9 @@ import by.mksn.inintobot.telegram.InlineKeyboardButton
 
 object LanguageSettingHandler : SettingHandler(2) {
 
-    override fun keyboardButtons(settings: UserSettings, checkedButtonLablel: String) =
+    override fun keyboardButtons(settings: UserSettings, checkedButtonLabel: String) =
         AppContext.supportedLanguages.map { (code, name) ->
-            val label = if (settings.language == code) checkedButtonLablel.format(name) else name
+            val label = if (settings.language == code) checkedButtonLabel.format(name) else name
             InlineKeyboardButton(label, callbackData(code))
         }
 

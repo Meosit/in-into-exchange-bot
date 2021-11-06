@@ -14,8 +14,9 @@ import com.github.h0tk3y.betterParse.lexer.regexToken
  */
 class TokenDictionary(currencyOrApiRegex: Regex) {
 
-    // greedy whitespace occupation and optional integer part
-    val number = regexToken("number", "((\\d\\s*)+)?[.,](\\s*\\d)+|(\\d\\s*)*\\d")
+    // greedy whitespace occupation and optional integer part, also with optional thousand separators
+    // regex parts : "decimal with thousands" or "decimal with optional integer part" or "regular integer"
+    val number = regexToken("number", "(\\d\\s*){1,3}[,.]((\\d\\s*){3}[,.])+(\\s*\\d)+|((\\d\\s*)+)?[.,](\\s*\\d)+|(\\d\\s*)*\\d")
     val currencyOrApi = regexToken("currency or api alias", currencyOrApiRegex)
 
     // metric suffix must be placed after currency in the regexToken list to support aliases which starts with the one of the suffixes

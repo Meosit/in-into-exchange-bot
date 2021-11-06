@@ -5,9 +5,7 @@ import by.mksn.inintobot.currency.Currency
 import by.mksn.inintobot.expression.Const
 import by.mksn.inintobot.misc.AliasMatcher
 import by.mksn.inintobot.misc.toFixedScaleBigDecimal
-import io.ktor.http.Url
-import io.ktor.http.fullPath
-import io.ktor.http.hostWithPort
+import io.ktor.http.*
 import java.math.BigDecimal
 import kotlin.test.assertEquals
 
@@ -41,7 +39,12 @@ val testCurrencies = listOf(
         code = "KZT",
         emoji = "🇰🇿",
         aliases = setOf("KZT", "kz", "tenge", "тенге", "тенги", "тенг", "тнг")
-    )
+    ),
+    Currency(
+        code = "PLN",
+        emoji = "🇰🇿",
+        aliases = setOf("PLN", "PLZ", "zloty", "złoty", "zlot", "złot", "zł", "zl", "z", "pl", "злотый", "злотая", "злотые", "злотых", "злоты", "злот", "зл","з")
+    ),
 )
 
 val testApis = listOf(

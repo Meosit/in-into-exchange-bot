@@ -15,7 +15,7 @@ object RootSettingHandler : SettingHandler(1) {
         listOf(ControlButtonHandler.closeButton(buttonLabels.close))
 
     override val buttonsPerRow: Int = 1
-    override fun keyboardButtons(settings: UserSettings, checkedButtonLablel: String) =
+    override fun keyboardButtons(settings: UserSettings, checkedButtonLabel: String) =
         AppContext.settingsStrings.of(settings.language).rootButtons
             .map { (key, label) -> InlineKeyboardButton(label, callbackData(key)) }
 

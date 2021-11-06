@@ -8,12 +8,12 @@ import by.mksn.inintobot.telegram.InlineKeyboardButton
 object DefaultCurrencySettingHandler : SettingHandler(3) {
 
     override val buttonsPerRow: Int = 3
-    override fun keyboardButtons(settings: UserSettings, checkedButtonLablel: String): List<InlineKeyboardButton> {
+    override fun keyboardButtons(settings: UserSettings, checkedButtonLabel: String): List<InlineKeyboardButton> {
         val api = AppContext.supportedApis.first { settings.apiName == it.name }
         return AppContext.supportedCurrencies.mapNotNull {
             if (it.code in api.unsupported) null else {
                 val label =
-                    if (settings.defaultCurrency == it.code) checkedButtonLablel.format(it.code) else it.code
+                    if (settings.defaultCurrency == it.code) checkedButtonLabel.format(it.code) else it.code
                 InlineKeyboardButton(label, callbackData(it.code))
             }
         }

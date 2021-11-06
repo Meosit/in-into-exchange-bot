@@ -18,18 +18,22 @@ import java.time.format.DateTimeFormatter
 private val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")
 private fun ZonedDateTime.toSimpleString() = formatter.format(this)
 
-private fun BotUser.toChatString() = """
-    User: ${if (name.contains(" ")) "`${name.escapeMarkdown()}`" else "@${name.escapeMarkdown()}"} (`${id}`)
-    When: `${lastUsed.toLocalDateTime().atZone(ZoneOffset.UTC).withZoneSameInstant(ZoneId.of("UTC+3"))
-    .toSimpleString()}`
-    Query: `${lastQuery.trimToLength(25, "…")}`
-    Requests: `${numRequests}` (chat: `${numRequests - inlineRequests}`; inline: `${inlineRequests}`)
-    Settings: `${settings?.let {
-    if (settings != UserSettings(language = settings.language))
-        AppContext.json.encodeToString(UserSettings.serializer(), it).escapeMarkdown()
-    else "<same as default (${settings.language})>"
-}}`
-""".trimIndent()
+private fun BotUser.toChatString(): String {
+    val settingsStr =  settings?.let { if(settings == UserSettings(settings.language))
+        "<defaults (${settings.language})>" else simpleSettingsString(it) } ?: "<none>"
+    return """
+        User: ${if (name.contains(" ")) "`${name.escapeMarkdown()}`" else "@${name.escapeMarkdown()}"} (`${id}`)
+        When: `${lastUsed.toLocalDateTime().atZone(ZoneOffset.UTC).withZoneSameInstant(ZoneId.of("UTC+3"))
+            .toSimpleString()}`
+        Query: `${lastQuery.trimToLength(25, "…")}`
+        Requests: `${numRequests}` (chat: `${numRequests - inlineRequests}`; inline: `${inlineRequests}`)
+        Settings: `$settingsStr`
+    """.trimIndent()
+}
+
+private fun simpleSettingsString(it: UserSettings) = with(it) {
+    "$apiName: $defaultCurrency (${outputCurrencies.joinToString()}) #$decimalDigits; $language"
+}
 
 suspend fun Message.handleAdminCommand(sender: BotOutputSender): Boolean = when (text) {
     "/me" -> {

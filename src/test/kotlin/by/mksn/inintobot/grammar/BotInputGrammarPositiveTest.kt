@@ -399,4 +399,59 @@ class BotInputGrammarPositiveTest {
         assertTrue(additionalCurrencies.isEmpty())
         assertEquals(expectedExpr, actualExpr)
     }
+
+    @Test
+    fun thousands_separator_american() {
+        val input = "5,699.20 zł"
+        val expectedExpr = CurrenciedExpression(5699.2.asConst, "PLN".toCurrency())
+
+        val (actualExpr, additionalCurrencies) = grammar.parseToEnd(input)
+
+        assertTrue(additionalCurrencies.isEmpty())
+        assertEquals(expectedExpr, actualExpr)
+    }
+
+    @Test
+    fun thousands_separator_american_integer() {
+        val input = "5,699,000 zł"
+        val expectedExpr = CurrenciedExpression(5699000.asConst, "PLN".toCurrency())
+
+        val (actualExpr, additionalCurrencies) = grammar.parseToEnd(input)
+
+        assertTrue(additionalCurrencies.isEmpty())
+        assertEquals(expectedExpr, actualExpr)
+    }
+
+    @Test
+    fun thousands_separator_german() {
+        val input = "5.699.000,20 zł"
+        val expectedExpr = CurrenciedExpression(5699000.2.asConst, "PLN".toCurrency())
+
+        val (actualExpr, additionalCurrencies) = grammar.parseToEnd(input)
+
+        assertTrue(additionalCurrencies.isEmpty())
+        assertEquals(expectedExpr, actualExpr)
+    }
+
+    @Test
+    fun thousands_separator_german_integer() {
+        val input = "5.699.000 zł"
+        val expectedExpr = CurrenciedExpression(5699000.asConst, "PLN".toCurrency())
+
+        val (actualExpr, additionalCurrencies) = grammar.parseToEnd(input)
+
+        assertTrue(additionalCurrencies.isEmpty())
+        assertEquals(expectedExpr, actualExpr)
+    }
+
+    @Test
+    fun thousands_separator_unknown() {
+        val input = "5,699.000,20 zł"
+        val expectedExpr = CurrenciedExpression(569900020.asConst, "PLN".toCurrency())
+
+        val (actualExpr, additionalCurrencies) = grammar.parseToEnd(input)
+
+        assertTrue(additionalCurrencies.isEmpty())
+        assertEquals(expectedExpr, actualExpr)
+    }
 }

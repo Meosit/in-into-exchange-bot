@@ -79,7 +79,7 @@
     "unsupported": [
       "ETH"
     ],
-    "refreshHours": 3
+    "refreshHours": 8
   },
   {
     "name": "OpenExchangeRates",

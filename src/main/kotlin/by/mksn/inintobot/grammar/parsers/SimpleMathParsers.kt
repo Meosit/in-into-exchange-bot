@@ -11,7 +11,22 @@ import com.github.h0tk3y.betterParse.parser.Parser
  */
 class SimpleMathParsers(tokenDict: TokenDictionary) {
 
-    private fun String.toParsableNumber() = replace(" ", "").replace(',', '.')
+    private val americanNotationRegex = """^\d+(,\d{3})+(\.\d+)?$""".toRegex()
+    private val germanNotationRegex = """^\d+(\.\d{3})+(,\d+)?$""".toRegex()
+    private fun String.toParsableNumber(): String {
+        val noSpaces = replace(" ", "")
+        val americanNotation = noSpaces.matches(americanNotationRegex)
+        val germanNotation = noSpaces.matches(germanNotationRegex)
+        val separators = noSpaces.count { it == '.' || it == ',' }
+
+        return when {
+            separators <= 1 -> noSpaces.replace(',', '.')
+            americanNotation -> noSpaces.replace(",", "")
+            germanNotation -> noSpaces.replace(".", "").replace(',', '.')
+            // if it's not a thousand separators - just convert to integer
+            else -> noSpaces.replace(",", "").replace(".", "")
+        }
+    }
 
     val number: Parser<Expression> =
         (tokenDict.number and oneOrMore(tokenDict.kilo) map { (num, suffixes) ->
