@@ -322,6 +322,21 @@
     ]
   },
   {
+    "code": "HUF",
+    "emoji": "\uD83C\uDDED\uD83C\uDDFA",
+    "aliases": [
+      "HUF",
+      "HU",
+      "ft",
+      "forint",
+      "forints",
+      "форинт",
+      "форинты",
+      "форинтов",
+      "форинта"
+    ]
+  },
+  {
     "code": "BTC",
     "emoji": "⛓",
     "aliases": [

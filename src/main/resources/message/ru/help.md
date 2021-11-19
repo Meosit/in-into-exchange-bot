@@ -1,4 +1,4 @@
-Конвертация сумм с поддержкой 22 валют, арифметических и многовалютных выражений.
+Конвертация сумм с поддержкой 24 валют, арифметических и многовалютных выражений.
 
 Синтаксисы запроса:
 1) `<число/выражение> [<валюта>] [<название API>] [<доп. валюты>...] [#<знаков после запятой>]`
@@ -13,7 +13,7 @@
 - `(120рублей + 8 злотых)*2 !фунты`
 
 Особенности:
-- Поддерживаемые валюты (❗поддержка зависит от выбранного API): `BYN`, `USD`, `EUR`, `RUB`, `UAH`, `PLN`, `CZK`, `GBP`, `JPY`, `CNY`, `KZT`, `CHF`, `BGN`, `TRY`, `CAD`, `ISK`, `DKK`, `SEK`, `NOK`, `ILS`, `GEL`, `BTC`, `ETH`
+- Поддерживаемые валюты (❗поддержка зависит от выбранного API): `BYN`, `USD`, `EUR`, `RUB`, `UAH`, `PLN`, `CZK`, `GBP`, `JPY`, `CNY`, `KZT`, `CHF`, `BGN`, `TRY`, `CAD`, `ISK`, `DKK`, `SEK`, `NOK`, `ILS`, `GEL`, `HUF`, `BTC`, `ETH`
 - Поддерживаемые API с курсами валют (см. /apis): [НБ РБ](http://www.nbrb.by/), [ЦБ РФ](http://cbr.ru/), [НБ Украины](https://bank.gov.ua/), [European Central Bank](https://www.ecb.europa.eu/home/html/index.en.html), [Fixer.io](https://fixer.io/), [OpenExchangeRates.org](https://openexchangerates.org/), [TraderMade.com](https://tradermade.com), [Forex API](https://fcsapi.com/)
 - По умолчанию используется `OpenExchangeRates` API, а также отображается 4 валюты: `BYN`, `USD`, `EUR`, `RUB`
 - Валюта `BYN` используется по умолчанию, если она не поддерживается, то используется базовая валюта выбранного API 

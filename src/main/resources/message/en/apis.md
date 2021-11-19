@@ -4,7 +4,7 @@ __National Bank of Belarus__
 - Site: http://www.nbrb.by/engl
 - Names: `NBRB`, `НБРБ`
 - Base currency: `BYN`
-- NOT supported: `ILS`, `GEL`, `BTC`, `ETH`
+- NOT supported: `ILS`, `GEL`, `BTC`, `ETH`, `HUF`
 
 __National Bank of Ukraine__
 - Site: https://bank.gov.ua/en/

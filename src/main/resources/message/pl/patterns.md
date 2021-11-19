@@ -47,6 +47,8 @@ Każdą walutę można opisać używając nie tylko oficjalnego symbolu, zaś r�
 `ILS`, `shekel`, `il`, `шекель` + przypadki
 - Gruzińskie lari:
 `GEL`,`georgia`,`lari`,`грузия`,`лари`,`₾`
+- Węgierski forint:
+`HUF`,`Ft`,`forint`,`forints`,`форинт` + przypadki
 - Bitcoin:
 `BTC`, `bitcoin`, `биткоин`, `биток` + przypadki
 - Ethereum:

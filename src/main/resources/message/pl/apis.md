@@ -4,7 +4,7 @@ __Bank Narodowy Republiki Białorusi__
 - Strona WWW: http://www.nbrb.by/
 - Skróty: `NBRB`, `НБРБ`
 - Waluta podstawowa: `BYN`
-- Waluty nieobsługiwane: `ILS`, `GEL`, `BTC`, `ETH`
+- Waluty nieobsługiwane: `ILS`, `GEL`, `BTC`, `ETH`, `HUF`
 
 __Bank Narodowy Ukrainy__
 - Strona WWW: https://bank.gov.ua/

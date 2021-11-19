@@ -1,4 +1,4 @@
-Przeliczanie kwot, wyrażeń arytmetycznych i wielowalutowych dla ponad 22 walut.
+Przeliczanie kwot, wyrażeń arytmetycznych i wielowalutowych dla ponad 24 walut.
 
 Składnia zapytania:
 1) `<liczba/wyrażenie> [<waluta>] [<nazwa API>] [<waluty dodatkowe>...] [#<znaków po przecinku>]`
@@ -13,7 +13,7 @@ Przykład:
 - `(12keuro + 8k bucks)*2 !pounds`
 
 Właściwości:
-- Waluty obsługiwane (❗zależy od wybranego API): `BYN`, `USD`, `EUR`, `RUB`, `UAH`, `PLN`, `CZK`, `GBP`, `JPY`, `CNY`, `KZT`, `CHF`, `BGN`, `TRY`, `CAD`, `ISK`, `DKK`, `SEK`, `NOK`, `ILS`, `GEL`, `BTC`, `ETH`
+- Waluty obsługiwane (❗zależy od wybranego API): `BYN`, `USD`, `EUR`, `RUB`, `UAH`, `PLN`, `CZK`, `GBP`, `JPY`, `CNY`, `KZT`, `CHF`, `BGN`, `TRY`, `CAD`, `ISK`, `DKK`, `SEK`, `NOK`, `ILS`, `GEL`, `HUF`, `BTC`, `ETH`
 - Obsługiwane API wraz z kursami wymiany walut (zobacz /apis): [Bank Białorusi](http://www.nbrb.by/), [Bank Rosji](http://cbr.ru/), [Bank Ukrainy](https://bank.gov.ua/), [European Central Bank](https://www.ecb.europa.eu/home/html/index.en.html), [Fixer.io](https://fixer.io/), [OpenExchangeRates.org](https://openexchangerates.org/), [TraderMade.com](https://tradermade.com), [Forex API](https://fcsapi.com/)
 - Domyślnie się używa `OpenExchangeRates` API, wyświetla się 4 waluty: `BYN`, `USD`, `EUR`, `RUB`
 - Waluta `BYN` się używa domyślnie; jeżeli nie jest obsługiwana, używa się waluty podstawowej wybranego API 
