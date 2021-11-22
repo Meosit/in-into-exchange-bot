@@ -109,6 +109,7 @@ object AppContext {
                 CommandMessages(
                     start = loadResourceAsString("message/$language/start.md"),
                     help = loadResourceAsString("message/$language/help.md"),
+                    api = loadResourceAsString("message/$language/api.md"),
                     apis = loadResourceAsString("message/$language/apis.md"),
                     apiStatus = loadResourceAsString("message/$language/api-status.md"),
                     patterns = loadResourceAsString("message/$language/patterns.md")

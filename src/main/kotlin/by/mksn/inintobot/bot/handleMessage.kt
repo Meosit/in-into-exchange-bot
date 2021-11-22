@@ -62,10 +62,27 @@ suspend fun Message.handle(settings: UserSettings, sender: BotOutputSender, depr
         "/help", "/patterns", "/apis" -> {
             logger.info("Handling bot command $text")
             val message = with(AppContext.commandMessages.of(settings.language)) {
+                val displayNames = AppContext.apiDisplayNames.of(settings.language)
                 when (text) {
                     "/patterns" -> patterns
-                    "/apis" -> apis
+                        .replace("{currencies}", AppContext.supportedCurrencies
+                            .joinToString("\n") { "- `${it.code}`:\n" + it.aliases.joinToString { a -> "`$a`" } })
+                    "/apis" -> {
+                        val apisContent = AppContext.supportedApis.joinToString("\n\n") { rateApi ->
+                            val displayName = displayNames.getValue(rateApi.name)
+                            api
+                                .replace("{name}", displayName)
+                                .replace("{link}", rateApi.displayLink)
+                                .replace("{base}", "`${rateApi.base}`")
+                                .replace("{aliases}", rateApi.aliases.joinToString { "`$it`" })
+                                .replace("{unsupported}", if (rateApi.unsupported.isEmpty()) "`-/-`" else rateApi.unsupported.joinToString { "`$it`" })
+                        }
+                        apis.replace("{apis}", apisContent)
+                    }
                     else -> help
+                        .replace("{currency_count}", AppContext.supportedCurrencies.size.toString())
+                        .replace("{currency_list}", AppContext.supportedCurrencies.joinToString { "`${it.code}`" })
+                        .replace("{apis}", AppContext.supportedApis.joinToString { "[${displayNames.getValue(it.name)}](${it.displayLink})" })
                 }
             }
             val formattedMessage = if (deprecatedBot) BotDeprecatedOutput(BotTextOutput(message), settings.language)

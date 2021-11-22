@@ -25,6 +25,10 @@ data class RateApi(
      */
     val url: String,
     /**
+     * API display link to be shown in user documentation
+     */
+    val displayLink: String,
+    /**
      * List of currency codes which are unsupported by this API against the list of all currencies
      */
     val unsupported: Set<String>,
