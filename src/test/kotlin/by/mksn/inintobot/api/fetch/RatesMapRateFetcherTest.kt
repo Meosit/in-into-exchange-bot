@@ -69,14 +69,15 @@ class RatesMapRateFetcherTest {
     @Test
     fun successful_fetch_and_parse() {
         val json = Json { ignoreUnknownKeys = true; isLenient = true }
-        val apiConfig = RateApi("Fixer", setOf(), "USD", testUrl, setOf(), 1)
+        val apiConfig = RateApi("Fixer", setOf(), "USD", testUrl, testUrl, setOf(), 1)
         val fetcher = RatesMapRateFetcher(apiConfig, httpClient, json)
         val expectedRates = mapOf(
             testCurrencies.first { it.code == "UAH" } to "26.591049".toFixedScaleBigDecimal(),
             testCurrencies.first { it.code == "USD" } to "1".toFixedScaleBigDecimal(),
             testCurrencies.first { it.code == "EUR" } to "0.885622".toFixedScaleBigDecimal(),
             testCurrencies.first { it.code == "KZT" } to "399.629195".toFixedScaleBigDecimal(),
-            testCurrencies.first { it.code == "BYN" } to "2.382028".toFixedScaleBigDecimal()
+            testCurrencies.first { it.code == "BYN" } to "2.382028".toFixedScaleBigDecimal(),
+            testCurrencies.first { it.code == "PLN" } to "3.92885".toFixedScaleBigDecimal()
         )
         runBlocking {
             val actualRates = fetcher.fetch(testCurrencies)

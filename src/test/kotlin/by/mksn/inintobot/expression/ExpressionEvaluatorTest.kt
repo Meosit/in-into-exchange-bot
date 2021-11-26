@@ -193,6 +193,69 @@ class ExpressionEvaluatorTest {
     }
 
     @Test
+    fun currencied_division() {
+        val expr = Divide(
+            CurrenciedExpression(4.06.asConst, "USD".toCurrency()),
+            CurrenciedExpression(2.03.asConst, "UAH".toCurrency())
+        )
+
+        val (value, exprType, stringRepr, baseCurrency, involvedCurrencies) = expressionEvaluator.evaluate(expr)
+
+        assertEquals(2.bigDecimal, value)
+        assertEquals(ExpressionType.CURRENCY_DIVISION, exprType)
+        assertEquals(apiBaseCurrency, baseCurrency)
+        assertEqualsOrdered(listOf("USD".toCurrency(), "UAH".toCurrency()), involvedCurrencies)
+        assertEquals("4.06 USD/2.03 UAH", stringRepr)
+    }
+
+    @Test
+    fun currencied_division_complicated() {
+        val expr = Subtract(
+            Add(
+                Divide(
+                    Add(
+                        CurrenciedExpression(Subtract(Add(4.06.asConst, 1.asConst), 1.asConst), "USD".toCurrency()),
+                        CurrenciedExpression(10.asConst, "UAH".toCurrency())
+                    ),
+                    CurrenciedExpression(2.03.asConst, "BYN".toCurrency())
+                ),
+                10.asConst
+            ),
+            Divide(CurrenciedExpression(10.asConst, "USD".toCurrency()), CurrenciedExpression(15.asConst, "BYN".toCurrency()))
+        )
+
+        val (value, exprType, stringRepr, baseCurrency, involvedCurrencies) = expressionEvaluator.evaluate(expr)
+
+        assertEquals(ExpressionType.CURRENCY_DIVISION, exprType)
+        assertEquals(apiBaseCurrency, baseCurrency)
+        assertEqualsOrdered(listOf("USD".toCurrency(), "UAH".toCurrency(), "BYN".toCurrency()), involvedCurrencies)
+        assertEquals("((4.06 + 1 - 1) USD + 10 UAH)/2.03 BYN + 10 - 10 USD/15 BYN", stringRepr)
+        assertEquals("16.2594417077175698".bigDecimal, value)
+    }
+
+    @Test
+    fun currencied_division_complicated_division_in_division() {
+        val expr = Divide(
+            Divide(
+                Add(
+                    CurrenciedExpression(Subtract(Add(4.06.asConst, 1.asConst), 1.asConst), "USD".toCurrency()),
+                    CurrenciedExpression(10.asConst, "UAH".toCurrency())
+                ),
+                CurrenciedExpression(10.asConst, "UAH".toCurrency())
+            ),
+            Divide(CurrenciedExpression(10.asConst, "USD".toCurrency()), CurrenciedExpression(15.asConst, "BYN".toCurrency()))
+        )
+
+        val (value, exprType, stringRepr, baseCurrency, involvedCurrencies) = expressionEvaluator.evaluate(expr)
+
+        assertEquals(ExpressionType.CURRENCY_DIVISION, exprType)
+        assertEquals(apiBaseCurrency, baseCurrency)
+        assertEqualsOrdered(listOf("USD".toCurrency(), "UAH".toCurrency(), "BYN".toCurrency()), involvedCurrencies)
+        assertEquals("((4.06 + 1 - 1) USD + 10 UAH)/10 UAH/(10 USD/15 BYN)", stringRepr)
+        assertEquals("2.1089999999999999".bigDecimal, value)
+    }
+
+    @Test
     fun multiple_currencies_including_api_base() {
         val expr = Add(
             Add(

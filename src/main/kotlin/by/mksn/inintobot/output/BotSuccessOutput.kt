@@ -17,23 +17,28 @@ data class BotSuccessOutput(
     val apiName: String? = null
 ) : BotOutput {
 
-    val expressionHeader = when (expression.type) {
+    private val expressionHeader = when (expression.type) {
         ExpressionType.ONE_UNIT -> strings.headers.rate.format(expression.baseCurrency.code)
-        ExpressionType.SINGLE_VALUE -> ""
+        ExpressionType.SINGLE_VALUE, ExpressionType.CURRENCY_DIVISION -> ""
         ExpressionType.SINGLE_CURRENCY_EXPR -> strings.headers.singleCurrencyExpression
             .format(expression.stringRepr, expression.involvedCurrencies.first().code)
         ExpressionType.MULTI_CURRENCY_EXPR -> strings.headers.multiCurrencyExpression.format(expression.stringRepr)
     }
 
     private val markdown by lazy {
-        val apiHeader = apiName?.let { strings.headers.api.format(it) } ?: ""
-        val exchangeBody = exchanges
-            .joinToString("\n") { "`${it.currency.emoji}${it.currency.code}`  `${it.value.toStr(decimalDigits)}`" }
-        (expressionHeader + apiHeader + exchangeBody).trimToLength(AppContext.maxOutputLength, "… ${strings.outputTooBigMessage}")
+        if (expression.type != ExpressionType.CURRENCY_DIVISION) {
+            val apiHeader = apiName?.let { strings.headers.api.format(it) } ?: ""
+            val exchangeBody = exchanges
+                .joinToString("\n") { "`${it.currency.emoji}${it.currency.code}`  `${it.value.toStr(decimalDigits)}`" }
+            (expressionHeader + apiHeader + exchangeBody).trimToLength(AppContext.maxOutputLength, "… ${strings.outputTooBigMessage}")
+        } else {
+            "${expression.stringRepr} = ${expression.result.toStr()}"
+        }
     }
 
     override fun inlineTitle() = when (expression.type) {
         ExpressionType.ONE_UNIT -> strings.inlineTitles.dashboard.format(expression.involvedCurrencies.first().code)
+        ExpressionType.CURRENCY_DIVISION -> strings.inlineTitles.calculate
         ExpressionType.MULTI_CURRENCY_EXPR ->
             strings.inlineTitles.exchange.format("\uD83D\uDCB1",
                 expression.involvedCurrencies.joinToString(",") { it.code },
@@ -59,6 +64,7 @@ data class BotSuccessOutput(
 
     override fun inlineThumbUrl() = when (expression.type) {
         ExpressionType.ONE_UNIT -> strings.inlineThumbs.dashboard
+        ExpressionType.CURRENCY_DIVISION -> strings.inlineThumbs.calculate
         else -> strings.inlineThumbs.exchange
     }
 

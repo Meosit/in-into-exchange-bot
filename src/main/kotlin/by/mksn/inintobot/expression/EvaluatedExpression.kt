@@ -26,7 +26,12 @@ enum class ExpressionType {
     /**
      * The expression contains math operators and each operand has it's own currency, e.g. `"10 EUR + 12 USD - 1 BYN"`
      */
-    MULTI_CURRENCY_EXPR
+    MULTI_CURRENCY_EXPR,
+
+    /**
+     * The expression is a division of two math expression where each has it's own currency. `"10 EUR / 12 USD"`
+     */
+    CURRENCY_DIVISION
 }
 
 /**

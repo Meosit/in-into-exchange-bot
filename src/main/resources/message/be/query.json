@@ -3,7 +3,8 @@
     "rate": "\uD83D\uDCB9 Курс `%s`\n",
     "api": "\uD83C\uDF10 _%s_\n",
     "singleCurrencyExpression": "#️⃣ _%s (%s) =_\n",
-    "multiCurrencyExpression": "#️⃣ _%s =_\n"
+    "multiCurrencyExpression": "#️⃣ _%s =_\n",
+    "currencyDivision": "#️⃣ _%s =_\n"
   },
   "inlineTitles": {
     "exchange": "%s %s ⇒ %s",

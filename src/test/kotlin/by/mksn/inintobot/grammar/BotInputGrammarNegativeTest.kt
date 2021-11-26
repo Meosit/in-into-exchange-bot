@@ -79,8 +79,31 @@ class BotInputGrammarNegativeTest {
     }
 
     @Test
-    fun division_by_currencied_number() {
-        val input = "123EUR / 123 USD"
+    fun multiplication_by_currencied_number_with_sum() {
+        val input = "123EUR * 123 USD + 10 EUR"
+
+        val result = grammar.tryParseToEnd(input)
+
+        assertTrue(result is UnparsedRemainder)
+        assertEquals(14, result.startsWith.column)
+        assertEquals("USD", result.startsWith.text)
+    }
+
+    @Test
+    fun division_by_currencied_number_with_sum() {
+        val input = "123EUR / 123 USD + 10 EUR"
+
+        val result = grammar.tryParseToEnd(input)
+
+        assertTrue(result is UnparsedRemainder)
+        assertEquals(14, result.startsWith.column)
+        assertEquals("USD", result.startsWith.text)
+    }
+
+
+    @Test
+    fun division_by_currencied_number_with_different_default() {
+        val input = "123EUR / 123 USD EUR"
 
         val result = grammar.tryParseToEnd(input)
 

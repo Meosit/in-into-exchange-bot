@@ -24,9 +24,9 @@ data class BotQueryErrorOutput(
 
     override fun markdown() = """
         ${errorMessage.escapeMarkdown()} (at $errorPosition)
-        ```  ${"▼".padStart(if (errorPosition > trimmedRawInput.length) trimmedRawInput.length else errorPosition)}
-        > $trimmedRawInput
-          ${"▲".padStart(if (errorPosition > trimmedRawInput.length) trimmedRawInput.length else errorPosition)}```
+        `${"▼".padStart(if (errorPosition > trimmedRawInput.length) trimmedRawInput.length else errorPosition)}`
+        `$trimmedRawInput`
+        `${"▲".padStart(if (errorPosition > trimmedRawInput.length) trimmedRawInput.length else errorPosition)}`
     """.trimIndent()
 
     override fun toApiResponse() = ApiErrorResponse(

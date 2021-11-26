@@ -53,6 +53,7 @@ val testApis = listOf(
         aliases = setOf("NBRB", "нбрб"),
         base = "BYN",
         url = "http://www.nbrb.by/API/ExRates/Rates?Periodicity=0",
+        displayLink = "blah",
         unsupported = setOf(),
         refreshHours = 1
     ),
@@ -61,6 +62,7 @@ val testApis = listOf(
         aliases = setOf("NBU", "нбу"),
         base = "UAH",
         url = "https://bank.gov.ua/NBUStatService/v1/statdirectory/exchange?json",
+        displayLink = "blah",
         unsupported = setOf(),
         refreshHours = 1
     ),
@@ -69,6 +71,7 @@ val testApis = listOf(
         aliases = setOf("TraderMade", "tm", "тм"),
         base = "USD",
         url = "blah",
+        displayLink = "blah",
         unsupported = setOf(),
         refreshHours = 1
     )

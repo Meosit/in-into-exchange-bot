@@ -16,10 +16,7 @@ import com.github.h0tk3y.betterParse.lexer.DefaultTokenizer
 import com.github.h0tk3y.betterParse.lexer.TokenMatch
 import com.github.h0tk3y.betterParse.lexer.TokenMatchesSequence
 import com.github.h0tk3y.betterParse.lexer.Tokenizer
-import com.github.h0tk3y.betterParse.parser.AlternativesFailure
-import com.github.h0tk3y.betterParse.parser.ErrorResult
-import com.github.h0tk3y.betterParse.parser.NoMatchingToken
-import com.github.h0tk3y.betterParse.parser.Parser
+import com.github.h0tk3y.betterParse.parser.*
 
 
 class BotInputGrammar(
@@ -67,6 +64,9 @@ class BotInputGrammar(
     private val botInputParser by allValidExpressionParsers and optional(apiConfig) and additionalCurrenciesChain and decimalDigitsConfig map
             { (expr, api, keys, decimalDigits) -> BotInput(expr, keys.toSet(), api, decimalDigits) }
 
+    private val botCurrencyDivisionInputParser by currParsers.currenciedDivisionSubSumChain and optional(apiConfig) and decimalDigitsConfig map
+            { (expr, api, decimalDigits) -> BotInput(expr, setOf(), api, decimalDigits) }
+
     override val tokens = tokenDict.allTokens
 
     override val tokenizer: Tokenizer by lazy { SingleLineTokenizer(DefaultTokenizer(tokens)) }
@@ -82,6 +82,11 @@ class BotInputGrammar(
                     }
                     find(result.errors)
                 }
+                is ErrorResult -> result
+                is Parsed -> tokens.getNotIgnored(result.nextPosition)?.let {
+                    // applying the currencied division parser only when the others failed
+                    botCurrencyDivisionInputParser.tryParseToEnd(tokens, fromPosition) as? Parsed<BotInput>
+                } ?: result
                 else -> result
             }
     }

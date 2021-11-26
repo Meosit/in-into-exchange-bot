@@ -166,6 +166,97 @@ class BotInputGrammarPositiveTest {
     }
 
     @Test
+    fun multiple_currencies_division() {
+        val input = "4.06в / 2, 03 ,ey"
+        val expectedExpr = Divide(
+            CurrenciedExpression(4.06.asConst, "USD".toCurrency()),
+            CurrenciedExpression(2.03.asConst, "BYN".toCurrency())
+        )
+
+        val (actualExpr, additionalCurrencies) = grammar.parseToEnd(input)
+
+        assertTrue(additionalCurrencies.isEmpty())
+        assertEquals(expectedExpr, actualExpr)
+    }
+
+    @Test
+    fun multiple_currencies_division_different_api() {
+        val input = "4.06в / 2, 03 ,ey NBU"
+        val expectedExpr = Divide(
+            CurrenciedExpression(4.06.asConst, "USD".toCurrency()),
+            CurrenciedExpression(2.03.asConst, "BYN".toCurrency())
+        )
+
+        val (actualExpr, additionalCurrencies, rateApi) = grammar.parseToEnd(input)
+
+        assertTrue(additionalCurrencies.isEmpty())
+        assertEquals(expectedExpr, actualExpr)
+        assertEquals("NBU".toRateApi(), rateApi)
+    }
+
+
+    @Test
+    fun multiple_currencies_division_with_addition() {
+        val input = "4.06в / 2, 03 ,ey + 10"
+        val expectedExpr = Add(
+            Divide(
+                CurrenciedExpression(4.06.asConst, "USD".toCurrency()),
+                CurrenciedExpression(2.03.asConst, "BYN".toCurrency())
+            ),
+            10.asConst
+        )
+
+        val (actualExpr, additionalCurrencies) = grammar.parseToEnd(input)
+
+        assertTrue(additionalCurrencies.isEmpty())
+        assertEquals(expectedExpr, actualExpr)
+    }
+
+
+    @Test
+    fun multiple_currencies_division_complicated() {
+        val input = "((4.06 + 1 - 1)$ + 10uah) / 2, 03 ,ey + 10 - (10в/15byn)"
+        val expectedExpr = Subtract(
+            Add(
+                Divide(
+                    Add(
+                        CurrenciedExpression(Subtract(Add(4.06.asConst, 1.asConst), 1.asConst), "USD".toCurrency()),
+                        CurrenciedExpression(10.asConst, "UAH".toCurrency())
+                    ),
+                    CurrenciedExpression(2.03.asConst, "BYN".toCurrency())
+                ),
+                10.asConst
+            ),
+            Divide(CurrenciedExpression(10.asConst, "USD".toCurrency()), CurrenciedExpression(15.asConst, "BYN".toCurrency()))
+        )
+
+        val (actualExpr, additionalCurrencies) = grammar.parseToEnd(input)
+
+        assertTrue(additionalCurrencies.isEmpty())
+        assertEquals(expectedExpr, actualExpr)
+    }
+
+    @Test
+    fun multiple_currencies_division_inside_denominator() {
+        val input = "((4.06 + 1 - 1)$ + 10uah)/10uah / (10в/15byn)"
+        val expectedExpr = Divide(
+            Divide(
+                Add(
+                    CurrenciedExpression(Subtract(Add(4.06.asConst, 1.asConst), 1.asConst), "USD".toCurrency()),
+                    CurrenciedExpression(10.asConst, "UAH".toCurrency())
+                ),
+                CurrenciedExpression(10.asConst, "UAH".toCurrency())
+            ),
+            Divide(CurrenciedExpression(10.asConst, "USD".toCurrency()), CurrenciedExpression(15.asConst, "BYN".toCurrency()))
+        )
+
+        val (actualExpr, additionalCurrencies) = grammar.parseToEnd(input)
+
+        assertTrue(additionalCurrencies.isEmpty())
+        assertEquals(expectedExpr, actualExpr)
+    }
+
+    @Test
     fun additional_currencies_ininto_unions() {
         val input = "10 euro into бр IN dollars"
         val expectedAdditionalCurrencies = setOf(
@@ -454,4 +545,16 @@ class BotInputGrammarPositiveTest {
         assertTrue(additionalCurrencies.isEmpty())
         assertEquals(expectedExpr, actualExpr)
     }
+
+
+//    @Test
+//    fun kilo_with_alias_collision() {
+//        val input = "5kzl"
+//        val expectedExpr = CurrenciedExpression(ConstWithSuffixes("5".bigDecimal, 1, SuffixType.KILO), "PLN".toCurrency())
+//
+//        val (actualExpr, additionalCurrencies) = grammar.parseToEnd(input)
+//
+//        assertTrue(additionalCurrencies.isEmpty())
+//        assertEquals(expectedExpr, actualExpr)
+//    }
 }

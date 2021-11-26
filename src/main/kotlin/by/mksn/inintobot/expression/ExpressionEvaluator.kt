@@ -1,6 +1,7 @@
 package by.mksn.inintobot.expression
 
 import by.mksn.inintobot.currency.Currency
+import by.mksn.inintobot.expression.ExpressionType.*
 import by.mksn.inintobot.misc.toFixedScaleBigDecimal
 import by.mksn.inintobot.misc.toStr
 import java.math.BigDecimal
@@ -25,31 +26,37 @@ class ExpressionEvaluator(
 
     private fun captureCurrencyMetadata(rootExpr: Expression): CurrencyMetadata {
         val involvedCurrencies = linkedSetOf<Currency>()
+        var isCurrencyInDenominator = false
 
-        fun findCurrencies(expr: Expression): Any = when (expr) {
+        fun findCurrencies(expr: Expression, inDenominator: Boolean): Any = when (expr) {
             is Const -> Unit
             is ConstWithSuffixes -> Unit
-            is Negate -> findCurrencies(expr.e)
+            is Negate -> findCurrencies(expr.e, inDenominator)
             is Add -> {
-                findCurrencies(expr.e1)
-                findCurrencies(expr.e2)
+                findCurrencies(expr.e1, inDenominator)
+                findCurrencies(expr.e2, inDenominator)
             }
             is Subtract -> {
-                findCurrencies(expr.e1)
-                findCurrencies(expr.e2)
+                findCurrencies(expr.e1, inDenominator)
+                findCurrencies(expr.e2, inDenominator)
             }
             is Multiply -> {
-                findCurrencies(expr.e1)
-                findCurrencies(expr.e2)
+                findCurrencies(expr.e1, inDenominator)
+                findCurrencies(expr.e2, inDenominator)
             }
             is Divide -> {
-                findCurrencies(expr.e1)
-                findCurrencies(expr.e2)
+                findCurrencies(expr.e1, inDenominator)
+                findCurrencies(expr.e2, inDenominator = true)
             }
-            is CurrenciedExpression -> involvedCurrencies.add(expr.currency)
+            is CurrenciedExpression -> {
+                if (inDenominator) {
+                    isCurrencyInDenominator = true
+                }
+                involvedCurrencies.add(expr.currency)
+            }
         }
 
-        findCurrencies(rootExpr)
+        findCurrencies(rootExpr, false)
 
         val expressionType: ExpressionType?
         val baseCurrency: Currency?
@@ -58,22 +65,22 @@ class ExpressionEvaluator(
                 involvedCurrencies.add(defaultCurrency)
                 baseCurrency = defaultCurrency
                 expressionType = when {
-                    rootExpr.isOneUnitConst() -> ExpressionType.ONE_UNIT
-                    rootExpr.isConst() -> ExpressionType.SINGLE_VALUE
-                    else -> ExpressionType.SINGLE_CURRENCY_EXPR
+                    rootExpr.isOneUnitConst() -> ONE_UNIT
+                    rootExpr.isConst() -> SINGLE_VALUE
+                    else -> SINGLE_CURRENCY_EXPR
                 }
             }
             1 -> {
                 baseCurrency = involvedCurrencies.first()
                 expressionType = when {
-                    rootExpr is CurrenciedExpression && rootExpr.e.isOneUnitConst() -> ExpressionType.ONE_UNIT
-                    rootExpr is CurrenciedExpression && rootExpr.e.isConst() -> ExpressionType.SINGLE_VALUE
-                    else -> ExpressionType.SINGLE_CURRENCY_EXPR
+                    rootExpr is CurrenciedExpression && rootExpr.e.isOneUnitConst() -> ONE_UNIT
+                    rootExpr is CurrenciedExpression && rootExpr.e.isConst() -> SINGLE_VALUE
+                    else -> SINGLE_CURRENCY_EXPR
                 }
             }
             else -> {
                 baseCurrency = apiBaseCurrency
-                expressionType = ExpressionType.MULTI_CURRENCY_EXPR
+                expressionType = if (isCurrencyInDenominator) CURRENCY_DIVISION else MULTI_CURRENCY_EXPR
             }
         }
         return CurrencyMetadata(
@@ -106,14 +113,18 @@ class ExpressionEvaluator(
                     .format(stringRepr(expr.e1), stringRepr(expr.e2))
             }
             is Divide -> when (expr.e1) {
-                is CurrenciedExpression -> stringRepr(CurrenciedExpression(Divide(expr.e1.e, expr.e2), expr.e1.currency))
-                else -> "${valueFormatWithParsRespect(expr.e1)}/${if (expr.e2 is Const) "%s" else "(%s)"}"
+                is CurrenciedExpression -> if (expr.e2 is CurrenciedExpression) {
+                    "%s/%s".format(stringRepr(expr.e1), stringRepr(expr.e2))
+                } else {
+                    stringRepr(CurrenciedExpression(Divide(expr.e1.e, expr.e2), expr.e1.currency))
+                }
+                else -> "${valueFormatWithParsRespect(expr.e1)}/${if (expr.e2 is Const || expr.e2 is CurrenciedExpression) "%s" else "(%s)"}"
                     .format(stringRepr(expr.e1), stringRepr(expr.e2))
             }
             is CurrenciedExpression -> when (expressionType) {
-                ExpressionType.ONE_UNIT -> "1"
-                ExpressionType.SINGLE_VALUE, ExpressionType.SINGLE_CURRENCY_EXPR -> stringRepr(expr.e)
-                ExpressionType.MULTI_CURRENCY_EXPR -> when (expr.e) {
+                ONE_UNIT -> "1"
+                SINGLE_VALUE, SINGLE_CURRENCY_EXPR -> stringRepr(expr.e)
+                MULTI_CURRENCY_EXPR, CURRENCY_DIVISION -> when (expr.e) {
                     is Add, is Subtract -> "(${stringRepr(expr.e)}) ${expr.currency.code}"
                     else -> "${stringRepr(expr.e)} ${expr.currency.code}"
                 }
@@ -139,7 +150,7 @@ class ExpressionEvaluator(
             is Multiply -> eval(expr.e1) * eval(expr.e2)
             is Divide -> eval(expr.e1) / eval(expr.e2)
             is CurrenciedExpression -> when (type) {
-                ExpressionType.MULTI_CURRENCY_EXPR -> exchange(eval(expr.e), expr.currency, apiBaseCurrency)
+                MULTI_CURRENCY_EXPR -> exchange(eval(expr.e), expr.currency, apiBaseCurrency)
                 else -> eval(expr.e)
             }
         }
