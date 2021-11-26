@@ -32,7 +32,7 @@ data class BotSuccessOutput(
                 .joinToString("\n") { "`${it.currency.emoji}${it.currency.code}`  `${it.value.toStr(decimalDigits)}`" }
             (expressionHeader + apiHeader + exchangeBody).trimToLength(AppContext.maxOutputLength, "… ${strings.outputTooBigMessage}")
         } else {
-            "${expression.stringRepr} = ${expression.result.toStr()}"
+            "`${expression.stringRepr}` = `${expression.result.toStr()}`"
         }
     }
 

@@ -9,13 +9,11 @@ data class BotJustCalculateOutput(
     val strings: QueryStrings
 ) : BotOutput {
 
-    private val outputExpression = "${expression.stringRepr} = ${expression.result.toStr()}"
-
     override fun inlineTitle() = strings.inlineTitles.calculate
     override fun inlineThumbUrl() = strings.inlineThumbs.calculate
 
-    override fun inlineDescription() = outputExpression
+    override fun inlineDescription() = "${expression.stringRepr} = ${expression.result.toStr()}"
 
-    override fun markdown() = "`$outputExpression`"
+    override fun markdown() = "`${expression.stringRepr}` = `${expression.result.toStr()}`"
 
 }
