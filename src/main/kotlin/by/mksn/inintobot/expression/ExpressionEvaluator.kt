@@ -150,7 +150,7 @@ class ExpressionEvaluator(
             is Multiply -> eval(expr.e1) * eval(expr.e2)
             is Divide -> eval(expr.e1) / eval(expr.e2)
             is CurrenciedExpression -> when (type) {
-                MULTI_CURRENCY_EXPR -> exchange(eval(expr.e), expr.currency, apiBaseCurrency)
+                MULTI_CURRENCY_EXPR, CURRENCY_DIVISION -> exchange(eval(expr.e), expr.currency, apiBaseCurrency)
                 else -> eval(expr.e)
             }
         }
