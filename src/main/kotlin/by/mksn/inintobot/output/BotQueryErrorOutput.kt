@@ -6,6 +6,7 @@ import by.mksn.inintobot.grammar.RateApiUnexpected
 import by.mksn.inintobot.misc.escapeMarkdown
 import by.mksn.inintobot.misc.trimToLength
 import by.mksn.inintobot.output.strings.ErrorMessages
+import by.mksn.inintobot.settings.UserSettings
 import com.github.h0tk3y.betterParse.parser.ErrorResult
 import com.github.h0tk3y.betterParse.parser.MismatchedToken
 import com.github.h0tk3y.betterParse.parser.NoMatchingToken
@@ -29,7 +30,7 @@ data class BotQueryErrorOutput(
         `${"▲".padStart(if (errorPosition > trimmedRawInput.length) trimmedRawInput.length else errorPosition)}`
     """.trimIndent()
 
-    override fun toApiResponse() = ApiErrorResponse(
+    override fun toApiResponse(settings: UserSettings) = ApiErrorResponse(
         message = errorMessage,
         rawInput = trimmedRawInput,
         position = if (errorPosition > trimmedRawInput.length) trimmedRawInput.length else errorPosition

@@ -2,6 +2,7 @@ package by.mksn.inintobot.output
 
 import by.mksn.inintobot.AppContext
 import by.mksn.inintobot.misc.trimToLength
+import by.mksn.inintobot.settings.UserSettings
 
 data class BotStaleRatesOutput(
     val botOutput: BotOutput,
@@ -22,5 +23,5 @@ data class BotStaleRatesOutput(
             .trimToLength(AppContext.maxOutputLength, "…")
     }
 
-    override fun toApiResponse() = botOutput.toApiResponse()
+    override fun toApiResponse(settings: UserSettings) = botOutput.toApiResponse(settings)
 }

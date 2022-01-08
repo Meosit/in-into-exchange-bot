@@ -84,16 +84,29 @@ fun Application.main() {
         post("/exchange") {
             try {
                 val (query, settings) = call.receive<ApiExchangeRequest>()
-                if (query.isBlank()) {
-                    call.respond(HttpStatusCode.BadRequest, ApiErrorResponse("No query found"))
-                } else {
-                    val output = handleBotExchangeQuery(query, settings).first().toApiResponse()
-
-                    val response = AppContext.json.encodeToString(ApiResponse.serializer(), output)
-                    call.respondText(response, ContentType.Application.Json, status = output.code)
+                when {
+                    !AppContext.supportedApis.any { settings.apiName == it.name } ->
+                        call.respond(HttpStatusCode.BadRequest, ApiErrorResponse("Invalid api ${settings.apiName}"))
+                    !AppContext.supportedLanguages.keys.any { settings.language == it } ->
+                        call.respond(HttpStatusCode.BadRequest, ApiErrorResponse("Invalid default currency ${settings.defaultCurrency}"))
+                    !AppContext.supportedCurrencies.any { settings.defaultCurrency == it.code } ->
+                        call.respond(HttpStatusCode.BadRequest, ApiErrorResponse("Invalid default currency ${settings.defaultCurrency}"))
+                    settings.outputCurrencies.any { it !in AppContext.supportedCurrencies.map { c -> c.code } } ->
+                        call.respond(HttpStatusCode.BadRequest, ApiErrorResponse("Invalid output currencies currency ${settings.outputCurrencies.joinToString()}"))
+                    settings.dashboardCurrencies.any { it !in AppContext.supportedCurrencies.map { c -> c.code } } ->
+                        call.respond(HttpStatusCode.BadRequest, ApiErrorResponse("Invalid dashboard currencies currency ${settings.outputCurrencies.joinToString()}"))
+                    query.isBlank() ->
+                        call.respond(HttpStatusCode.BadRequest, ApiErrorResponse("No query found"))
+                    else -> {
+                        val output = handleBotExchangeQuery(query, settings).first().toApiResponse(settings)
+                        val response = AppContext.json.encodeToString(ApiResponse.serializer(), output)
+                        call.respondText(response, ContentType.Application.Json, status = output.code)
+                    }
                 }
             } catch (e: SerializationException) {
                 call.respond(HttpStatusCode.BadRequest, ApiErrorResponse("Invalid request format"))
+            } catch (e: Exception) {
+                call.respond(HttpStatusCode.InternalServerError, ApiErrorResponse("Unknown error"))
             }
         }
         get("/settings/currencies") {

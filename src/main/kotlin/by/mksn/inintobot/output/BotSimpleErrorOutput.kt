@@ -1,5 +1,7 @@
 package by.mksn.inintobot.output
 
+import by.mksn.inintobot.settings.UserSettings
+
 data class BotSimpleErrorOutput(
     val errorMessage: String
 ) : BotOutput {
@@ -10,5 +12,5 @@ data class BotSimpleErrorOutput(
 
     override fun markdown() = errorMessage
 
-    override fun toApiResponse() = ApiErrorResponse(errorMessage)
+    override fun toApiResponse(settings: UserSettings) = ApiErrorResponse(errorMessage)
 }
