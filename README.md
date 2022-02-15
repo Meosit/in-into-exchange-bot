@@ -44,7 +44,7 @@ This bot is deployed on [Heroku](https://www.heroku.com/what) and fits into [fre
 * `ALLOWED_TOKENS_STRING` - Comma-separated list of [Telegram bot tokens](https://core.telegram.org/bots/api#authorizing-your-bot) which are allowed to query this backend. This allows to configure multiple serving bots/migrate to new one
 * `DEPRECATED_TOKENS_STRING` - Comma-separated list of [Telegram bot tokens](https://core.telegram.org/bots/api#authorizing-your-bot) which are deprecated, but temporarily available. For bots in this list a deprecation notice will be displayed for every outgoing message.   
 * `DATABASE_URL` - Heroku Postgres database url taken corresponding settings at [data.heroku.com](https://data.heroku.com/)
-* `FIXER_ACCESS_KEY` - API key for [Fixer](https://fixer.io/) (1000 calls/month, refresh every 1 hour)
+* `FIXER_ACCESS_KEY` - API key for [Fixer](https://fixer.io/) (100 calls/month, refresh every 8 hours)
 * `OPENEXCHANGERATES_ACCESS_KEY` - API key for [OpenExchangeRates](https://openexchangerates.org/) (1000 calls/month, refresh every 1 hour)
 * `TRADERMADE_ACCESS_KEY` - API key for [TraderMade](https://marketdata.tradermade.com/) (1000 calls/month, refresh every 1 hour)
 * `FOREX_ACCESS_KEY` - API key for [Forex](https://fcsapi.com/) (500 calls/month, refresh every 2 hours)
