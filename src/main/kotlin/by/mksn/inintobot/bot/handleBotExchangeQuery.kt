@@ -15,6 +15,8 @@ import com.github.h0tk3y.betterParse.grammar.tryParseToEnd
 import com.github.h0tk3y.betterParse.parser.ErrorResult
 import com.github.h0tk3y.betterParse.parser.Parsed
 import org.slf4j.LoggerFactory
+import java.time.ZoneOffset
+import java.time.ZonedDateTime
 
 private val logger = LoggerFactory.getLogger("handleBotQuery")
 
@@ -53,6 +55,7 @@ fun handleBotExchangeQuery(query: String, settings: UserSettings): Array<BotOutp
             }
             val isStaleRates = AppContext.exchangeRates.isStale(api)
 
+
             val rateExchanger = CurrencyRateExchanger(apiBaseCurrency, rates)
 
             val evaluator = ExpressionEvaluator(defaultCurrency, apiBaseCurrency, rateExchanger::exchange)
@@ -81,8 +84,15 @@ fun handleBotExchangeQuery(query: String, settings: UserSettings): Array<BotOutp
             val queryStrings = AppContext.queryStrings.of(settings.language)
             val nonDefaultApiName = if (api.name == settings.apiName && evaluated.type != ExpressionType.ONE_UNIT)
                 null else AppContext.apiDisplayNames.of(settings.language).getValue(api.name)
+            val nonDefaultApiTime = if (api.name == settings.apiName && evaluated.type != ExpressionType.ONE_UNIT) {
+                null
+            } else {
+                val timeUnitNames = AppContext.timeUnitNames.of(settings.language)
+                val now = ZonedDateTime.now(ZoneOffset.UTC)
+                AppContext.exchangeRates.ratesStatus[api]?.let { encodeToStringDuration(it.ratesUpdated, now, timeUnitNames) }
+            }
 
-            val output = BotSuccessOutput(evaluated, exchanged, queryStrings, decimalDigits, nonDefaultApiName).let {
+            val output = BotSuccessOutput(evaluated, exchanged, queryStrings, decimalDigits, nonDefaultApiName, nonDefaultApiTime).let {
                 if (isStaleRates) BotStaleRatesOutput(it, api.name, settings.language) else it
             }
             return if (evaluated.type == ExpressionType.SINGLE_CURRENCY_EXPR) {

@@ -36,7 +36,7 @@ fun TimeUnitNames.nameOfHours(value: Long) = when (value % 100) {
     }
 }
 
-private fun encodeToStringDuration(time: ZonedDateTime, now: ZonedDateTime?, timeUnitNames: TimeUnitNames): String {
+fun encodeToStringDuration(time: ZonedDateTime, now: ZonedDateTime?, timeUnitNames: TimeUnitNames): String {
     val hours = ChronoUnit.HOURS.between(time, now)
     val minutes = ChronoUnit.MINUTES.between(time, now) - hours * 60
     return when {

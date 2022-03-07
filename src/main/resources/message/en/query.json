@@ -2,6 +2,7 @@
   "headers": {
     "rate": "\uD83D\uDCB9 Rates for `%s`\n",
     "api": "\uD83C\uDF10 _%s_\n",
+    "apiTime": "\uD83D\uDD59 %s\n",
     "singleCurrencyExpression": "#️⃣ _%s (%s) =_\n",
     "multiCurrencyExpression": "#️⃣ _%s =_\n"
   },

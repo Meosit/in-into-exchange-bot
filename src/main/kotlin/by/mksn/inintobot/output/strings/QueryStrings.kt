@@ -17,6 +17,7 @@ data class QueryStrings(
 data class MessageHeaders(
     val rate: String,
     val api: String,
+    val apiTime: String,
     val singleCurrencyExpression: String,
     val multiCurrencyExpression: String
 )
