@@ -2,7 +2,7 @@
   "headers": {
     "rate": "\uD83D\uDCB9 Курс `%s`\n",
     "api": "\uD83C\uDF10 _%s_\n",
-    "apiTime": "\uD83D\uDD59 %s\n",
+    "apiTime":"\uD83D\uDD59 _На %s (UTC)_\n",
     "singleCurrencyExpression": "#️⃣ _%s (%s) =_\n",
     "multiCurrencyExpression": "#️⃣ _%s =_\n"
   },

@@ -18,7 +18,7 @@ import java.time.temporal.ChronoUnit
 
 private val logger = LoggerFactory.getLogger("handleMessage")
 
-fun TimeUnitNames.nameOfMinutes(value: Long) = when (value % 100) {
+private fun TimeUnitNames.nameOfMinutes(value: Long) = when (value % 100) {
     in 11L..20L -> minuteFiveTillTen
     else -> when (value % 10) {
         1L -> minuteOne
@@ -27,7 +27,7 @@ fun TimeUnitNames.nameOfMinutes(value: Long) = when (value % 100) {
     }
 }
 
-fun TimeUnitNames.nameOfHours(value: Long) = when (value % 100) {
+private fun TimeUnitNames.nameOfHours(value: Long) = when (value % 100) {
     in 11L..20L -> hourFiveTillTen
     else -> when (value % 10) {
         1L -> hourOne
@@ -36,7 +36,7 @@ fun TimeUnitNames.nameOfHours(value: Long) = when (value % 100) {
     }
 }
 
-fun encodeToStringDuration(time: ZonedDateTime, now: ZonedDateTime?, timeUnitNames: TimeUnitNames): String {
+private fun encodeToStringDuration(time: ZonedDateTime, now: ZonedDateTime?, timeUnitNames: TimeUnitNames): String {
     val hours = ChronoUnit.HOURS.between(time, now)
     val minutes = ChronoUnit.MINUTES.between(time, now) - hours * 60
     return when {
