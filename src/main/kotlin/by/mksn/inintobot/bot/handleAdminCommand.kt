@@ -10,6 +10,9 @@ import by.mksn.inintobot.settings.BotUser
 import by.mksn.inintobot.settings.UserSettings
 import by.mksn.inintobot.settings.UserStore
 import by.mksn.inintobot.telegram.Message
+import io.ktor.application.*
+import io.ktor.util.pipeline.*
+import kotlinx.coroutines.launch
 import java.time.ZoneId
 import java.time.ZoneOffset
 import java.time.ZonedDateTime
@@ -35,7 +38,7 @@ private fun simpleSettingsString(it: UserSettings) = with(it) {
     "$apiName: $defaultCurrency (${outputCurrencies.joinToString()}) #$decimalDigits; $language"
 }
 
-suspend fun Message.handleAdminCommand(sender: BotOutputSender): Boolean = when (text) {
+suspend fun Message.handleAdminCommand(context: PipelineContext<Unit, ApplicationCall>, sender: BotOutputSender): Boolean = when (text) {
     "/me" -> {
         val user = UserStore.userById(AppContext.creatorId.toLong())
         val markdown = user?.toChatString() ?: "Not found"
@@ -65,31 +68,35 @@ suspend fun Message.handleAdminCommand(sender: BotOutputSender): Boolean = when 
             true
         }
         text.startsWith("/reload") -> {
-            val apiAlias = text.removePrefix("/reload")
-            if (apiAlias.isEmpty()) {
-                AppContext.exchangeRates.reloadAll(AppContext.httpClient, AppContext.json)
-                val markdown = AppContext.exchangeRates.ratesStatus.asSequence()
-                    .map { (api, updated) ->
-                        "${api.name}: ${updated.lastChecked.withZoneSameInstant(ZoneId.of("UTC+3")).toSimpleString()}"
-                    }
-                    .joinToString(separator = "\n", prefix = "Last updated:\n```\n", postfix = "\n```")
-                sender.sendChatMessage(AppContext.creatorId, BotTextOutput(markdown))
-            } else {
-                val rateApi = AliasMatcher(AppContext.supportedApis).matchOrNull(apiAlias)
-                val markdown = if (rateApi != null) {
-                    AppContext.exchangeRates.reloadOne(rateApi, AppContext.httpClient, AppContext.json)
-                    AppContext.exchangeRates.ratesStatus.asSequence()
-                        .filter { it.key == rateApi }
+            context.launch {
+                val apiAlias = text.removePrefix("/reload")
+                if (apiAlias.isEmpty()) {
+                    sender.sendChatMessage(AppContext.creatorId, BotTextOutput("Full reload started"))
+                    AppContext.exchangeRates.reloadAll(AppContext.httpClient, AppContext.json)
+                    val markdown = AppContext.exchangeRates.ratesStatus.asSequence()
                         .map { (api, updated) ->
-                            "${api.name}: ${updated.lastChecked.withZoneSameInstant(ZoneId.of("UTC+3"))
-                                .toSimpleString()}"
+                            "${api.name}: ${updated.lastChecked.withZoneSameInstant(ZoneId.of("UTC+3")).toSimpleString()}"
                         }
-                        .ifEmpty { sequenceOf("API was never updated") }
                         .joinToString(separator = "\n", prefix = "Last updated:\n```\n", postfix = "\n```")
+                    sender.sendChatMessage(AppContext.creatorId, BotTextOutput(markdown))
                 } else {
-                    "Invalid API alias provided"
+                    val rateApi = AliasMatcher(AppContext.supportedApis).matchOrNull(apiAlias)
+                    val markdown = if (rateApi != null) {
+                        sender.sendChatMessage(AppContext.creatorId, BotTextOutput("Reload started"))
+                        AppContext.exchangeRates.reloadOne(rateApi, AppContext.httpClient, AppContext.json)
+                        AppContext.exchangeRates.ratesStatus.asSequence()
+                            .filter { it.key == rateApi }
+                            .map { (api, updated) ->
+                                "${api.name}: ${updated.lastChecked.withZoneSameInstant(ZoneId.of("UTC+3"))
+                                    .toSimpleString()}"
+                            }
+                            .ifEmpty { sequenceOf("API was never updated") }
+                            .joinToString(separator = "\n", prefix = "Last updated:\n```\n", postfix = "\n```")
+                    } else {
+                        "Invalid API alias provided"
+                    }
+                    sender.sendChatMessage(AppContext.creatorId, BotTextOutput(markdown))
                 }
-                sender.sendChatMessage(AppContext.creatorId, BotTextOutput(markdown))
             }
             true
         }

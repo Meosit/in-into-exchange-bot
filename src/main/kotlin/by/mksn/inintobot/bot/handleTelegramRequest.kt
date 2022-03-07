@@ -9,8 +9,10 @@ import by.mksn.inintobot.settings.UserStore
 import by.mksn.inintobot.telegram.Chat
 import by.mksn.inintobot.telegram.Update
 import by.mksn.inintobot.telegram.User
-import io.ktor.client.features.ResponseException
-import io.ktor.client.statement.readText
+import io.ktor.application.*
+import io.ktor.client.features.*
+import io.ktor.client.statement.*
+import io.ktor.util.pipeline.*
 import org.slf4j.LoggerFactory
 import java.io.PrintWriter
 import java.io.StringWriter
@@ -21,7 +23,12 @@ private val logger = LoggerFactory.getLogger("handleTelegramRequest")
 /**
  * Handles the telegram bot [Update] for the specific [botToken]
  */
-suspend fun handleTelegramRequest(update: Update, botToken: String, deprecatedBot: Boolean) {
+suspend fun handleTelegramRequest(
+    context: PipelineContext<Unit, ApplicationCall>,
+    update: Update,
+    botToken: String,
+    deprecatedBot: Boolean
+) {
     val sender = BotOutputSender(AppContext.httpClient, botToken)
     try {
         val settings = loadSettings(update)
@@ -30,8 +37,8 @@ suspend fun handleTelegramRequest(update: Update, botToken: String, deprecatedBo
             logger.info("Settings: $settings")
             when {
                 inlineQuery != null -> inlineQuery.handle(settings, sender, deprecatedBot)
-                message != null -> message.handle(settings, sender, deprecatedBot)
-                editedMessage != null -> editedMessage.handle(settings, sender, deprecatedBot)
+                message != null -> message.handle(context, settings, sender, deprecatedBot)
+                editedMessage != null -> editedMessage.handle(context, settings, sender, deprecatedBot)
                 callbackQuery != null -> {
                     Setting.handle(callbackQuery, settings, sender)
                     sender.pingCallbackQuery(callbackQuery.id)

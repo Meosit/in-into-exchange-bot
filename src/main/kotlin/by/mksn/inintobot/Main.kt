@@ -65,7 +65,7 @@ fun Application.main() {
             post("/handle/$token") {
                 try {
                     val update = call.receive<Update>()
-                    handleTelegramRequest(update, token, token in deprecatedTokens)
+                    handleTelegramRequest(this, update, token, token in deprecatedTokens)
                 } catch (e: Exception) {
                     val sw = StringWriter()
                     e.printStackTrace(PrintWriter(sw))

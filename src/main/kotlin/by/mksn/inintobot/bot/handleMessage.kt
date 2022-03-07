@@ -8,6 +8,8 @@ import by.mksn.inintobot.output.BotOutputSender
 import by.mksn.inintobot.output.BotTextOutput
 import by.mksn.inintobot.settings.UserSettings
 import by.mksn.inintobot.telegram.Message
+import io.ktor.application.*
+import io.ktor.util.pipeline.*
 import org.slf4j.LoggerFactory
 import java.time.ZoneOffset
 import java.time.ZonedDateTime
@@ -44,9 +46,14 @@ private fun encodeToStringDuration(time: ZonedDateTime, now: ZonedDateTime?, tim
     }
 }
 
-suspend fun Message.handle(settings: UserSettings, sender: BotOutputSender, deprecatedBot: Boolean) {
+suspend fun Message.handle(
+    context: PipelineContext<Unit, ApplicationCall>,
+    settings: UserSettings,
+    sender: BotOutputSender,
+    deprecatedBot: Boolean
+) {
     if (chat.id.toString() == AppContext.creatorId) {
-        val handled = handleAdminCommand(sender)
+        val handled = handleAdminCommand(context, sender)
         if (handled) return
     }
     when (text) {
