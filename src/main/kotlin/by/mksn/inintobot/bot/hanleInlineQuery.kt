@@ -28,12 +28,13 @@ suspend fun InlineQuery.handle(settings: UserSettings, sender: BotOutputSender, 
             val rateExchanger = CurrencyRateExchanger(apiBaseCurrency, rates)
             val queryStrings = AppContext.queryStrings.of(settings.language)
             val apiDisplayNames = AppContext.apiDisplayNames.of(settings.language)
+            val apiTime = AppContext.exchangeRates.ratesStatus[api]?.ratesUpdated?.format(apiTimeFormat)
             currencies.asSequence()
                 .filter { settings.dashboardCurrencies.contains(it.code) }
                 .map { EvaluatedExpression(1.toFixedScaleBigDecimal(), ExpressionType.ONE_UNIT, "1", it, listOf(it)) }
                 .map { it to rateExchanger.exchangeAll(it.result, it.baseCurrency, currencies) }
                 .map { (expression, exchanged) ->
-                    BotSuccessOutput(expression, exchanged, queryStrings, settings.decimalDigits, apiDisplayNames[settings.apiName])
+                    BotSuccessOutput(expression, exchanged, queryStrings, settings.decimalDigits, apiDisplayNames[settings.apiName], apiTime)
                 }
                 .map { if (isStaleRates) BotStaleRatesOutput(it, api.name, settings.language) else it }
                 .toList().toTypedArray()
