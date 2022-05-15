@@ -49,6 +49,6 @@ class CbrRateFetcher(rateApi: RateApi, client: HttpClient, json: Json) :
     override val serializer: KSerializer<List<CbrResponseEntry>> = ListSerializer(CbrResponseEntry.serializer())
 
     override suspend fun parseResponse(response: List<CbrResponseEntry>) =
-        response.asSequence().associateBy({ it.code }, { it.scale / it.rate })
+        response.associateBy({ it.code }, { it.scale / it.rate })
 
 }

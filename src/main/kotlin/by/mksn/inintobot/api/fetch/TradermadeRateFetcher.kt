@@ -29,6 +29,6 @@ class TradermadeRateFetcher(rateApi: RateApi, client: HttpClient, json: Json) :
     override val serializer: KSerializer<TradermadeResponse> = TradermadeResponse.serializer()
 
     override suspend fun parseResponse(response: TradermadeResponse) =
-        response.quotes.asSequence().associateBy({ it.code }, { it.rate })
+        response.quotes.associateBy({ it.code }, { it.rate })
 
 }

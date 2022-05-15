@@ -25,6 +25,6 @@ class NbuRateFetcher(rateApi: RateApi, client: HttpClient, json: Json) :
     override val serializer: KSerializer<List<NbuResponseEntry>> = ListSerializer(NbuResponseEntry.serializer())
 
     override suspend fun parseResponse(response: List<NbuResponseEntry>) =
-        response.asSequence().associateBy({ it.code }, { 1.toFixedScaleBigDecimal() / it.rate })
+        response.associateBy({ it.code }, { 1.toFixedScaleBigDecimal() / it.rate })
 
 }

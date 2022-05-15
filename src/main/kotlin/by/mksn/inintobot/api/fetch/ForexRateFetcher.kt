@@ -29,6 +29,6 @@ class ForexRateFetcher(private val rateApi: RateApi, client: HttpClient, json: J
     override val serializer: KSerializer<ForexResponse> = ForexResponse.serializer()
 
     override suspend fun parseResponse(response: ForexResponse) =
-        response.response.asSequence().associateBy({ it.code.replace("${rateApi.base}/", "") }, { it.rate })
+        response.response.associateBy({ it.code.replace("${rateApi.base}/", "") }, { it.rate })
 
 }

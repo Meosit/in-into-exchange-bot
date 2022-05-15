@@ -29,6 +29,11 @@
       "ILS",
       "GEL",
       "ISK",
+      "THB",
+      "IDR",
+      "VND",
+      "HRK",
+      "MXN",
       "BTC",
       "ETH"
     ],
@@ -48,6 +53,9 @@
       "UAH",
       "KZT",
       "GEL",
+      "VND",
+      "MDL",
+      "AMD",
       "BTC",
       "ETH"
     ],
@@ -62,7 +70,7 @@
       "фикс"
     ],
     "base": "EUR",
-    "url": "http://data.fixer.io/api/latest?access_key=<fixer_access_key>&symbols=BYN,USD,EUR,RUB,UAH,PLN,CZK,GBP,JPY,CNY,KZT,CHF,BGN,TRY,CAD,ISK,DKK,SEK,NOK,BTC,ILS,GEL,HUF",
+    "url": "http://data.fixer.io/api/latest?access_key=<fixer_access_key>&symbols=BYN,USD,EUR,RUB,UAH,PLN,CZK,GBP,JPY,CNY,KZT,CHF,BGN,TRY,CAD,ISK,DKK,SEK,NOK,BTC,ILS,GEL,HUF,MXN,HRK,VND,KRW,MDL,HKD,RON,IDR,THB,AMD",
     "displayLink": "https://fixer.io/",
     "unsupported": [
       "ETH"
@@ -92,13 +100,16 @@
       "тм"
     ],
     "base": "USD",
-    "url": "https://marketdata.tradermade.com/api/v1/live?api_key=<tradermade_access_key>&currency=USDEUR,USDRUB,USDUAH,USDPLN,USDCZK,USDGBP,USDJPY,USDCNY,USDCHF,USDTRY,USDCAD,USDISK,USDDKK,USDSEK,USDNOK,USDILS,USDBTC,USDETH,USDHUF",
+    "url": "https://marketdata.tradermade.com/api/v1/live?api_key=<tradermade_access_key>&currency=USDEUR,USDRUB,USDPLN,USDCZK,USDGBP,USDJPY,USDCNY,USDCHF,USDTRY,USDCAD,USDISK,USDDKK,USDSEK,USDNOK,USDILS,USDBTC,USDETH,USDHUF,USDTHB,USDIDR,USDRON,USDHKD,USDKRW,USDVND,USDHRK,USDMXN",
     "displayLink": "https://tradermade.com/",
     "unsupported": [
       "BYN",
       "BGN",
       "GEL",
-      "KZT"
+      "AMD",
+      "MDL",
+      "KZT",
+      "UAH"
     ],
     "refreshHours": 2
   },
@@ -111,7 +122,7 @@
       "Форекс"
     ],
     "base": "USD",
-    "url": "https://fcsapi.com/api-v2/forex/latest?access_key=<forex_access_key>&symbol=USD/BYN,USD/EUR,USD/RUB,USD/UAH,USD/PLN,USD/CZK,USD/GBP,USD/JPY,USD/CNY,USD/KZT,USD/CHF,USD/BGN,USD/TRY,USD/CAD,USD/ISK,USD/DKK,USD/SEK,USD/NOK,USD/ILS,USD/BTC,USD/ETH,USD/GEL,USD/HUF",
+    "url": "https://fcsapi.com/api-v2/forex/latest?access_key=<forex_access_key>&symbol=USD/BYN,USD/EUR,USD/RUB,USD/UAH,USD/PLN,USD/CZK,USD/GBP,USD/JPY,USD/CNY,USD/KZT,USD/CHF,USD/BGN,USD/TRY,USD/CAD,USD/ISK,USD/DKK,USD/SEK,USD/NOK,USD/ILS,USD/BTC,USD/ETH,USD/GEL,USD/HUF,USD/MXN,USD/HRK,USD/VND,USD/KRW,USD/MDL,USD/HKD,USD/RON,USD/IDR,USD/THB,USD/AMD",
     "displayLink": "https://fcsapi.com/",
     "unsupported": [],
     "refreshHours": 2

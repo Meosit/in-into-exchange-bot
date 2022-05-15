@@ -38,6 +38,6 @@ class EcbRateFetcher(rateApi: RateApi, client: HttpClient, json: Json) :
     override val serializer: KSerializer<List<EcbResponseEntry>> = ListSerializer(EcbResponseEntry.serializer())
 
     override suspend fun parseResponse(response: List<EcbResponseEntry>) =
-        response.asSequence().associateBy({ it.code }, { it.rate })
+        response.associateBy({ it.code }, { it.rate })
 
 }
