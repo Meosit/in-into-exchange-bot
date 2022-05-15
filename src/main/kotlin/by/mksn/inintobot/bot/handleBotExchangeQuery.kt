@@ -2,8 +2,7 @@ package by.mksn.inintobot.bot
 
 import by.mksn.inintobot.AppContext
 import by.mksn.inintobot.api.RateApi
-import by.mksn.inintobot.currency.CurrencyRateExchanger
-import by.mksn.inintobot.currency.UnknownCurrencyException
+import by.mksn.inintobot.currency.*
 import by.mksn.inintobot.expression.ExpressionEvaluator
 import by.mksn.inintobot.expression.ExpressionType
 import by.mksn.inintobot.grammar.BotInputGrammar
@@ -22,6 +21,7 @@ private val logger = LoggerFactory.getLogger("handleBotQuery")
 val botOutputRegex = "([\uD83C-\uDBFF\uDC00-\uDFFF]{2}[A-Z]{3} {2}\\d+(\\.\\d+)? ?)+".toRegex()
 val botJustCalculateReminder = "\\s?=\\s\\d+(\\.\\d+)?".toRegex()
 val apiTimeFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")
+data class ExchangeAll(val exchanged: List<Exchange>, val errorMessage: String?)
 
 fun handleBotExchangeQuery(query: String, settings: UserSettings): Array<BotOutput> {
     val currencies = AppContext.supportedCurrencies
@@ -66,7 +66,7 @@ fun handleBotExchangeQuery(query: String, settings: UserSettings): Array<BotOutp
                 val messages = AppContext.errorMessages.of(settings.language)
                 return arrayOf(BotSimpleErrorOutput(messages.divisionByZero))
             } catch (e: UnknownCurrencyException) {
-                val message = makeUnsupportedCurrencyMessage(e, api, settings)
+                val message = makeMissingCurrenciesMessage(listOf(e.currency), api, settings)
                 return arrayOf(BotSimpleErrorOutput(message))
             }
 
@@ -74,12 +74,13 @@ fun handleBotExchangeQuery(query: String, settings: UserSettings): Array<BotOutp
                 it in evaluated.involvedCurrencies || it.code in settings.outputCurrencies || it in additionalCurrencies
             }
             logger.info("Output currencies: ${outputCurrencies.joinToString { it.code }}")
-
-            val exchanged = try {
-                rateExchanger.exchangeAll(evaluated.result, evaluated.baseCurrency, outputCurrencies)
+            val (exchanged, errorMessage) = try {
+                ExchangeAll(rateExchanger.exchangeAll(evaluated.result, evaluated.baseCurrency, outputCurrencies), null)
             } catch (e: UnknownCurrencyException) {
-                val message = makeUnsupportedCurrencyMessage(e, api, settings)
+                val message = makeMissingCurrenciesMessage(listOf(e.currency), api, settings)
                 return arrayOf(BotSimpleErrorOutput(message))
+            } catch (e: MissingCurrenciesException) {
+                ExchangeAll(e.exchanges, makeMissingCurrenciesMessage(e.missing, api, settings))
             }
             val queryStrings = AppContext.queryStrings.of(settings.language)
             val nonDefaultApiName = if (api.name == settings.apiName && evaluated.type != ExpressionType.ONE_UNIT)
@@ -87,9 +88,9 @@ fun handleBotExchangeQuery(query: String, settings: UserSettings): Array<BotOutp
             val nonDefaultApiTime = if (api.name == settings.apiName && evaluated.type != ExpressionType.ONE_UNIT)
                 null else AppContext.exchangeRates.ratesStatus[api]?.ratesUpdated?.format(apiTimeFormat)
 
-            val output = BotSuccessOutput(evaluated, exchanged, queryStrings, decimalDigits, nonDefaultApiName, nonDefaultApiTime).let {
-                if (isStaleRates) BotStaleRatesOutput(it, api.name, settings.language) else it
-            }
+            val output = BotSuccessOutput(evaluated, exchanged, queryStrings, decimalDigits, nonDefaultApiName, nonDefaultApiTime)
+                .let { if (isStaleRates) BotStaleRatesOutput(it, api.name, settings.language) else it }
+                .let { if (errorMessage != null) BotOutputWithMessage(it, errorMessage) else it }
             return if (evaluated.type == ExpressionType.SINGLE_CURRENCY_EXPR) {
                 arrayOf(output, BotJustCalculateOutput(evaluated, queryStrings))
             } else {
@@ -113,22 +114,23 @@ fun handleBotExchangeQuery(query: String, settings: UserSettings): Array<BotOutp
     }
 }
 
-private fun makeUnsupportedCurrencyMessage(
-    e: UnknownCurrencyException,
+private fun makeMissingCurrenciesMessage(
+    currencies: List<Currency>,
     api: RateApi,
     settings: UserSettings
 ): String {
-    logger.info("Unsupported currency ${e.currency.code} for ${api.name} api used")
+    val currencyCodes = currencies.map { it.code }
+    logger.info("Unsupported currencies ${currencyCodes.joinToString()} for ${api.name} api used")
     val displayNames = AppContext.apiDisplayNames.of(settings.language)
     val alternativeApiName = AppContext.supportedApis
-        .findLast { !it.unsupported.contains(e.currency.code) }
+        .findLast { a -> currencies.all { c -> c.code !in a.unsupported } }
         ?.let { displayNames.getValue(it.name) }
     val messages = AppContext.errorMessages.of(settings.language)
     val apiDisplayName = displayNames.getValue(api.name)
     val message = if (alternativeApiName != null) {
-        messages.unsupportedCurrencyWithAlternative.format(e.currency.code, apiDisplayName, alternativeApiName)
+        messages.unsupportedCurrencyWithAlternative.format(currencyCodes.joinToString(), apiDisplayName, alternativeApiName)
     } else {
-        messages.unsupportedCurrency.format(e.currency.code, apiDisplayName)
+        messages.unsupportedCurrency.format(currencyCodes.joinToString(), apiDisplayName)
     }
     return message
 }

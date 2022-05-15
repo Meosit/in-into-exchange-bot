@@ -39,9 +39,16 @@ class CurrencyRateExchanger(
      * Exchanges the provided [value] in the given [sourceCurrency] to multiple [targets] currencies
      * using [exchangeRates] and [baseCurrency] as comparison criteria
      */
-    fun exchangeAll(value: BigDecimal, sourceCurrency: Currency, targets: List<Currency>): List<Exchange> =
-        targets.asSequence().map { Exchange(it, exchange(value, sourceCurrency, it)) }.toList()
+    fun exchangeAll(value: BigDecimal, sourceCurrency: Currency, targets: List<Currency>): List<Exchange> {
+        val missingRates = targets.minus(exchangeRates.keys)
+        val exchanges = targets.asSequence().filterNot { it in missingRates }.map { Exchange(it, exchange(value, sourceCurrency, it)) }.toList()
+        if (missingRates.isNotEmpty()) {
+            throw MissingCurrenciesException(exchanges, missingRates)
+        }
+        return exchanges
+    }
 
 }
 
 class UnknownCurrencyException(val currency: Currency) : RuntimeException("Currency ${currency.code} not found for the API")
+class MissingCurrenciesException(val exchanges: List<Exchange>, val missing: List<Currency>) : RuntimeException("Some currency rates are missing in the API: ${missing.joinToString { it.code }}")

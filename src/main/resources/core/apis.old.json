@@ -1,5 +1,23 @@
 [
   {
+    "name": "NBRB",
+    "aliases": [
+      "NBRB",
+      "НБРБ"
+    ],
+    "base": "BYN",
+    "url": "http://www.nbrb.by/API/ExRates/Rates?Periodicity=0",
+    "displayLink": "http://www.nbrb.by/",
+    "unsupported": [
+      "ILS",
+      "GEL",
+      "BTC",
+      "ETH",
+      "HUF"
+    ],
+    "refreshHours": 1
+  },
+  {
     "name": "NBU",
     "aliases": [
       "NBU",
@@ -100,7 +118,7 @@
       "GEL",
       "KZT"
     ],
-    "refreshHours": 2
+    "refreshHours": 1
   },
   {
     "name": "Forex",
