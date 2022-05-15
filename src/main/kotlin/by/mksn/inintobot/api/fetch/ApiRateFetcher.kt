@@ -15,6 +15,7 @@ interface ApiRateFetcher {
             return when (api.name) {
                 "NBRB" -> NbrbRateFetcher(api, client, json)
                 "NBU" -> NbuRateFetcher(api, client, json)
+                "NBP" -> NbpRateFetcher(api, client, json)
                 "CBR" -> CbrRateFetcher(api, client, json)
                 "ECB" -> EcbRateFetcher(api, client, json)
                 "Fixer", "OpenExchangeRates" -> RatesMapRateFetcher(api, client, json)

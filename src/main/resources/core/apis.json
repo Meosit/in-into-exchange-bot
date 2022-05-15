@@ -16,6 +16,21 @@
     "refreshHours": 1
   },
   {
+    "name": "NBP",
+    "aliases": [
+      "NBP",
+      "НБП"
+    ],
+    "base": "UAH",
+    "url": "https://api.nbp.pl/api/exchangerates/tables/<table_type>/?format=json",
+    "displayLink": "https://nbp.pl/",
+    "unsupported": [
+      "BTC",
+      "ETH"
+    ],
+    "refreshHours": 1
+  },
+  {
     "name": "CBR",
     "aliases": [
       "CBR",
