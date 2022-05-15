@@ -100,7 +100,7 @@
       "оер"
     ],
     "base": "USD",
-    "url": "https://openexchangerates.org/api/latest.json?app_id=<openexchangerates_access_key>&symbols=BYN,USD,EUR,RUB,UAH,PLN,CZK,GBP,JPY,CNY,KZT,CHF,BGN,TRY,CAD,ISK,DKK,SEK,NOK,BTC,ILS,GEL,HUF",
+    "url": "https://openexchangerates.org/api/latest.json?app_id=<openexchangerates_access_key>&symbols=BYN,USD,EUR,RUB,UAH,PLN,CZK,GBP,JPY,CNY,KZT,CHF,BGN,TRY,CAD,ISK,DKK,SEK,NOK,BTC,ILS,GEL,HUF,MXN,HRK,VND,KRW,MDL,HKD,RON,IDR,THB,AMD",
     "displayLink": "https://openexchangerates.org/",
     "unsupported": [
       "ETH"

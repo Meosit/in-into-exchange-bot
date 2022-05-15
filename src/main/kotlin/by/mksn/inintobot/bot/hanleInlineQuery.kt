@@ -1,7 +1,9 @@
 package by.mksn.inintobot.bot
 
 import by.mksn.inintobot.AppContext
+import by.mksn.inintobot.currency.Currency
 import by.mksn.inintobot.currency.CurrencyRateExchanger
+import by.mksn.inintobot.currency.MissingCurrenciesException
 import by.mksn.inintobot.expression.EvaluatedExpression
 import by.mksn.inintobot.expression.ExpressionType
 import by.mksn.inintobot.misc.toFixedScaleBigDecimal
@@ -32,7 +34,7 @@ suspend fun InlineQuery.handle(settings: UserSettings, sender: BotOutputSender, 
             currencies.asSequence()
                 .filter { settings.dashboardCurrencies.contains(it.code) }
                 .map { EvaluatedExpression(1.toFixedScaleBigDecimal(), ExpressionType.ONE_UNIT, "1", it, listOf(it)) }
-                .map { it to rateExchanger.exchangeAll(it.result, it.baseCurrency, currencies) }
+                .map { it to exchangeAllGracefully(rateExchanger, it, currencies) }
                 .map { (expression, exchanged) ->
                     BotSuccessOutput(expression, exchanged, queryStrings, settings.decimalDigits, apiDisplayNames[settings.apiName], apiTime)
                 }
@@ -50,4 +52,14 @@ suspend fun InlineQuery.handle(settings: UserSettings, sender: BotOutputSender, 
     val formattedOutputs = if (deprecatedBot)
         outputs.map { BotDeprecatedOutput(it, settings.language) }.toTypedArray() else outputs
     sender.sendInlineQuery(id, *formattedOutputs)
+}
+
+private fun exchangeAllGracefully(
+    rateExchanger: CurrencyRateExchanger,
+    it: EvaluatedExpression,
+    currencies: List<Currency>
+) = try {
+    rateExchanger.exchangeAll(it.result, it.baseCurrency, currencies)
+} catch (e: MissingCurrenciesException) {
+    e.exchanges
 }
