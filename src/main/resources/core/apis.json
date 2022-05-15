@@ -21,7 +21,7 @@
       "NBP",
       "НБП"
     ],
-    "base": "UAH",
+    "base": "PLN",
     "url": "https://api.nbp.pl/api/exchangerates/tables/<table_type>/?format=json",
     "displayLink": "https://nbp.pl/",
     "unsupported": [
