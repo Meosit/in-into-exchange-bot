@@ -16,7 +16,7 @@ Właściwości:
 - Waluty obsługiwane (❗zależy od wybranego API): {currency_list}
 - Obsługiwane API wraz z kursami wymiany walut (zobacz /apis): {apis}
 - Domyślnie się używa `OpenExchangeRates` API, wyświetla się 4 waluty: `BYN`, `USD`, `EUR`, `RUB`
-- Waluta `BYN` się używa domyślnie; jeżeli nie jest obsługiwana, używa się waluty podstawowej wybranego API 
+- Waluta `USD` się używa domyślnie; jeżeli nie jest obsługiwana, używa się waluty podstawowej wybranego API 
 - Liczby się wyświetlają do dwóch miejsc po przecinku (1.99), można to zmienić opcją `#<znaków po przecinku>`  
 - Walutę można opisać w języku polskim (`euro`, `rubel`), używając symboli (`$`,`€`) oraz znaki walut (`BYN`, `CZK`), dodatkowo używając różnego rodzaju skrótów (`zl`, `rub`, `dol`, `grn`) - zobacz /patterns
 - Oprócz sumy są dopuszczalne wyrażenia arytmetyczne z użyciem operatorów `*`, `/`, `+`, `-` oraz nawiasów.
