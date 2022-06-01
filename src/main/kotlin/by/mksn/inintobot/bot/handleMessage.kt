@@ -73,7 +73,7 @@ suspend fun Message.handle(
                 when (text) {
                     "/patterns" -> patterns
                         .replace("{currencies}", AppContext.supportedCurrencies
-                            .joinToString("\n") { "- `${it.code}`:\n" + it.aliases.joinToString { a -> "`$a`" } })
+                            .joinToString("\n") { "- `${it.code}`:\n" + it.aliases.joinToString() })
                     "/apis" -> {
                         val apisContent = AppContext.supportedApis.joinToString("\n\n") { rateApi ->
                             val displayName = displayNames.getValue(rateApi.name)
