@@ -1,5 +1,8 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
+group = "org.mksn"
+version = "1.0"
+
 buildscript {
     repositories { mavenCentral() }
 
@@ -29,25 +32,33 @@ subprojects {
     }
 
     apply(plugin = "kotlin")
+    apply(plugin = "kotlinx-serialization")
 }
 
-group = "org.mksn"
-version = "1.0"
 
-val serializationVersion = "1.3.2"
-val ktorVersion = "2.1.0"
-dependencies {
+allprojects {
 
-    implementation(kotlin("stdlib-jdk8"))
-    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:$serializationVersion")
-    implementation("io.ktor:ktor-client-core:$ktorVersion")
-    implementation("io.ktor:ktor-client-apache:$ktorVersion")
-    implementation("io.ktor:ktor-client-json-jvm:$ktorVersion")
-    implementation("io.ktor:ktor-client-serialization-jvm:$ktorVersion")
+    val serializationVersion = "1.4.0"
+    val ktorVersion = "2.1.0"
+
+    dependencies {
+        implementation(kotlin("stdlib-jdk8"))
+        implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:$serializationVersion")
+        implementation("io.ktor:ktor-client-core:$ktorVersion")
+        implementation("io.ktor:ktor-client-content-negotiation:$ktorVersion")
+        implementation("io.ktor:ktor-serialization-kotlinx-json:$ktorVersion")
+        implementation("org.slf4j:slf4j-jdk14:2.0.0")
+
+
+        testImplementation(kotlin("test"))
+        testImplementation("io.ktor:ktor-client-mock:$ktorVersion")
+    }
 }
+
 
 tasks {
     withType<KotlinCompile> {
         kotlinOptions.jvmTarget = JavaVersion.VERSION_11.toString()
     }
 }
+
