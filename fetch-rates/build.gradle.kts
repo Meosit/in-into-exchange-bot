@@ -14,11 +14,8 @@ dependencies {
 tasks {
 
     named<ShadowJar>("shadowJar") {
-        archiveFileName.set("InIntoBot.jar")
+        archiveFileName.set("fetch-rates.jar")
         mergeServiceFiles()
-        manifest {
-            attributes(mapOf("Main-Class" to "MainKt"))
-        }
     }
 
     register("stage") {
