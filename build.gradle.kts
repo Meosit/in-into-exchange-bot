@@ -47,7 +47,9 @@ allprojects {
         implementation("io.ktor:ktor-client-core:$ktorVersion")
         implementation("io.ktor:ktor-client-content-negotiation:$ktorVersion")
         implementation("io.ktor:ktor-serialization-kotlinx-json:$ktorVersion")
-        implementation("org.slf4j:slf4j-jdk14:2.0.0")
+        implementation("io.ktor:ktor-client-java:$ktorVersion")
+        implementation("org.slf4j:slf4j-api:2.0.0")
+        runtimeOnly("org.slf4j:slf4j-jdk14:2.0.0")
 
 
         testImplementation(kotlin("test"))

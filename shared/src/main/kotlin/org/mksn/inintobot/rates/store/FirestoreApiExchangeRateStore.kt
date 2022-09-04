@@ -27,7 +27,9 @@ class FirestoreApiExchangeRateStore : ApiExchangeRateStore, AutoCloseable {
             .setCredentials(credentials)
             .setProjectId(ServiceOptions.getDefaultProjectId())
             .build()
-        FirebaseApp.initializeApp(options)
+        if (FirebaseApp.getApps().find { it.name == FirebaseApp.DEFAULT_APP_NAME } == null) {
+            FirebaseApp.initializeApp(options)
+        }
         db = FirestoreClient.getFirestore()
     }
 
