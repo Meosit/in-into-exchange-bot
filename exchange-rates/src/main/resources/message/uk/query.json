@@ -1,0 +1,20 @@
+{
+  "headers": {
+    "rate": "\uD83D\uDCB9 Курс `%s`\n",
+    "api": "\uD83C\uDF10 _%s_\n",
+    "apiTime":"\uD83D\uDD59 _На %s (UTC)_\n",
+    "singleCurrencyExpression": "#️⃣ _%s (%s) =_\n",
+    "multiCurrencyExpression": "#️⃣ _%s =_\n"
+  },
+  "inlineTitles": {
+    "exchange": "%s %s ⇒ %s",
+    "calculate": "Просто порахувати",
+    "dashboard": "Курс %s"
+  },
+  "inlineThumbs": {
+    "exchange": "https://i.imgur.com/wR13J26.png",
+    "calculate": "https://i.imgur.com/aYmzJbg.png",
+    "dashboard": "https://i.imgur.com/Y506WlE.png"
+  },
+  "outputTooBigMessage": "❗Забагато символів"
+}

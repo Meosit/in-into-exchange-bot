@@ -1,0 +1,10 @@
+{
+  "hourShort": "g",
+  "hourOne": "godzina",
+  "hourTwoTillFour": "godziny",
+  "hourFiveTillTen": "godzin",
+  "minuteShort": "min",
+  "minuteOne": "minuta",
+  "minuteTwoTillFour": "minuty",
+  "minuteFiveTillTen": "minut"
+}

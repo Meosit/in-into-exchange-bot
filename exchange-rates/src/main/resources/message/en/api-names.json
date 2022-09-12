@@ -1,0 +1,11 @@
+{
+  "NBRB": "Bank of Belarus",
+  "NBU": "Bank of Ukraine",
+  "NBP": "Bank of Poland",
+  "CBR": "Bank of Russia",
+  "ECB": "Bank of Europe",
+  "Fixer": "Fixer.io",
+  "OpenExchangeRates": "OpenExchangeRates.org",
+  "TraderMade": "TraderMade.com",
+  "Forex": "Forex API"
+}

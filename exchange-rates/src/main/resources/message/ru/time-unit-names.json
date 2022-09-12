@@ -1,0 +1,10 @@
+{
+  "hourShort": "ч",
+  "hourOne": "час",
+  "hourTwoTillFour": "часа",
+  "hourFiveTillTen": "часов",
+  "minuteShort": "мин",
+  "minuteOne": "минуту",
+  "minuteTwoTillFour": "минуты",
+  "minuteFiveTillTen": "минут"
+}

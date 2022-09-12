@@ -1,0 +1,10 @@
+{
+  "hourShort": "h",
+  "hourOne": "hour",
+  "hourTwoTillFour": "hours",
+  "hourFiveTillTen": "hours",
+  "minuteShort": "min",
+  "minuteOne": "minute",
+  "minuteTwoTillFour": "minutes",
+  "minuteFiveTillTen": "minutes"
+}
