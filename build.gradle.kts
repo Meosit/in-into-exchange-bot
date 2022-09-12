@@ -51,6 +51,8 @@ allprojects {
         implementation("org.slf4j:slf4j-api:2.0.0")
         runtimeOnly("org.slf4j:slf4j-jdk14:2.0.0")
 
+        implementation("com.google.firebase:firebase-admin:9.0.0")
+        api("com.google.cloud.functions:functions-framework-api:1.0.4")
 
         testImplementation(kotlin("test"))
         testImplementation("io.ktor:ktor-client-mock:$ktorVersion")

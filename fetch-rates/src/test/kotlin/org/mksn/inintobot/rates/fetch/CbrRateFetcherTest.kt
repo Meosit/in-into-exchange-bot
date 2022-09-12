@@ -10,7 +10,6 @@ import org.mksn.inintobot.misc.toFixedScaleBigDecimal
 import org.mksn.inintobot.rates.RateApi
 import org.mksn.inintobot.rates.assertEqualsUnordered
 import org.mksn.inintobot.rates.fullUrl
-import org.mksn.inintobot.rates.testCurrencies
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 
@@ -80,8 +79,9 @@ class CbrRateFetcherTest {
     @Test
     fun successful_fetch_and_parse() {
         val json = Json
-        val apiConfig = RateApi("CBR", Currencies.forCode("RUB"), testUrl, testUrl, setOf(), 1)
+        val apiConfig = RateApi("CBR", arrayOf(), Currencies["RUB"], testUrl, testUrl, setOf(), 1)
         val fetcher = CbrRateFetcher(apiConfig, httpClient, json)
+        val testCurrencies = Currencies.filter { it.code in setOf("UAH", "USD", "EUR", "KZT", "BYN", "PLN") }
         val expectedRates = mapOf(
             testCurrencies.first { it.code == "UAH" } to 10.toFixedScaleBigDecimal() / "25.7973".toFixedScaleBigDecimal(),
             testCurrencies.first { it.code == "USD" } to 1.toFixedScaleBigDecimal() / "68.6319".toFixedScaleBigDecimal(),

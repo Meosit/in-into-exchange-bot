@@ -1,11 +1,13 @@
 package org.mksn.inintobot.rates
 
 import org.mksn.inintobot.currency.Currency
-import org.mksn.inintobot.misc.toFixedScaleBigDecimal
 import org.mksn.inintobot.misc.*
 import java.math.BigDecimal
 import java.time.LocalDate
 import java.time.LocalTime
+import java.time.ZoneOffset
+import java.time.ZonedDateTime
+import java.time.temporal.ChronoUnit
 
 /**
  * Currency API Configuration
@@ -48,6 +50,8 @@ data class ApiExchangeRates(
         }
         return exchanges
     }
+
+    fun staleData() = ChronoUnit.HOURS.between(ZonedDateTime.of(date, time, ZoneOffset.UTC), ZonedDateTime.now(ZoneOffset.UTC)) >= api.refreshHours * 2
 
 }
 

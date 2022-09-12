@@ -38,7 +38,7 @@ class Function : HttpFunction {
             }
         }
 
-        val jobs = RateApis.AVAILABLE.values.map { async(Dispatchers.Default) { reloadOne(it, store, httpClient, json) } }
+        val jobs = RateApis.map { async(Dispatchers.Default) { reloadOne(it, store, httpClient, json) } }
         jobs.forEach { it.await() }
         response.setStatusCode(HttpStatusCode.OK.value)
     }
@@ -49,7 +49,7 @@ class Function : HttpFunction {
             for (i in 1..numRetries) {
                 logger.info("${api.name}: Reloading exchange rates (try $i)...")
                 try {
-                    val rates = ApiRateFetcher.forApi(api, httpClient, json).fetch(Currencies.ALL.values.toList())
+                    val rates = ApiRateFetcher.forApi(api, httpClient, json).fetch(Currencies)
                     logger.info("${api.name}: Loaded rates")
                     val oldRates = store.runCatching { getLatest(api.name) }.onFailure {
                         logger.warn("${api.name}: Failed fetch latest rates for api: $it")

@@ -10,7 +10,6 @@ import org.mksn.inintobot.misc.toFixedScaleBigDecimal
 import org.mksn.inintobot.rates.RateApi
 import org.mksn.inintobot.rates.assertEqualsUnordered
 import org.mksn.inintobot.rates.fullUrl
-import org.mksn.inintobot.rates.testCurrencies
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 
@@ -86,8 +85,9 @@ class EcbRateFetcherTest {
     @Test
     fun successful_fetch_and_parse() {
         val json = Json
-        val apiConfig = RateApi("ECB", Currencies.forCode("EUR"), testUrl, testUrl, setOf(), 1)
+        val apiConfig = RateApi("ECB", arrayOf(), Currencies["EUR"], testUrl, testUrl, setOf(), 1)
         val fetcher = EcbRateFetcher(apiConfig, httpClient, json)
+        val testCurrencies = Currencies.filter { it.code in setOf("USD", "EUR", "PLN") }
         val expectedRates = mapOf(
             testCurrencies.first { it.code == "USD" } to "1.1330".toFixedScaleBigDecimal(),
             testCurrencies.first { it.code == "EUR" } to "1".toFixedScaleBigDecimal(),

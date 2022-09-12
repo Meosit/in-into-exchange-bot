@@ -1,17 +1,19 @@
 package org.mksn.inintobot.rates
 
-import kotlinx.serialization.Serializable
 import org.mksn.inintobot.currency.Currency
 
 /**
  * Currency API Configuration
  */
-@Serializable
 data class RateApi(
     /**
      * Name of the API to reference it within an app
      */
     val name: String,
+    /**
+     * Currency base used by this API
+     */
+    val aliases: Array<String>,
     /**
      * Currency base used by this API
      */
@@ -32,10 +34,6 @@ data class RateApi(
      * Number of hours after the last refresh to consider the data is outdated and should be refreshed
      */
     val refreshHours: Int,
-    /**
-     * If false - do not use this api for reloading and serving
-     */
-    val available: Boolean = true
 ) {
     /**
      * Comparison is performed only over the API name.

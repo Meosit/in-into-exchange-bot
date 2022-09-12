@@ -3,12 +3,10 @@ package org.mksn.inintobot.rates.store
 import org.mksn.inintobot.rates.ApiExchangeRates
 import java.time.LocalDate
 
-interface ApiExchangeRateStore : AutoCloseable {
+interface ApiExchangeRateStore {
 
     /**
      * Saves specified [rates] to the platform-specific store
-     *
-     * @throws StoreUnavailableException if failed to save rates
      */
     fun save(rates: ApiExchangeRates)
 
