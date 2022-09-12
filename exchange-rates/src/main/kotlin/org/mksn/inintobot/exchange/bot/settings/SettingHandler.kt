@@ -1,8 +1,8 @@
 package org.mksn.inintobot.exchange.bot.settings
 
-import org.mksn.inintobot.exchange.json
+import kotlinx.serialization.json.Json
+import org.mksn.inintobot.exchange.BotContext
 import org.mksn.inintobot.exchange.output.BotOutput
-import org.mksn.inintobot.exchange.output.BotOutputSender
 import org.mksn.inintobot.exchange.output.BotTextOutput
 import org.mksn.inintobot.exchange.output.strings.BotMessages
 import org.mksn.inintobot.exchange.output.strings.SettingsStrings
@@ -10,7 +10,6 @@ import org.mksn.inintobot.exchange.settings.UserSettings
 import org.mksn.inintobot.exchange.telegram.InlineKeyboardButton
 import org.mksn.inintobot.exchange.telegram.InlineKeyboardMarkup
 import org.mksn.inintobot.exchange.telegram.Message
-import org.mksn.inintobot.exchange.userSettingsStore
 import org.mksn.inintobot.misc.lettersDiffer
 import org.slf4j.LoggerFactory
 
@@ -37,7 +36,7 @@ abstract class SettingHandler(id: Int) {
 
     protected abstract fun messageMarkdown(settings: UserSettings, messages: SettingsStrings.MessagesSettingsStrings): String
 
-    protected open fun createOutputWithKeyboard(settings: UserSettings): BotOutput {
+    protected open fun createOutputWithKeyboard(settings: UserSettings, json: Json): BotOutput {
         val settingsStrings = BotMessages.settings.of(settings.language)
         val buttons = keyboardButtons(settings, settingsStrings.buttons.checked)
         logger.info("${buttons.size} buttons generated")
@@ -62,27 +61,27 @@ abstract class SettingHandler(id: Int) {
     protected fun throwInvalid(data: String?): Nothing =
         throw IllegalStateException("Invalid payload '$data' supplied")
 
-    open suspend fun handle(data: String?, message: Message, current: UserSettings, sender: BotOutputSender) {
+    open suspend fun handle(data: String?, message: Message, current: UserSettings, context: BotContext) {
         logger.info("Handling settings payload: $data")
         val payload = data?.trimType()
         if (payload == null) {
-            val output = createOutputWithKeyboard(current)
+            val output = createOutputWithKeyboard(current, context.json)
             if (output.markdown() lettersDiffer message.text) {
-                sender.editChatMessage(message.chat.id.toString(), message.messageId, output)
+                context.sender.editChatMessage(message.chat.id.toString(), message.messageId, output)
             }
         } else {
             if (isValidPayload(payload)) {
                 val newSettings = createNewSettings(current, payload)
                 try {
-                    userSettingsStore.save(message.chat.id.toString(), newSettings)
+                    context.settingsStore.save(message.chat.id.toString(), newSettings)
                     logger.info("Settings successfully updated: $newSettings")
-                    val output = createOutputWithKeyboard(newSettings)
+                    val output = createOutputWithKeyboard(newSettings, context.json)
                     if (output.markdown() lettersDiffer message.text) {
-                        sender.editChatMessage(message.chat.id.toString(), message.messageId, output)
+                        context.sender.editChatMessage(message.chat.id.toString(), message.messageId, output)
                     }
                 } catch (e: Exception) {
                     val error = BotMessages.errors.of(current.language).unableToSave
-                    sender.editChatMessage(message.chat.id.toString(), message.messageId, BotTextOutput(error))
+                    context.sender.editChatMessage(message.chat.id.toString(), message.messageId, BotTextOutput(error))
                     throw e
                 }
             } else {

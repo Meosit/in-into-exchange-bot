@@ -1,6 +1,6 @@
 package org.mksn.inintobot.exchange.bot.settings
 
-import org.mksn.inintobot.exchange.output.BotOutputSender
+import org.mksn.inintobot.exchange.BotContext
 import org.mksn.inintobot.exchange.output.strings.BotMessages
 import org.mksn.inintobot.exchange.output.strings.SettingsStrings
 import org.mksn.inintobot.exchange.settings.UserSettings
@@ -28,21 +28,21 @@ object RootSettingHandler : SettingHandler(1) {
         throw IllegalStateException("Not applicable for root button press")
     }
 
-    override suspend fun handle(data: String?, message: Message, current: UserSettings, sender: BotOutputSender) {
+    override suspend fun handle(data: String?, message: Message, current: UserSettings, context: BotContext) {
         when (data?.trimType()) {
-            "language" -> Setting.LANGUAGE.handle(null, message, current, sender)
-            "defaultCurrency" -> Setting.DEFAULT_CURRENCY.handle(null, message, current, sender)
-            "defaultApi" -> Setting.DEFAULT_API.handle(null, message, current, sender)
-            "outputCurrencies" -> Setting.OUTPUT_CURRENCIES.handle(null, message, current, sender)
-            "dashboardCurrencies" -> Setting.DASHBOARD_CURRENCIES.handle(null, message, current, sender)
-            "decimalDigits" -> Setting.DECIMAL_DIGITS.handle(null, message, current, sender)
+            "language" -> Setting.LANGUAGE.handle(null, message, current, context)
+            "defaultCurrency" -> Setting.DEFAULT_CURRENCY.handle(null, message, current, context)
+            "defaultApi" -> Setting.DEFAULT_API.handle(null, message, current, context)
+            "outputCurrencies" -> Setting.OUTPUT_CURRENCIES.handle(null, message, current, context)
+            "dashboardCurrencies" -> Setting.DASHBOARD_CURRENCIES.handle(null, message, current, context)
+            "decimalDigits" -> Setting.DECIMAL_DIGITS.handle(null, message, current, context)
             else -> {
-                val output = createOutputWithKeyboard(current)
+                val output = createOutputWithKeyboard(current, context.json)
                 if (data == null) {
-                    sender.sendChatMessage(message.chat.id.toString(), output)
+                    context.sender.sendChatMessage(message.chat.id.toString(), output)
                 } else {
                     if (output.markdown() lettersDiffer message.text) {
-                        sender.editChatMessage(message.chat.id.toString(), message.messageId, output)
+                        context.sender.editChatMessage(message.chat.id.toString(), message.messageId, output)
                     }
                 }
             }

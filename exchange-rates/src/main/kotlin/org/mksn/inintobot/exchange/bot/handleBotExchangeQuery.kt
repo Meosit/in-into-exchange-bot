@@ -12,21 +12,19 @@ import org.mksn.inintobot.exchange.grammar.alias.CurrencyAliases
 import org.mksn.inintobot.exchange.grammar.alias.RateAliases
 import org.mksn.inintobot.exchange.output.*
 import org.mksn.inintobot.exchange.output.strings.BotMessages
-import org.mksn.inintobot.exchange.rateStore
 import org.mksn.inintobot.exchange.settings.UserSettings
 import org.mksn.inintobot.misc.DEFAULT_DECIMAL_DIGITS
 import org.mksn.inintobot.rates.*
+import org.mksn.inintobot.rates.store.ApiExchangeRateStore
 import org.slf4j.LoggerFactory
-import java.time.format.DateTimeFormatter
 
 private val logger = LoggerFactory.getLogger("handleBotQuery")
 
 val botOutputRegex = "([\uD83C-\uDBFF\uDC00-\uDFFF]{2}[A-Z]{3} {2}\\d+(\\.\\d+)? ?)+".toRegex()
 val botJustCalculateReminder = "\\s?=\\s\\d+(\\.\\d+)?".toRegex()
-val apiTimeFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")
 data class ExchangeAll(val exchanged: List<Exchange>, val errorMessage: String?)
 
-fun handleBotExchangeQuery(query: String, settings: UserSettings): Array<BotOutput> {
+fun handleBotExchangeQuery(query: String, settings: UserSettings, rateStore: ApiExchangeRateStore): Array<BotOutput> {
     val defaultApi = RateApis[settings.apiName]
 
     val grammar = BotInputGrammar(CurrencyAliases, RateAliases)

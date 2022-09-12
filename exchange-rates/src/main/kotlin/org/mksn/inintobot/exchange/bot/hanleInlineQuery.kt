@@ -2,14 +2,13 @@ package org.mksn.inintobot.exchange.bot
 
 import org.mksn.inintobot.currency.Currencies
 import org.mksn.inintobot.currency.Currency
+import org.mksn.inintobot.exchange.BotContext
 import org.mksn.inintobot.exchange.expression.EvaluatedExpression
 import org.mksn.inintobot.exchange.expression.ExpressionType
-import org.mksn.inintobot.exchange.output.BotOutputSender
 import org.mksn.inintobot.exchange.output.BotSimpleErrorOutput
 import org.mksn.inintobot.exchange.output.BotStaleRatesOutput
 import org.mksn.inintobot.exchange.output.BotSuccessOutput
 import org.mksn.inintobot.exchange.output.strings.BotMessages
-import org.mksn.inintobot.exchange.rateStore
 import org.mksn.inintobot.exchange.settings.UserSettings
 import org.mksn.inintobot.exchange.telegram.InlineQuery
 import org.mksn.inintobot.misc.toFixedScaleBigDecimal
@@ -20,7 +19,7 @@ import org.slf4j.LoggerFactory
 
 private val logger = LoggerFactory.getLogger("handleInlineQuery")
 
-suspend fun InlineQuery.handle(settings: UserSettings, sender: BotOutputSender) {
+suspend fun InlineQuery.handle(settings: UserSettings, context: BotContext) {
     val outputs = if (query.isBlank()) {
         logger.info("Handling dashboard inline query")
         val api = RateApis[settings.apiName]
@@ -28,7 +27,7 @@ suspend fun InlineQuery.handle(settings: UserSettings, sender: BotOutputSender) 
         val apiBaseCurrency = currencies.first { it == api.base }
         logger.info("Api is ${api.name} (base: ${apiBaseCurrency.code}), currencies: ${currencies.joinToString { it.code }}")
 
-        val rates = rateStore.getLatest(api.name)
+        val rates = context.rateStore.getLatest(api.name)
         if (rates != null) {
             val queryStrings = BotMessages.query.of(settings.language)
             val apiDisplayNames = BotMessages.apiDisplayNames.of(settings.language)
@@ -48,10 +47,10 @@ suspend fun InlineQuery.handle(settings: UserSettings, sender: BotOutputSender) 
         }
     } else {
         logger.info("Handling inline query '$query'")
-        handleBotExchangeQuery(query, settings)
+        handleBotExchangeQuery(query, settings, context.rateStore)
     }
 
-    sender.sendInlineQuery(id, *outputs)
+    context.sender.sendInlineQuery(id, *outputs)
 }
 
 private fun exchangeAllGracefully(
