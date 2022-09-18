@@ -9,12 +9,12 @@ import org.mksn.inintobot.exchange.output.strings.BotMessages
 import org.mksn.inintobot.exchange.settings.UserSettings
 import org.mksn.inintobot.exchange.settings.UserSettingsStore
 import org.mksn.inintobot.exchange.telegram.Update
-import org.slf4j.LoggerFactory
 import java.io.PrintWriter
 import java.io.StringWriter
+import java.util.logging.Logger
 
 
-private val logger = LoggerFactory.getLogger("handleTelegramRequest")
+private val logger = Logger.getLogger("handleTelegramRequest")
 
 suspend fun handleTelegramRequest(
     update: Update,
@@ -23,8 +23,7 @@ suspend fun handleTelegramRequest(
     try {
         val settings = context.settingsStore.loadSettings(update)
         with(update) {
-            logger.info("User {}", userReadableName())
-            logger.info("Settings: $settings")
+            logger.info("User ${userReadableName()}, settings: $settings")
             when {
                 inlineQuery != null -> inlineQuery.handle(settings, context)
                 message != null -> message.handle(settings, context)
@@ -46,7 +45,7 @@ suspend fun handleTelegramRequest(
         }
         val sw = StringWriter()
         e.printStackTrace(PrintWriter(sw))
-        logger.error(sw.toString())
+        logger.severe(sw.toString())
     }
     return
 }
@@ -55,7 +54,7 @@ fun UserSettingsStore.loadSettings(update: Update) = with(update) {
     val chat = message?.chat ?: editedMessage?.chat ?: callbackQuery?.message?.chat
     val telegramUser = inlineQuery?.from ?: message?.from ?: editedMessage?.from ?: callbackQuery?.from
     val userId = chat?.id ?: telegramUser?.id
-    val settings = userId?.let { this@loadSettings.get(it.toString()) }
+    val settings = userId?.let { get(it.toString()) }
     if (settings != null) {
         logger.info("Loaded settings for user $userId (${userReadableName()}): $settings")
         settings

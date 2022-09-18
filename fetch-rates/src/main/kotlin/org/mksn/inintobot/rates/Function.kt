@@ -16,15 +16,14 @@ import org.mksn.inintobot.currency.Currencies
 import org.mksn.inintobot.rates.fetch.ApiRateFetcher
 import org.mksn.inintobot.rates.store.ApiExchangeRateStore
 import org.mksn.inintobot.rates.store.FirestoreApiExchangeRateStore
-import org.slf4j.Logger
-import org.slf4j.LoggerFactory
 import java.io.PrintWriter
 import java.io.StringWriter
 import java.time.ZoneOffset
 import java.time.ZonedDateTime
+import java.util.logging.Logger
 
 private const val numRetries = 3
-private val logger: Logger = LoggerFactory.getLogger(Function::class.java)
+private val logger: Logger = Logger.getLogger(Function::class.simpleName)
 private val store: ApiExchangeRateStore = FirestoreApiExchangeRateStore()
 
 @Suppress("unused")
@@ -52,7 +51,7 @@ class Function : HttpFunction {
                     val rates = ApiRateFetcher.forApi(api, httpClient, json).fetch(Currencies)
                     logger.info("${api.name}: Loaded rates")
                     val oldRates = store.runCatching { getLatest(api.name) }.onFailure {
-                        logger.warn("${api.name}: Failed fetch latest rates for api: $it")
+                        logger.warning("${api.name}: Failed fetch latest rates for api: $it")
                     }.getOrNull()
                     val refreshed = ZonedDateTime.now(ZoneOffset.UTC).withNano(0)
                     if (oldRates != null && oldRates.rates == rates) {
@@ -67,7 +66,7 @@ class Function : HttpFunction {
                 } catch (e: Exception) {
                     val sw = StringWriter()
                     e.printStackTrace(PrintWriter(sw))
-                    logger.error("${api.name}: Failed to load or store new rates: \n$sw")
+                    logger.severe("${api.name}: Failed to load or store new rates: \n$sw")
                 }
             }
         } else {

@@ -8,26 +8,24 @@ import org.mksn.inintobot.currency.Currency
 import org.mksn.inintobot.exchange.expression.ExpressionEvaluator
 import org.mksn.inintobot.exchange.expression.ExpressionType
 import org.mksn.inintobot.exchange.grammar.BotInputGrammar
-import org.mksn.inintobot.exchange.grammar.alias.CurrencyAliases
-import org.mksn.inintobot.exchange.grammar.alias.RateAliases
+import org.mksn.inintobot.exchange.grammar.alias.CurrencyAliasMatcher
+import org.mksn.inintobot.exchange.grammar.alias.RateAliasMatcher
 import org.mksn.inintobot.exchange.output.*
 import org.mksn.inintobot.exchange.output.strings.BotMessages
 import org.mksn.inintobot.exchange.settings.UserSettings
 import org.mksn.inintobot.misc.DEFAULT_DECIMAL_DIGITS
 import org.mksn.inintobot.rates.*
 import org.mksn.inintobot.rates.store.ApiExchangeRateStore
-import org.slf4j.LoggerFactory
+import java.util.logging.Logger
 
-private val logger = LoggerFactory.getLogger("handleBotQuery")
+private val logger = Logger.getLogger("handleBotQuery")
+private val grammar = BotInputGrammar(CurrencyAliasMatcher, RateAliasMatcher)
 
-val botOutputRegex = "([\uD83C-\uDBFF\uDC00-\uDFFF]{2}[A-Z]{3} {2}\\d+(\\.\\d+)? ?)+".toRegex()
-val botJustCalculateReminder = "\\s?=\\s\\d+(\\.\\d+)?".toRegex()
 data class ExchangeAll(val exchanged: List<Exchange>, val errorMessage: String?)
 
 fun handleBotExchangeQuery(query: String, settings: UserSettings, rateStore: ApiExchangeRateStore): Array<BotOutput> {
     val defaultApi = RateApis[settings.apiName]
 
-    val grammar = BotInputGrammar(CurrencyAliases, RateAliases)
     when (val result = grammar.tryParseToEnd(query)) {
         is Parsed -> with(result.value) {
             val api = rateApi ?: defaultApi
@@ -38,7 +36,7 @@ fun handleBotExchangeQuery(query: String, settings: UserSettings, rateStore: Api
                 else -> decimalDigits
             }
             logger.info("New precision is $decimalDigits")
-            logger.info("Chosen api is ${api.name} (default: ${defaultApi.name})", api.name)
+            logger.info("Chosen api is ${api.name} (default: ${defaultApi.name})")
             val apiCurrencies = Currencies.filterNot { it.code in api.unsupported }
             val apiBaseCurrency = api.base
             val defaultCurrency = apiCurrencies.firstOrNull { it.code == settings.defaultCurrency } ?: apiBaseCurrency
@@ -46,7 +44,7 @@ fun handleBotExchangeQuery(query: String, settings: UserSettings, rateStore: Api
             logger.info("Currencies (default: ${defaultCurrency.code}, api base: ${apiBaseCurrency.code}): ${apiCurrencies.joinToString { it.code } }")
             val rates = rateStore.getLatest(api.name)
             if (rates == null) {
-                logger.error("Rates unavailable for API ${api.name}")
+                logger.severe("Rates unavailable for API ${api.name}")
                 return arrayOf(BotSimpleErrorOutput(BotMessages.errors.of(settings.language).ratesUnavailable))
             }
 
@@ -92,16 +90,8 @@ fun handleBotExchangeQuery(query: String, settings: UserSettings, rateStore: Api
         is ErrorResult -> {
             val messages = BotMessages.errors.of(settings.language)
             val output = result.toBotOutput(query, messages)
-            val botOutputAsInput = botOutputRegex.containsMatchIn(output.rawInput)
-            val botJustCalculateAsInput = output.errorMessage == messages.unparsedReminder
-                    && botJustCalculateReminder.matches(output.rawInput.substring(output.errorPosition - 1))
-            return if (botOutputAsInput || botJustCalculateAsInput) {
-                logger.info("Bot inline query output used as chat input")
-                arrayOf(BotSimpleErrorOutput(messages.inlineOutputAsChatInput))
-            } else{
-                logger.info("Invalid query provided: ${output.errorMessage} (at ${output.errorPosition})")
-                arrayOf(output)
-            }
+            logger.info("Invalid query provided: ${output.errorMessage} (at ${output.errorPosition})")
+            return arrayOf(output)
         }
     }
 }

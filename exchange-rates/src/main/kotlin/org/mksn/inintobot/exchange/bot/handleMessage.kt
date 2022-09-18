@@ -3,17 +3,18 @@ package org.mksn.inintobot.exchange.bot
 import org.mksn.inintobot.currency.Currencies
 import org.mksn.inintobot.exchange.BotContext
 import org.mksn.inintobot.exchange.bot.settings.Setting
+import org.mksn.inintobot.exchange.output.BotSimpleErrorOutput
 import org.mksn.inintobot.exchange.output.BotTextOutput
 import org.mksn.inintobot.exchange.output.strings.BotMessages
 import org.mksn.inintobot.exchange.settings.UserSettings
 import org.mksn.inintobot.exchange.telegram.Message
 import org.mksn.inintobot.rates.RateApis
-import org.slf4j.LoggerFactory
 import java.time.ZoneOffset
 import java.time.ZonedDateTime
+import java.util.logging.Logger
 
 
-private val logger = LoggerFactory.getLogger("handleMessage")
+private val logger = Logger.getLogger("handleMessage")
 
 
 suspend fun Message.handle(
@@ -78,8 +79,14 @@ suspend fun Message.handle(
         }
         else -> {
             logger.info("Handling '$text' chat message")
-            val outputs = handleBotExchangeQuery(text, settings, context.rateStore)
-            outputs.firstOrNull()?.let { context.sender.sendChatMessage(chat.id.toString(), it) }
+            if (context.botUsername in (viaBot?.username ?: "")) {
+                logger.info("Bot inline query output used as chat input")
+                val messages = BotMessages.errors.of(settings.language)
+                context.sender.sendChatMessage(chat.id.toString(), BotSimpleErrorOutput(messages.inlineOutputAsChatInput))
+            } else {
+                val outputs = handleBotExchangeQuery(text, settings, context.rateStore)
+                outputs.firstOrNull()?.let { context.sender.sendChatMessage(chat.id.toString(), it) }
+            }
         }
     }
 }

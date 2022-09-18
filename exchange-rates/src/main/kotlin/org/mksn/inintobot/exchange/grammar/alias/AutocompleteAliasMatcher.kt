@@ -1,51 +1,55 @@
 package org.mksn.inintobot.exchange.grammar.alias
 
 
-abstract class AutocompleteAliasMatcher<out T> : AliasMatcher<T> {
+abstract class AutocompleteAliasMatcher<T> : AliasMatcher<T> {
 
     abstract val aliases: Map<String, T>
+    abstract val aliasCharacters: Set<Char>
 
     override val totalAliases: Int get() = aliases.size
 
-    override fun matchOrNull(candidate: String): T? = when (candidate) {
+    override fun charCanBeMatched(char: Char): Boolean = isAutocompletePossibleMatch(char) || char in aliasCharacters
+
+    override fun matchOrNull(candidate: String): T? = when (val alias = candidate.lowercase()) {
         "" -> null
-        in aliases -> aliases[candidate]
+        in aliases -> aliases[alias]
         // original value is a priority, then goes transliterated one, last if keyboard-switched
-        else -> with(aliases) {
-            val root = candidate.wordRoot()
-            firstNotNullOfOrNull { (k, v) -> v.takeIf { k.startsWith(root, true) } }
-                ?: firstNotNullOfOrNull { (k, v) -> v.takeIf { k.transliterate().startsWith(root, true) } }
-                ?: firstNotNullOfOrNull { (k, v) -> v.takeIf { k.switchKeyboard().startsWith(root, true) } }
-        }
+        else -> alias.length.takeIf { it > 1 }?.let {
+            val root = alias.wordRoot()
+            aliases[root]
+                ?: aliases.firstNotNullOfOrNull { (k, v) -> v.takeIf { k.startsWith(root, true) } }
+                ?: aliases.firstNotNullOfOrNull { (k, v) -> v.takeIf { k.transliterate().startsWith(root, true) } }
+                ?: aliases.firstNotNullOfOrNull { (k, v) -> v.takeIf { k.switchKeyboard().startsWith(root, true) } }
+        } ?: aliases[alias.transliterate().lowercase()] ?: aliases[alias.switchKeyboard().lowercase()]
     }
 
     override fun match(candidate: String): T = matchOrNull(candidate)
-        ?: throw NoSuchElementException("Cannot autocomplete given candidate '${candidate}' to known ${aliases.size} aliases")
+        ?: throw NoSuchElementException("Cannot match given candidate '${candidate}' to known ${aliases.size} aliases")
 
     companion object {
         // The 'native' typing mapping of cyrillic symbols to the corresponding latin symbols on the same keyboard buttons
         // (e.g. the person forgot to switch the keyboard to cyrillic, but started typing and vice versa)
         // NOT ALL keyboard letters included, just the buttons where letters in both languages present
         private const val CYRILLIC_KEYBOARD_LETTERS =
-            """йцукенгшщзфывапролдячсмитьЙЦУКЕНГШЩЗФЫВАПРОЛДЯЧСМИТЬ"""
+              """йцукенгшщзхъфывапролджэёячсмитьбюЙЦУКЕНГШЩЗХЪФЫВАПРОЛДЖЭЁЯЧСМИТЬБЮ"""
         private const val LATIN_KEYBOARD_LETTERS =
-            """qwertyuiopasdfghjklzxcvbnmQWERTYUIOPASDFGHJKLZXCVBNM"""
+              """qwertyuiop[]asdfghjkl;'\zxcvbnm,.QWERTYUIOP{}ASDFGHJKL:"|ZXCVBNM<>"""
 
         // Cyrillic-latin naive transliteration, only for letters which have exact one-letter alternative,
         // for example cyrillic 'Ш' transliterates to 'SH', hence not inclided
         private const val CYRILLIC_TRANSLIT_LETTERS =
-            """абвгдезиклмнопрстyфцАБВГДЕЗИЙКЛМНОПРСТУФЦ"""
+            """абвгдезийклмнопрстyфцАБВГДЕЗИЙКЛМНОПРСТУФЦ"""
         private const val LATIN_TRANSLIT_LETTERS =
-            """abvgdeziklmnoprstufcABVGDEZIYKLMNOPRSTUFC"""
+            """abvgdeziyklmnoprstufcABVGDEZIYKLMNOPRSTUFC"""
 
         private val wordEndings =
-            arrayOf("ый", "ей", "oй", "oв", "ая", "ые", "ых", "ях", "ах", "ия", "ии", "ь", "a", "ы", "и", "е", "я", "s")
+            arrayOf("ый", "ей", "ой", "ов", "ая", "ые", "ых", "ях", "ах", "ия", "ии", "ь", "а", "ы", "и", "е", "я", "s")
 
         /**
          * Naive implementation of getting word root,
          * good-enough for currencies case as we try to cover as much as possible
          */
-        fun String.wordRoot(): String = takeIf { length > 3 }?.let {
+        private fun String.wordRoot(): String = takeIf { length > 3 }?.let {
             with(lowercase()) {
                 wordEndings
                     .firstOrNull { this.endsWith(it) }
@@ -61,6 +65,8 @@ abstract class AutocompleteAliasMatcher<out T> : AliasMatcher<T> {
                 chars[index++] = transform(char)
             return String(chars)
         }
+
+        private fun isAutocompletePossibleMatch(char: Char) = char in LATIN_KEYBOARD_LETTERS || char in CYRILLIC_KEYBOARD_LETTERS
 
         /**
          * Returns a string, contained of chars from the **cyrillic** or **latin** keyboard layout using the same *physical button* as a comparison criteria.

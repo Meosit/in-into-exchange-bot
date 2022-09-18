@@ -14,6 +14,7 @@ import org.mksn.inintobot.rates.store.FirestoreApiExchangeRateStore
 data class BotContext(
     val creatorId: String,
     val botToken: String,
+    val botUsername: String,
     val rateStore: ApiExchangeRateStore = FirestoreApiExchangeRateStore(),
     val settingsStore: UserSettingsStore = FirestoreUserSettingsStore(),
     val json: Json = Json { ignoreUnknownKeys = true; isLenient = true },

@@ -48,10 +48,8 @@ allprojects {
         implementation("io.ktor:ktor-client-content-negotiation:$ktorVersion")
         implementation("io.ktor:ktor-serialization-kotlinx-json:$ktorVersion")
         implementation("io.ktor:ktor-client-java:$ktorVersion")
-        implementation("org.slf4j:slf4j-api:2.0.0")
-        runtimeOnly("org.slf4j:slf4j-jdk14:2.0.0")
 
-        implementation("com.google.firebase:firebase-admin:9.0.0")
+        implementation("com.google.cloud:google-cloud-firestore:3.4.2")
         api("com.google.cloud.functions:functions-framework-api:1.0.4")
 
         testImplementation(kotlin("test"))

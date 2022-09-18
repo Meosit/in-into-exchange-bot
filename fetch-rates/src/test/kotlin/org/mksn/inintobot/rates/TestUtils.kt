@@ -3,6 +3,9 @@ package org.mksn.inintobot.rates
 import io.ktor.http.*
 import kotlin.test.assertEquals
 
+private val Url.hostWithPortIfRequired: String get() = if (port == protocol.defaultPort) host else hostWithPort
+val Url.fullUrl: String get() = "${protocol.name}://$hostWithPortIfRequired$fullPath"
+
 /**
  * Asserts two [Iterable]s without specific order using [expected] as a base one
  */
@@ -18,6 +21,3 @@ fun <E : Any, C : Iterable<E>> assertEqualsUnordered(expected: C, actual: C, key
         )
     }
 }
-
-private val Url.hostWithPortIfRequired: String get() = if (port == protocol.defaultPort) host else hostWithPort
-val Url.fullUrl: String get() = "${protocol.name}://$hostWithPortIfRequired$fullPath"

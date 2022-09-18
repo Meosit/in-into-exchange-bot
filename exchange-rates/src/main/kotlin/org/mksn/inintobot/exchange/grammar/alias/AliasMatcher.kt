@@ -4,6 +4,8 @@ interface AliasMatcher<out T> {
 
     val totalAliases: Int
 
+    fun charCanBeMatched(char: Char): Boolean
+
     fun matchOrNull(candidate: String): T?
 
     fun match(candidate: String): T = matchOrNull(candidate)

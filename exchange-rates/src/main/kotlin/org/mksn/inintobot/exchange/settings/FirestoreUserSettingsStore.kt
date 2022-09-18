@@ -15,7 +15,7 @@ class FirestoreUserSettingsStore(private val db: Firestore = FirestoreHolder.INS
     }
 
     override fun get(id: String): UserSettings? = db.collection(collectionSuffix)
-        .document("").get().get().data?.fromFirestoreMap()
+        .document(id).get().get().data?.fromFirestoreMap()
 
     private fun UserSettings.toFirestoreMap(): Map<String, Any> = mapOf(
         "language" to language,
@@ -29,7 +29,7 @@ class FirestoreUserSettingsStore(private val db: Firestore = FirestoreHolder.INS
 
     private fun Map<String, Any>.fromFirestoreMap() = UserSettings(
         language = this["language"].toString(),
-        decimalDigits = this["decimalDigits"] as Int,
+        decimalDigits = (this["decimalDigits"] as Long).toInt(),
         defaultCurrency = this["defaultCurrency"].toString(),
         apiName = this["apiName"].toString(),
         outputCurrencies = (this["outputCurrencies"] as List<*>).map { it.toString() },

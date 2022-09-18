@@ -11,9 +11,9 @@ import org.mksn.inintobot.exchange.telegram.InlineKeyboardButton
 import org.mksn.inintobot.exchange.telegram.InlineKeyboardMarkup
 import org.mksn.inintobot.exchange.telegram.Message
 import org.mksn.inintobot.misc.lettersDiffer
-import org.slf4j.LoggerFactory
+import java.util.logging.Logger
 
-private val logger = LoggerFactory.getLogger(SettingHandler::class.simpleName)
+private val logger = Logger.getLogger(SettingHandler::class.simpleName)
 
 abstract class SettingHandler(id: Int) {
 

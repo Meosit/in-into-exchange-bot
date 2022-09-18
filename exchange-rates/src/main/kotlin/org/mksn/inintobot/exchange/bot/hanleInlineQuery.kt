@@ -15,9 +15,9 @@ import org.mksn.inintobot.misc.toFixedScaleBigDecimal
 import org.mksn.inintobot.rates.ApiExchangeRates
 import org.mksn.inintobot.rates.MissingCurrenciesException
 import org.mksn.inintobot.rates.RateApis
-import org.slf4j.LoggerFactory
+import java.util.logging.Logger
 
-private val logger = LoggerFactory.getLogger("handleInlineQuery")
+private val logger = Logger.getLogger("handleInlineQuery")
 
 suspend fun InlineQuery.handle(settings: UserSettings, context: BotContext) {
     val outputs = if (query.isBlank()) {
@@ -42,7 +42,7 @@ suspend fun InlineQuery.handle(settings: UserSettings, context: BotContext) {
                 .map { if (rates.staleData()) BotStaleRatesOutput(it, api.name, settings.language) else it }
                 .toList().toTypedArray()
         } else {
-            logger.error("Rates unavailable for API ${api.name}")
+            logger.severe("Rates unavailable for API ${api.name}")
             arrayOf(BotSimpleErrorOutput(BotMessages.errors.of(settings.language).ratesUnavailable))
         }
     } else {

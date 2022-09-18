@@ -1,7 +1,6 @@
-package org.mksn.inintobot.exchange.grammar
+package org.mksn.inintobot.exchange.grammar.alias
 
 import com.github.h0tk3y.betterParse.lexer.Token
-import org.mksn.inintobot.exchange.grammar.alias.AliasMatcher
 
 /**
  * This token matches only if next letters occurrence can produce correct match from underlying [aliasMatcher]
@@ -13,8 +12,8 @@ class AliasMatchToken constructor(
 ) : Token(name, ignore) {
 
     override fun match(input: CharSequence, fromIndex: Int): Int {
-        val candidate = input.subSequence(fromIndex, input.length).takeWhile { it.isLetter() }.toString()
-        return if (aliasMatcher.matchOrNull(candidate) == null) 0 else candidate.length
+        val candidate = input.subSequence(fromIndex, input.length).takeWhile(aliasMatcher::charCanBeMatched).toString()
+        return aliasMatcher.matchOrNull(candidate)?.let { candidate.length } ?: 0
     }
 
     override fun toString(): String = "${name ?: ""} [autocomplete ${aliasMatcher.totalAliases} values]" + if (ignored) " [ignorable]" else ""

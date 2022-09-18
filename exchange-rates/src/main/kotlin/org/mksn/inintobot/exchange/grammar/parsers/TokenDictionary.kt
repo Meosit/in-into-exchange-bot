@@ -5,7 +5,7 @@ import com.github.h0tk3y.betterParse.lexer.literalToken
 import com.github.h0tk3y.betterParse.lexer.regexToken
 import org.mksn.inintobot.currency.Currency
 import org.mksn.inintobot.exchange.grammar.alias.AliasMatcher
-import org.mksn.inintobot.exchange.grammar.aliasMatchToken
+import org.mksn.inintobot.exchange.grammar.alias.aliasMatchToken
 import org.mksn.inintobot.exchange.grammar.configurableRegexToken
 import org.mksn.inintobot.rates.RateApi
 
@@ -28,15 +28,15 @@ class TokenDictionary(
     val apiAlias = aliasMatchToken("api alias", apiAliasMatcher)
 
     // metric suffix must be placed after currency in the regexToken list to support aliases which starts with the one of the suffixes
-    val kilo = configurableRegexToken("kilo suffix", "((?<=[\\s0-9)кКkK]))[кКkK]")
-    val mega = configurableRegexToken("mega suffix", "((?<=[\\s0-9)мМmM]))[мМmM]")
+    val kilo = configurableRegexToken("kilo suffix", "((?<=[\\s0-9кКkK]))[кКkK]", useTransparentBounds = true)
+    val mega = configurableRegexToken("mega suffix", "((?<=[\\s0-9мМmM]))[мМmM]", useTransparentBounds = true)
 
     val exclamation = literalToken("'!'", "!")
     val ampersand = literalToken("'&'", "&")
     val decimalDigitsOption = literalToken("decimal digits option '#'", "#")
 
     // currency can be added with this prefix to allow expressions like '1 dollar into euro'
-    val inIntoUnion = configurableRegexToken("union 'в'/'на'/'in'/'into'/'to'", "(?<=[)\\s0-9])(?iu)(into|in|to|в|на)(?-iu)(?=\\s)", useTransparentBounds = true)
+    val inIntoUnion = configurableRegexToken("union 'в'/'на'/'in'/'into'/'to'", "(?<=\\s)(?iu)(into|in|to|в|на)(?-iu)(?=\\s)", useTransparentBounds = true)
 
     val whitespace = regexToken("space", "\\s+", ignore = true)
 
