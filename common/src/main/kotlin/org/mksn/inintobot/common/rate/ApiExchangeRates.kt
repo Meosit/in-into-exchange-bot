@@ -51,7 +51,9 @@ data class ApiExchangeRates(
         return exchanges
     }
 
-    fun staleData() = ChronoUnit.HOURS.between(ZonedDateTime.of(date, time, ZoneOffset.UTC), ZonedDateTime.now(ZoneOffset.UTC)) >= api.refreshHours * 2
+    fun staleData() = ChronoUnit.HOURS.between(ZonedDateTime.of(date, time, ZoneOffset.UTC), ZonedDateTime.now(ZoneOffset.UTC)) >= api.staleTimeoutHours
+
+    fun timeString() = "$date ${time.withSecond(0)}"
 
 }
 

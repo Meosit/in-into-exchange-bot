@@ -20,6 +20,7 @@ suspend fun handleTelegramRequest(
     update: Update,
     context: BotContext
 ) {
+    logger.info("Handling Update...")
     try {
         val settings = context.settingsStore.loadSettings(update)
         with(update) {

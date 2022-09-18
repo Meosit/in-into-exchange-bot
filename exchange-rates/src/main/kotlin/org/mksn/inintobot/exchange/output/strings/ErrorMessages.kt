@@ -16,7 +16,6 @@ data class ErrorMessages(
     val unsupportedCurrency: String,
     val unsupportedCurrencyWithAlternative: String,
     val ratesUnavailable: String,
-    val deprecatedBot: String,
     val staleApiRates: String,
     val inlineOutputAsChatInput: String,
     val unableToSave: String,

@@ -7,32 +7,29 @@ import com.github.h0tk3y.betterParse.lexer.DefaultTokenizer
 import com.github.h0tk3y.betterParse.lexer.TokenMatchesSequence
 import com.github.h0tk3y.betterParse.lexer.Tokenizer
 import com.github.h0tk3y.betterParse.parser.*
-import org.mksn.inintobot.common.currency.Currency
 import org.mksn.inintobot.common.misc.toFixedScaleBigDecimal
 import org.mksn.inintobot.common.rate.RateApi
 import org.mksn.inintobot.exchange.expression.Const
 import org.mksn.inintobot.exchange.expression.CurrenciedExpression
-import org.mksn.inintobot.exchange.grammar.alias.AliasMatcher
+import org.mksn.inintobot.exchange.grammar.alias.CurrencyAliasMatcher
+import org.mksn.inintobot.exchange.grammar.alias.RateAliasMatcher
 import org.mksn.inintobot.exchange.grammar.parsers.CurrenciedMathParsers
 import org.mksn.inintobot.exchange.grammar.parsers.SimpleMathParsers
 import org.mksn.inintobot.exchange.grammar.parsers.TokenDictionary
 
 
-class BotInputGrammar(
-    currencyAliasMatcher: AliasMatcher<Currency>,
-    apiAliasMatcher: AliasMatcher<RateApi>,
-) : Grammar<BotInput>() {
+object BotInputGrammar : Grammar<BotInput>() {
 
-    private val tokenDict = TokenDictionary(currencyAliasMatcher, apiAliasMatcher)
+    private val tokenDict = TokenDictionary(CurrencyAliasMatcher, RateAliasMatcher)
 
     private val mathParsers = SimpleMathParsers(tokenDict)
-    private val currParsers = CurrenciedMathParsers(tokenDict, mathParsers, currencyAliasMatcher)
+    private val currParsers = CurrenciedMathParsers(tokenDict, mathParsers, CurrencyAliasMatcher)
 
     private val currencyKeyPrefix = skip(tokenDict.exclamation or tokenDict.ampersand or tokenDict.inIntoUnion)
     private val currencyKey = skip(tokenDict.whitespace) and (currencyKeyPrefix and currParsers.currency) map { it }
     private val additionalCurrenciesChain by zeroOrMore(currencyKey)
 
-    private val rateApiParser: Parser<RateApi> = tokenDict.apiAlias.map { apiAliasMatcher.match(it.text) }
+    private val rateApiParser: Parser<RateApi> = tokenDict.apiAlias.map { RateAliasMatcher.match(it.text) }
 
     private val apiConfig = skip(tokenDict.whitespace) and rateApiParser map { it }
 

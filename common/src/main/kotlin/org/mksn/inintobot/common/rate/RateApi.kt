@@ -34,6 +34,10 @@ data class RateApi(
      * Number of hours after the last refresh to consider the data is outdated and should be refreshed
      */
     val refreshHours: Int,
+    /**
+     * Number of hours when rates are considered as stale
+     */
+    val staleTimeoutHours: Int,
 ) {
     /**
      * Comparison is performed only over the API name.

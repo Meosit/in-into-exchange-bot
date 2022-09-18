@@ -8,8 +8,7 @@
   "unsupportedCurrency": "❗Unsupported currencies %s for %s API (or temporarily unavailable), please consider using other API, see /apis",
   "unsupportedCurrencyWithAlternative": "❗Unsupported currencies %s for %s API (or temporarily unavailable), please consider using other API: `%s`",
   "ratesUnavailable": "❗Rates for this API currently unavailable, please consider using other API for now, see /apis",
-  "deprecatedBot": "⚠️ This bot is deprecated and can be disabled soon, please use @inintobot which does the same but also offers extended functionality including settings customization. If you have any questions or issues, contact @meosit",
-  "staleApiRates": "⚠️ Rates for %s API are stale due to external reasons, please consider using other API for now, see /apis",
+  "staleApiRates": "⚠️ Rates for %s API were not updated since %s due to external reasons, please consider using other API for now, see /apis",
   "unableToSave": "❗Unable to save settings",
   "inlineOutputAsChatInput": "Seems like you've already got an answer \uD83D\uDE43",
   "unexpectedError": "❗Unexpected error"

@@ -31,7 +31,7 @@ suspend fun InlineQuery.handle(settings: UserSettings, context: BotContext) {
         if (rates != null) {
             val queryStrings = BotMessages.query.of(settings.language)
             val apiDisplayNames = BotMessages.apiDisplayNames.of(settings.language)
-            val apiTime = "${rates.date} ${rates.time}"
+            val apiTime = rates.timeString()
             currencies.asSequence()
                 .filter { settings.dashboardCurrencies.contains(it.code) }
                 .map { EvaluatedExpression(1.toFixedScaleBigDecimal(), ExpressionType.ONE_UNIT, "1", it, listOf(it)) }
@@ -39,7 +39,7 @@ suspend fun InlineQuery.handle(settings: UserSettings, context: BotContext) {
                 .map { (expression, exchanged) ->
                     BotSuccessOutput(expression, exchanged, queryStrings, settings.decimalDigits, apiDisplayNames[settings.apiName], apiTime)
                 }
-                .map { if (rates.staleData()) BotStaleRatesOutput(it, api.name, settings.language) else it }
+                .map { if (rates.staleData()) BotStaleRatesOutput(it, api.name, apiTime, settings.language) else it }
                 .toList().toTypedArray()
         } else {
             logger.severe("Rates unavailable for API ${api.name}")

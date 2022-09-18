@@ -12,21 +12,18 @@ import org.mksn.inintobot.common.user.UserSettings
 import org.mksn.inintobot.exchange.expression.ExpressionEvaluator
 import org.mksn.inintobot.exchange.expression.ExpressionType
 import org.mksn.inintobot.exchange.grammar.BotInputGrammar
-import org.mksn.inintobot.exchange.grammar.alias.CurrencyAliasMatcher
-import org.mksn.inintobot.exchange.grammar.alias.RateAliasMatcher
 import org.mksn.inintobot.exchange.output.*
 import org.mksn.inintobot.exchange.output.strings.BotMessages
 import java.util.logging.Logger
 
 private val logger = Logger.getLogger("handleBotQuery")
-private val grammar = BotInputGrammar(CurrencyAliasMatcher, RateAliasMatcher)
 
 data class ExchangeAll(val exchanged: List<Exchange>, val errorMessage: String?)
 
 fun handleBotExchangeQuery(query: String, settings: UserSettings, rateStore: ApiExchangeRateStore): Array<BotOutput> {
     val defaultApi = RateApis[settings.apiName]
 
-    when (val result = grammar.tryParseToEnd(query)) {
+    when (val result = BotInputGrammar.tryParseToEnd(query)) {
         is Parsed -> with(result.value) {
             val api = rateApi ?: defaultApi
             val decimalDigits = when {
@@ -76,10 +73,10 @@ fun handleBotExchangeQuery(query: String, settings: UserSettings, rateStore: Api
             val nonDefaultApiName = if (api.name == settings.apiName && evaluated.type != ExpressionType.ONE_UNIT)
                 null else BotMessages.apiDisplayNames.of(settings.language).getValue(api.name)
             val nonDefaultApiTime = if (api.name == settings.apiName && evaluated.type != ExpressionType.ONE_UNIT)
-                null else ("${rates.date}  ${rates.time}")
+                null else rates.timeString()
 
             val output = BotSuccessOutput(evaluated, exchanged, queryStrings, decimalDigits, nonDefaultApiName, nonDefaultApiTime)
-                .let { if (rates.staleData()) BotStaleRatesOutput(it, api.name, settings.language) else it }
+                .let { if (rates.staleData()) BotStaleRatesOutput(it, api.name, rates.timeString(), settings.language) else it }
                 .let { if (errorMessage != null) BotOutputWithMessage(it, errorMessage) else it }
             return if (evaluated.type == ExpressionType.SINGLE_CURRENCY_EXPR) {
                 arrayOf(output, BotJustCalculateOutput(evaluated, queryStrings))
