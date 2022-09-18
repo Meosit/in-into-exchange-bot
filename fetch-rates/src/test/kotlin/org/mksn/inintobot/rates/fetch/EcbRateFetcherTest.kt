@@ -5,9 +5,9 @@ import io.ktor.client.engine.mock.*
 import io.ktor.http.*
 import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.json.Json
-import org.mksn.inintobot.currency.Currencies
-import org.mksn.inintobot.misc.toFixedScaleBigDecimal
-import org.mksn.inintobot.rates.RateApi
+import org.mksn.inintobot.common.currency.Currencies
+import org.mksn.inintobot.common.misc.toFixedScaleBigDecimal
+import org.mksn.inintobot.common.rate.RateApi
 import org.mksn.inintobot.rates.assertEqualsUnordered
 import org.mksn.inintobot.rates.fullUrl
 import kotlin.test.BeforeTest

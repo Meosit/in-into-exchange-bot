@@ -1,6 +1,6 @@
 package org.mksn.inintobot.exchange.grammar.alias
 
-import org.mksn.inintobot.currency.Currencies
+import org.mksn.inintobot.common.currency.Currencies
 import kotlin.test.Test
 import kotlin.test.assertContains
 import kotlin.test.assertEquals

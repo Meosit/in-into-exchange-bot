@@ -1,11 +1,11 @@
 package org.mksn.inintobot.exchange.bot.settings
 
-import org.mksn.inintobot.currency.Currencies
+import org.mksn.inintobot.common.currency.Currencies
+import org.mksn.inintobot.common.rate.RateApis
+import org.mksn.inintobot.common.user.UserSettings
 import org.mksn.inintobot.exchange.output.strings.BotMessages
 import org.mksn.inintobot.exchange.output.strings.SettingsStrings
-import org.mksn.inintobot.exchange.settings.UserSettings
 import org.mksn.inintobot.exchange.telegram.InlineKeyboardButton
-import org.mksn.inintobot.rates.RateApis
 
 object DashboardCurrenciesSettingHandler : SettingHandler(6) {
     override val buttonsPerRow: Int = 3

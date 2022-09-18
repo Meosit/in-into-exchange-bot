@@ -1,7 +1,7 @@
 package org.mksn.inintobot.exchange.grammar.alias
 
-import org.mksn.inintobot.currency.Currencies
-import org.mksn.inintobot.currency.Currency
+import org.mksn.inintobot.common.currency.Currencies
+import org.mksn.inintobot.common.currency.Currency
 
 object CurrencyAliasMatcher : AutocompleteAliasMatcher<Currency>() {
 

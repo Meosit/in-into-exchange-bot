@@ -2,12 +2,12 @@ package org.mksn.inintobot.exchange.bot
 
 import io.ktor.client.plugins.*
 import io.ktor.client.statement.*
+import org.mksn.inintobot.common.store.UserSettingsStore
+import org.mksn.inintobot.common.user.UserSettings
 import org.mksn.inintobot.exchange.BotContext
 import org.mksn.inintobot.exchange.bot.settings.Setting
 import org.mksn.inintobot.exchange.output.BotTextOutput
 import org.mksn.inintobot.exchange.output.strings.BotMessages
-import org.mksn.inintobot.exchange.settings.UserSettings
-import org.mksn.inintobot.exchange.settings.UserSettingsStore
 import org.mksn.inintobot.exchange.telegram.Update
 import java.io.PrintWriter
 import java.io.StringWriter

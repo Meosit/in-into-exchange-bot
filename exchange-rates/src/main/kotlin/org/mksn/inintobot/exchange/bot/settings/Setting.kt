@@ -1,7 +1,7 @@
 package org.mksn.inintobot.exchange.bot.settings
 
+import org.mksn.inintobot.common.user.UserSettings
 import org.mksn.inintobot.exchange.BotContext
-import org.mksn.inintobot.exchange.settings.UserSettings
 import org.mksn.inintobot.exchange.telegram.CallbackQuery
 import org.mksn.inintobot.exchange.telegram.Message
 

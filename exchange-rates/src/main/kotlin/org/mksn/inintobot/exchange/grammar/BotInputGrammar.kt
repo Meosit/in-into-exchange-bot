@@ -7,15 +7,15 @@ import com.github.h0tk3y.betterParse.lexer.DefaultTokenizer
 import com.github.h0tk3y.betterParse.lexer.TokenMatchesSequence
 import com.github.h0tk3y.betterParse.lexer.Tokenizer
 import com.github.h0tk3y.betterParse.parser.*
-import org.mksn.inintobot.currency.Currency
+import org.mksn.inintobot.common.currency.Currency
+import org.mksn.inintobot.common.misc.toFixedScaleBigDecimal
+import org.mksn.inintobot.common.rate.RateApi
 import org.mksn.inintobot.exchange.expression.Const
 import org.mksn.inintobot.exchange.expression.CurrenciedExpression
 import org.mksn.inintobot.exchange.grammar.alias.AliasMatcher
 import org.mksn.inintobot.exchange.grammar.parsers.CurrenciedMathParsers
 import org.mksn.inintobot.exchange.grammar.parsers.SimpleMathParsers
 import org.mksn.inintobot.exchange.grammar.parsers.TokenDictionary
-import org.mksn.inintobot.misc.toFixedScaleBigDecimal
-import org.mksn.inintobot.rates.RateApi
 
 
 class BotInputGrammar(

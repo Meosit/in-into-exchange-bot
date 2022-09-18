@@ -3,11 +3,11 @@ package org.mksn.inintobot.exchange.grammar.parsers
 import com.github.h0tk3y.betterParse.lexer.Token
 import com.github.h0tk3y.betterParse.lexer.literalToken
 import com.github.h0tk3y.betterParse.lexer.regexToken
-import org.mksn.inintobot.currency.Currency
+import org.mksn.inintobot.common.currency.Currency
+import org.mksn.inintobot.common.rate.RateApi
 import org.mksn.inintobot.exchange.grammar.alias.AliasMatcher
 import org.mksn.inintobot.exchange.grammar.alias.aliasMatchToken
 import org.mksn.inintobot.exchange.grammar.configurableRegexToken
-import org.mksn.inintobot.rates.RateApi
 
 
 /**

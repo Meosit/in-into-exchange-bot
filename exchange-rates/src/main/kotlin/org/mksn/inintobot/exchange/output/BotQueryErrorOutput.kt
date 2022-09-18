@@ -4,10 +4,10 @@ import com.github.h0tk3y.betterParse.parser.ErrorResult
 import com.github.h0tk3y.betterParse.parser.MismatchedToken
 import com.github.h0tk3y.betterParse.parser.NoMatchingToken
 import com.github.h0tk3y.betterParse.parser.UnparsedRemainder
+import org.mksn.inintobot.common.misc.escapeMarkdown
+import org.mksn.inintobot.common.misc.trimToLength
 import org.mksn.inintobot.exchange.output.strings.BotMessages
 import org.mksn.inintobot.exchange.output.strings.ErrorMessages
-import org.mksn.inintobot.misc.escapeMarkdown
-import org.mksn.inintobot.misc.trimToLength
 
 data class BotQueryErrorOutput(
     val rawInput: String,

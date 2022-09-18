@@ -1,16 +1,16 @@
 package org.mksn.inintobot.exchange.bot.settings
 
 import kotlinx.serialization.json.Json
+import org.mksn.inintobot.common.misc.lettersDiffer
+import org.mksn.inintobot.common.user.UserSettings
 import org.mksn.inintobot.exchange.BotContext
 import org.mksn.inintobot.exchange.output.BotOutput
 import org.mksn.inintobot.exchange.output.BotTextOutput
 import org.mksn.inintobot.exchange.output.strings.BotMessages
 import org.mksn.inintobot.exchange.output.strings.SettingsStrings
-import org.mksn.inintobot.exchange.settings.UserSettings
 import org.mksn.inintobot.exchange.telegram.InlineKeyboardButton
 import org.mksn.inintobot.exchange.telegram.InlineKeyboardMarkup
 import org.mksn.inintobot.exchange.telegram.Message
-import org.mksn.inintobot.misc.lettersDiffer
 import java.util.logging.Logger
 
 private val logger = Logger.getLogger(SettingHandler::class.simpleName)

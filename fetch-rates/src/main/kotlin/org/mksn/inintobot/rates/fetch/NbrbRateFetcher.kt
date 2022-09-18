@@ -6,8 +6,8 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.builtins.ListSerializer
 import kotlinx.serialization.json.Json
-import org.mksn.inintobot.misc.BigDecimalSerializer
-import org.mksn.inintobot.rates.RateApi
+import org.mksn.inintobot.common.misc.BigDecimalSerializer
+import org.mksn.inintobot.common.rate.RateApi
 import java.math.BigDecimal
 
 @Serializable

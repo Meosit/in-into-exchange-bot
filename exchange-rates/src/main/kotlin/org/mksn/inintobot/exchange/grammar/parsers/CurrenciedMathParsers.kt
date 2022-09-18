@@ -3,7 +3,7 @@ package org.mksn.inintobot.exchange.grammar.parsers
 import com.github.h0tk3y.betterParse.combinators.*
 import com.github.h0tk3y.betterParse.grammar.parser
 import com.github.h0tk3y.betterParse.parser.Parser
-import org.mksn.inintobot.currency.Currency
+import org.mksn.inintobot.common.currency.Currency
 import org.mksn.inintobot.exchange.expression.*
 import org.mksn.inintobot.exchange.grammar.alias.AliasMatcher
 

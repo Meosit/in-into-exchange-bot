@@ -1,8 +1,8 @@
 package org.mksn.inintobot.exchange.output
 
+import org.mksn.inintobot.common.misc.toStr
 import org.mksn.inintobot.exchange.expression.EvaluatedExpression
 import org.mksn.inintobot.exchange.output.strings.QueryStrings
-import org.mksn.inintobot.misc.toStr
 
 data class BotJustCalculateOutput(
     val expression: EvaluatedExpression,

@@ -2,8 +2,8 @@ package org.mksn.inintobot.rates.fetch
 
 import io.ktor.client.*
 import kotlinx.serialization.json.Json
-import org.mksn.inintobot.currency.Currency
-import org.mksn.inintobot.rates.RateApi
+import org.mksn.inintobot.common.currency.Currency
+import org.mksn.inintobot.common.rate.RateApi
 import java.math.BigDecimal
 
 interface ApiRateFetcher {

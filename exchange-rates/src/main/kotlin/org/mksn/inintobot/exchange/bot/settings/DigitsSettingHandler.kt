@@ -1,9 +1,9 @@
 package org.mksn.inintobot.exchange.bot.settings
 
+import org.mksn.inintobot.common.misc.DEFAULT_DECIMAL_DIGITS
+import org.mksn.inintobot.common.user.UserSettings
 import org.mksn.inintobot.exchange.output.strings.SettingsStrings
-import org.mksn.inintobot.exchange.settings.UserSettings
 import org.mksn.inintobot.exchange.telegram.InlineKeyboardButton
-import org.mksn.inintobot.misc.DEFAULT_DECIMAL_DIGITS
 
 object DigitsSettingHandler : SettingHandler(7) {
 

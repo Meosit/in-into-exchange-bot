@@ -1,7 +1,12 @@
 package org.mksn.inintobot.exchange.bot
 
-import org.mksn.inintobot.currency.Currencies
-import org.mksn.inintobot.currency.Currency
+import org.mksn.inintobot.common.currency.Currencies
+import org.mksn.inintobot.common.currency.Currency
+import org.mksn.inintobot.common.misc.toFixedScaleBigDecimal
+import org.mksn.inintobot.common.rate.ApiExchangeRates
+import org.mksn.inintobot.common.rate.MissingCurrenciesException
+import org.mksn.inintobot.common.rate.RateApis
+import org.mksn.inintobot.common.user.UserSettings
 import org.mksn.inintobot.exchange.BotContext
 import org.mksn.inintobot.exchange.expression.EvaluatedExpression
 import org.mksn.inintobot.exchange.expression.ExpressionType
@@ -9,12 +14,7 @@ import org.mksn.inintobot.exchange.output.BotSimpleErrorOutput
 import org.mksn.inintobot.exchange.output.BotStaleRatesOutput
 import org.mksn.inintobot.exchange.output.BotSuccessOutput
 import org.mksn.inintobot.exchange.output.strings.BotMessages
-import org.mksn.inintobot.exchange.settings.UserSettings
 import org.mksn.inintobot.exchange.telegram.InlineQuery
-import org.mksn.inintobot.misc.toFixedScaleBigDecimal
-import org.mksn.inintobot.rates.ApiExchangeRates
-import org.mksn.inintobot.rates.MissingCurrenciesException
-import org.mksn.inintobot.rates.RateApis
 import java.util.logging.Logger
 
 private val logger = Logger.getLogger("handleInlineQuery")

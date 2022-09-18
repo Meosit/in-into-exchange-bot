@@ -1,12 +1,12 @@
 package org.mksn.inintobot.exchange.output
 
+import org.mksn.inintobot.common.misc.toStr
+import org.mksn.inintobot.common.misc.trimToLength
+import org.mksn.inintobot.common.rate.Exchange
 import org.mksn.inintobot.exchange.expression.EvaluatedExpression
 import org.mksn.inintobot.exchange.expression.ExpressionType
 import org.mksn.inintobot.exchange.output.strings.BotMessages
 import org.mksn.inintobot.exchange.output.strings.QueryStrings
-import org.mksn.inintobot.misc.toStr
-import org.mksn.inintobot.misc.trimToLength
-import org.mksn.inintobot.rates.Exchange
 
 data class BotSuccessOutput(
     val expression: EvaluatedExpression,

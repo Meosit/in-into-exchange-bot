@@ -1,6 +1,6 @@
 package org.mksn.inintobot.exchange.expression
 
-import org.mksn.inintobot.currency.Currency
+import org.mksn.inintobot.common.currency.Currency
 import java.math.BigDecimal
 
 /**

@@ -3,8 +3,12 @@ package org.mksn.inintobot.exchange.bot
 import com.github.h0tk3y.betterParse.grammar.tryParseToEnd
 import com.github.h0tk3y.betterParse.parser.ErrorResult
 import com.github.h0tk3y.betterParse.parser.Parsed
-import org.mksn.inintobot.currency.Currencies
-import org.mksn.inintobot.currency.Currency
+import org.mksn.inintobot.common.currency.Currencies
+import org.mksn.inintobot.common.currency.Currency
+import org.mksn.inintobot.common.misc.DEFAULT_DECIMAL_DIGITS
+import org.mksn.inintobot.common.rate.*
+import org.mksn.inintobot.common.store.ApiExchangeRateStore
+import org.mksn.inintobot.common.user.UserSettings
 import org.mksn.inintobot.exchange.expression.ExpressionEvaluator
 import org.mksn.inintobot.exchange.expression.ExpressionType
 import org.mksn.inintobot.exchange.grammar.BotInputGrammar
@@ -12,10 +16,6 @@ import org.mksn.inintobot.exchange.grammar.alias.CurrencyAliasMatcher
 import org.mksn.inintobot.exchange.grammar.alias.RateAliasMatcher
 import org.mksn.inintobot.exchange.output.*
 import org.mksn.inintobot.exchange.output.strings.BotMessages
-import org.mksn.inintobot.exchange.settings.UserSettings
-import org.mksn.inintobot.misc.DEFAULT_DECIMAL_DIGITS
-import org.mksn.inintobot.rates.*
-import org.mksn.inintobot.rates.store.ApiExchangeRateStore
 import java.util.logging.Logger
 
 private val logger = Logger.getLogger("handleBotQuery")

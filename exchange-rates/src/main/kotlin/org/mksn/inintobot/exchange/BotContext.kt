@@ -5,18 +5,18 @@ import io.ktor.client.engine.java.*
 import io.ktor.client.plugins.contentnegotiation.*
 import io.ktor.serialization.kotlinx.json.*
 import kotlinx.serialization.json.Json
+import org.mksn.inintobot.common.store.ApiExchangeRateStore
+import org.mksn.inintobot.common.store.StoreProvider
+import org.mksn.inintobot.common.store.UserSettingsStore
 import org.mksn.inintobot.exchange.output.BotOutputSender
-import org.mksn.inintobot.exchange.settings.FirestoreUserSettingsStore
-import org.mksn.inintobot.exchange.settings.UserSettingsStore
-import org.mksn.inintobot.rates.store.ApiExchangeRateStore
-import org.mksn.inintobot.rates.store.FirestoreApiExchangeRateStore
 
 data class BotContext(
     val creatorId: String,
     val botToken: String,
     val botUsername: String,
-    val rateStore: ApiExchangeRateStore = FirestoreApiExchangeRateStore(),
-    val settingsStore: UserSettingsStore = FirestoreUserSettingsStore(),
+    val storeProvider: StoreProvider = StoreProvider.load(),
+    val rateStore: ApiExchangeRateStore = storeProvider.exchangeRateStore(),
+    val settingsStore: UserSettingsStore = storeProvider.userSettingsStore(),
     val json: Json = Json { ignoreUnknownKeys = true; isLenient = true },
     val httpClient: HttpClient = HttpClient(Java) {
         install(ContentNegotiation) {

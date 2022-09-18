@@ -1,7 +1,7 @@
 package org.mksn.inintobot.exchange.output
 
+import org.mksn.inintobot.common.misc.trimToLength
 import org.mksn.inintobot.exchange.output.strings.BotMessages
-import org.mksn.inintobot.misc.trimToLength
 
 data class BotStaleRatesOutput(
     val botOutput: BotOutput,

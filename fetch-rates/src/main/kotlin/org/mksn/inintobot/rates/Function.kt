@@ -1,21 +1,23 @@
 package org.mksn.inintobot.rates
 
-import com.google.cloud.functions.HttpFunction
-import com.google.cloud.functions.HttpRequest
-import com.google.cloud.functions.HttpResponse
 import io.ktor.client.*
 import io.ktor.client.engine.java.*
 import io.ktor.client.plugins.contentnegotiation.*
 import io.ktor.http.*
 import io.ktor.serialization.kotlinx.json.*
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
-import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.json.Json
-import org.mksn.inintobot.currency.Currencies
+import org.mksn.inintobot.common.HttpBotFunction
+import org.mksn.inintobot.common.currency.Currencies
+import org.mksn.inintobot.common.rate.ApiExchangeRates
+import org.mksn.inintobot.common.rate.RateApi
+import org.mksn.inintobot.common.rate.RateApis
+import org.mksn.inintobot.common.store.ApiExchangeRateStore
+import org.mksn.inintobot.common.store.StoreProvider
 import org.mksn.inintobot.rates.fetch.ApiRateFetcher
-import org.mksn.inintobot.rates.store.ApiExchangeRateStore
-import org.mksn.inintobot.rates.store.FirestoreApiExchangeRateStore
+import java.io.InputStream
 import java.io.PrintWriter
 import java.io.StringWriter
 import java.time.ZoneOffset
@@ -24,22 +26,21 @@ import java.util.logging.Logger
 
 private const val numRetries = 3
 private val logger: Logger = Logger.getLogger(Function::class.simpleName)
-private val store: ApiExchangeRateStore = FirestoreApiExchangeRateStore()
+private val store: ApiExchangeRateStore = StoreProvider.load().exchangeRateStore()
 
 @Suppress("unused")
-class Function : HttpFunction {
+class Function : HttpBotFunction {
 
-    override fun service(request: HttpRequest, response: HttpResponse) = runBlocking {
-        val json = Json { ignoreUnknownKeys = true; isLenient = true }
-        val httpClient = HttpClient(Java) {
-            install(ContentNegotiation) {
-                json(json)
-            }
+    val json = Json { ignoreUnknownKeys = true; isLenient = true }
+    val httpClient = HttpClient(Java) {
+        install(ContentNegotiation) {
+            json(json)
         }
-
-        val jobs = RateApis.map { async(Dispatchers.Default) { reloadOne(it, store, httpClient, json) } }
+    }
+    override suspend fun serve(input: InputStream): Int {
+        val jobs = RateApis.map { CoroutineScope(Dispatchers.Default).async { reloadOne(it, store, httpClient, json) } }
         jobs.forEach { it.await() }
-        response.setStatusCode(HttpStatusCode.OK.value)
+        return HttpStatusCode.OK.value
     }
 
     private suspend fun reloadOne(api: RateApi, store: ApiExchangeRateStore, httpClient: HttpClient, json: Json) {

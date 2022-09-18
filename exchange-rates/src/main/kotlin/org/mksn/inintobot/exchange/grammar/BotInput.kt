@@ -1,8 +1,8 @@
 package org.mksn.inintobot.exchange.grammar
 
-import org.mksn.inintobot.currency.Currency
+import org.mksn.inintobot.common.currency.Currency
+import org.mksn.inintobot.common.rate.RateApi
 import org.mksn.inintobot.exchange.expression.Expression
-import org.mksn.inintobot.rates.RateApi
 
 /**
  * Represents the successfully parsed input string

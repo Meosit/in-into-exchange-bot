@@ -1,7 +1,7 @@
 package org.mksn.inintobot.exchange.grammar.alias
 
-import org.mksn.inintobot.rates.RateApi
-import org.mksn.inintobot.rates.RateApis
+import org.mksn.inintobot.common.rate.RateApi
+import org.mksn.inintobot.common.rate.RateApis
 
 object RateAliasMatcher : AutocompleteAliasMatcher<RateApi>() {
 

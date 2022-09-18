@@ -5,9 +5,9 @@ import io.ktor.client.call.*
 import io.ktor.client.request.*
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.json.Json
-import org.mksn.inintobot.currency.Currency
-import org.mksn.inintobot.misc.toFixedScaleBigDecimal
-import org.mksn.inintobot.rates.RateApi
+import org.mksn.inintobot.common.currency.Currency
+import org.mksn.inintobot.common.misc.toFixedScaleBigDecimal
+import org.mksn.inintobot.common.rate.RateApi
 import java.math.BigDecimal
 
 abstract class BaseApiRateFetcher<T>(
