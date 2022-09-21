@@ -25,16 +25,13 @@ class FirestoreApiExchangeRateStore(private val db: Firestore) : ApiExchangeRate
     }
 
     override fun getForDate(name: String, date: LocalDate, backtrackDays: Int): ApiExchangeRates? {
-        return db.collection(collectionSuffix)
-            .whereEqualTo("api", name)
-            .whereLessThanOrEqualTo(FieldPath.documentId(), date.toString())
-            .whereGreaterThanOrEqualTo(FieldPath.documentId(), date.minusDays(backtrackDays.toLong()).toString())
-            .orderBy(FieldPath.documentId(), Query.Direction.DESCENDING)
-            .limit(1)
-            .get()
-            .get()
-            .documents
-            .firstOrNull()?.data?.fromFirestoreMap()
+        return with(db.collection(collectionSuffix).whereEqualTo("api", name)) {
+            if (backtrackDays != 0) whereLessThanOrEqualTo("date", date.toString())
+                .whereGreaterThanOrEqualTo("date", date.minusDays(backtrackDays.toLong()).toString())
+                .orderBy(FieldPath.documentId(), Query.Direction.DESCENDING)
+                .limit(1)
+            else whereEqualTo("date", date.toString())
+        }.get().get().documents.firstOrNull()?.data?.fromFirestoreMap()
     }
 
     override fun getLatest(name: String): ApiExchangeRates? = db.collection(collectionSuffix)

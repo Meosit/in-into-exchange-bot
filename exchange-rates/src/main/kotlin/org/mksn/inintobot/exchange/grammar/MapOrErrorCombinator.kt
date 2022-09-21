@@ -7,7 +7,7 @@ import com.github.h0tk3y.betterParse.parser.ParseResult
 import com.github.h0tk3y.betterParse.parser.Parsed
 import com.github.h0tk3y.betterParse.parser.Parser
 
-private class ParsedValue<out T>(override val value: T, override val nextPosition : Int) : Parsed<T>()
+internal class ParsedValue<out T>(override val value: T, override val nextPosition : Int) : Parsed<T>()
 
 /** Parses the sequence with [innerParser], and if that succeeds, maps its [Parsed] result with [mapSuccess] and
  * if a `null` returned injects an [ErrorResult] produced by [mapError].
@@ -21,7 +21,8 @@ class MapOrErrorCombinator<T, R>(
     override fun tryParse(tokens: TokenMatchesSequence, fromPosition: Int): ParseResult<R> {
         return when (val innerResult = innerParser.tryParse(tokens, fromPosition)) {
             is ErrorResult -> innerResult
-            is Parsed -> mapSuccess(innerResult.value)?.let { ParsedValue(it, innerResult.nextPosition) }
+            is Parsed -> mapSuccess(innerResult.value)
+                ?.let { ParsedValue(it, innerResult.nextPosition) }
                 ?: mapError(innerResult.value)
         }
     }

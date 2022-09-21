@@ -1,8 +1,11 @@
 package org.mksn.inintobot.exchange.grammar
 
+import com.github.h0tk3y.betterParse.lexer.TokenMatch
+import com.github.h0tk3y.betterParse.parser.ErrorResult
 import org.mksn.inintobot.common.currency.Currency
 import org.mksn.inintobot.common.rate.RateApi
 import org.mksn.inintobot.exchange.expression.Expression
+import java.time.LocalDate
 
 /**
  * Represents the successfully parsed input string
@@ -16,5 +19,7 @@ data class BotInput(
     val expression: Expression,
     val additionalCurrencies: Set<Currency>,
     val rateApi: RateApi?,
-    val decimalDigits: Int?
+    val decimalDigits: Int?,
+    val onDate: LocalDate?
 )
+data class InvalidDate(val match: TokenMatch): ErrorResult()

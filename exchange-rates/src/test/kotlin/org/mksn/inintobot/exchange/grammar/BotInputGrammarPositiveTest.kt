@@ -6,15 +6,14 @@ import org.mksn.inintobot.common.currency.Currency
 import org.mksn.inintobot.common.misc.toFixedScaleBigDecimal
 import org.mksn.inintobot.common.rate.RateApis
 import org.mksn.inintobot.exchange.expression.*
-import org.mksn.inintobot.exchange.grammar.alias.CurrencyAliasMatcher
-import org.mksn.inintobot.exchange.grammar.alias.RateAliasMatcher
+import java.time.LocalDate
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
 class BotInputGrammarPositiveTest {
 
-    private val grammar = BotInputGrammar(CurrencyAliasMatcher, RateAliasMatcher)
+    private val grammar = BotInputGrammar
 
     private val Int.bigDecimal get() = this.toFixedScaleBigDecimal()
     private val Int.asConst get() = Const(this.bigDecimal)
@@ -592,15 +591,50 @@ class BotInputGrammarPositiveTest {
         assertEquals(expectedExpr, actualExpr)
     }
 
+    @Test
+    fun kilo_with_alias_collision() {
+        val input = "5kzl"
+        val expectedExpr = CurrenciedExpression(ConstWithSuffixes(5.bigDecimal, 1, SuffixType.KILO), "PLN".toCurrency())
 
-//    @Test
-//    fun kilo_with_alias_collision() {
-//        val input = "5kzl"
-//        val expectedExpr = CurrenciedExpression(ConstWithSuffixes("5".bigDecimal, 1, SuffixType.KILO), "PLN".toCurrency())
-//
-//        val (actualExpr, additionalCurrencies) = grammar.parseToEnd(input)
-//
-//        assertTrue(additionalCurrencies.isEmpty())
-//        assertEquals(expectedExpr, actualExpr)
-//    }
+        val (actualExpr, additionalCurrencies) = grammar.parseToEnd(input)
+
+        assertTrue(additionalCurrencies.isEmpty())
+        assertEquals(expectedExpr, actualExpr)
+    }
+
+    @Test
+    fun value_with_date_spec() {
+        val input = "10 byn ? 2022-01-01"
+        val expectedExpr = CurrenciedExpression(10.asConst, "BYN".toCurrency())
+
+        val (actualExpr, additionalCurrencies, _, _, onDate) = grammar.parseToEnd(input)
+
+        assertTrue(additionalCurrencies.isEmpty())
+        assertEquals(LocalDate.of(2022, 1, 1), onDate)
+        assertEquals(expectedExpr, actualExpr)
+    }
+
+    @Test
+    fun value_with_date_spec_with_union() {
+        val input = "10 byn at 2022-01-01"
+        val expectedExpr = CurrenciedExpression(10.asConst, "BYN".toCurrency())
+
+        val (actualExpr, additionalCurrencies, _, _, onDate) = grammar.parseToEnd(input)
+
+        assertTrue(additionalCurrencies.isEmpty())
+        assertEquals(LocalDate.of(2022, 1, 1), onDate)
+        assertEquals(expectedExpr, actualExpr)
+    }
+
+    @Test
+    fun value_with_date_spec_with_relative_notation() {
+        val input = "10 byn at -12"
+        val expectedExpr = CurrenciedExpression(10.asConst, "BYN".toCurrency())
+
+        val (actualExpr, additionalCurrencies, _, _, onDate) = grammar.parseToEnd(input)
+
+        assertTrue(additionalCurrencies.isEmpty())
+        assertEquals(LocalDate.now().minusDays(12), onDate)
+        assertEquals(expectedExpr, actualExpr)
+    }
 }

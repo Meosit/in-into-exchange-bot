@@ -16,9 +16,13 @@ import org.mksn.inintobot.exchange.grammar.alias.RateAliasMatcher
 import org.mksn.inintobot.exchange.grammar.parsers.CurrenciedMathParsers
 import org.mksn.inintobot.exchange.grammar.parsers.SimpleMathParsers
 import org.mksn.inintobot.exchange.grammar.parsers.TokenDictionary
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 
 
 object BotInputGrammar : Grammar<BotInput>() {
+    private val universalTimeFormatter: DateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
+    private val englishTimeFormatter: DateTimeFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy")
 
     private val tokenDict = TokenDictionary(CurrencyAliasMatcher, RateAliasMatcher)
 
@@ -30,12 +34,20 @@ object BotInputGrammar : Grammar<BotInput>() {
     private val additionalCurrenciesChain by zeroOrMore(currencyKey)
 
     private val rateApiParser: Parser<RateApi> = tokenDict.apiAlias.map { RateAliasMatcher.match(it.text) }
+    private val onDateParser: Parser<LocalDate> = tokenDict.date.mapOrError(::InvalidDate) { match ->
+        match.text.takeIf { it.startsWith("-") }
+            ?.let { LocalDate.now().minusDays(it.removePrefix("-").toLong()) }
+            ?: runCatching { LocalDate.parse(match.text, universalTimeFormatter) }
+            .recoverCatching { LocalDate.parse(match.text, englishTimeFormatter) }
+            .getOrNull()
+    }
 
-    private val apiConfig = skip(tokenDict.whitespace) and rateApiParser map { it }
+    private val dateConfig = optionalNotIgnoring(InvalidDate::class, skip(tokenDict.question or tokenDict.dateUnion) and onDateParser map { it })
+    private val apiConfig = optional(skip(tokenDict.whitespace) and rateApiParser map { it })
 
     private val decimalDigitsNumber = tokenDict.number map { it.text.toIntOrNull() }
     private val decimalDigitsConfig =
-        optional(skip(tokenDict.whitespace) and skip(tokenDict.decimalDigitsOption) and decimalDigitsNumber map { it })
+        optional(skip(tokenDict.whitespace) and skip(tokenDict.hashtag) and decimalDigitsNumber map { it })
 
     private val onlyCurrencyExpressionParser by currParsers.currency map {
         CurrenciedExpression(Const(1.toFixedScaleBigDecimal()), it)
@@ -48,11 +60,11 @@ object BotInputGrammar : Grammar<BotInput>() {
     private val multiCurrencyExpressionParser by currParsers.currenciedSubSumChain
     private val allValidExpressionParsers by multiCurrencyExpressionParser or singleCurrencyExpressionParser or onlyCurrencyExpressionParser
 
-    private val botInputParser by allValidExpressionParsers and optional(apiConfig) and additionalCurrenciesChain and decimalDigitsConfig map
-            { (expr, api, keys, decimalDigits) -> BotInput(expr, keys.toSet(), api, decimalDigits) }
+    private val botInputParser by allValidExpressionParsers and apiConfig and additionalCurrenciesChain and decimalDigitsConfig and dateConfig map
+            { (expr, api, keys, decimalDigits, onDate) -> BotInput(expr, keys.toSet(), api, decimalDigits, onDate) }
 
-    private val botCurrencyDivisionInputParser by currParsers.currenciedDivisionSubSumChain and optional(apiConfig) and decimalDigitsConfig map
-            { (expr, api, decimalDigits) -> BotInput(expr, setOf(), api, decimalDigits) }
+    private val botCurrencyDivisionInputParser by currParsers.currenciedDivisionSubSumChain and apiConfig and decimalDigitsConfig and dateConfig map
+            { (expr, api, decimalDigits, onDate) -> BotInput(expr, setOf(), api, decimalDigits, onDate) }
 
     override val tokens = tokenDict.allTokens
 
@@ -77,7 +89,7 @@ object BotInputGrammar : Grammar<BotInput>() {
                 } ?: result
 
                 else -> result
-            }
+            }.also { println(tokens.joinToString("\n")) }
     }
 
 }

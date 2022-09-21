@@ -38,12 +38,13 @@ fun handleBotExchangeQuery(query: String, settings: UserSettings, rateStore: Api
             val apiBaseCurrency = api.base
             val defaultCurrency = apiCurrencies.firstOrNull { it.code == settings.defaultCurrency } ?: apiBaseCurrency
 
-            logger.info("Currencies (default: ${defaultCurrency.code}, api base: ${apiBaseCurrency.code}): ${apiCurrencies.joinToString { it.code } }")
-            val rates = rateStore.getLatest(api.name)
-            if (rates == null) {
-                logger.severe("Rates unavailable for API ${api.name}")
-                return arrayOf(BotSimpleErrorOutput(BotMessages.errors.of(settings.language).ratesUnavailable))
-            }
+            logger.info("Currencies (default: ${defaultCurrency.code}, api base: ${apiBaseCurrency.code}): ${apiCurrencies.joinToString { it.code }}")
+            val rates = (if (onDate == null) rateStore.getLatest(api.name) else rateStore.getForDate(api.name, onDate))
+                ?: if (onDate == null) {
+                    return arrayOf(BotSimpleErrorOutput(BotMessages.errors.of(settings.language).ratesUnavailable))
+                } else {
+                    return arrayOf(BotSimpleErrorOutput(BotMessages.errors.of(settings.language).ratesOnDateUnavailable))
+                }
 
             val evaluator = ExpressionEvaluator(defaultCurrency, apiBaseCurrency, rates::exchange)
             val evaluated = try {
@@ -70,20 +71,30 @@ fun handleBotExchangeQuery(query: String, settings: UserSettings, rateStore: Api
                 ExchangeAll(e.exchanges, makeMissingCurrenciesMessage(e.missing, api, settings))
             }
             val queryStrings = BotMessages.query.of(settings.language)
-            val nonDefaultApiName = if (api.name == settings.apiName && evaluated.type != ExpressionType.ONE_UNIT)
-                null else BotMessages.apiDisplayNames.of(settings.language).getValue(api.name)
-            val nonDefaultApiTime = if (api.name == settings.apiName && evaluated.type != ExpressionType.ONE_UNIT)
-                null else rates.timeString()
+
+            val nonDefaultApiName = when {
+                api.name == settings.apiName && evaluated.type != ExpressionType.ONE_UNIT -> null
+                else -> BotMessages.apiDisplayNames.of(settings.language).getValue(api.name)
+            }
+            val nonDefaultApiTime = when {
+                onDate != null -> rates.timeString()
+                api.name == settings.apiName && evaluated.type != ExpressionType.ONE_UNIT -> null
+                else -> rates.timeString()
+            }
 
             val output = BotSuccessOutput(evaluated, exchanged, queryStrings, decimalDigits, nonDefaultApiName, nonDefaultApiTime)
-                .let { if (rates.staleData()) BotStaleRatesOutput(it, api.name, rates.timeString(), settings.language) else it }
-                .let { if (errorMessage != null) BotOutputWithMessage(it, errorMessage) else it }
+            val outputWithError = (errorMessage?.let { BotOutputWithMessage(output, it) } ?: output)
+            val outputWithStaleMessage = if (onDate == null && rates.staleData())
+                BotStaleRatesOutput(outputWithError, api.name, rates.timeString(), settings.language)
+            else outputWithError
+
             return if (evaluated.type == ExpressionType.SINGLE_CURRENCY_EXPR) {
-                arrayOf(output, BotJustCalculateOutput(evaluated, queryStrings))
+                arrayOf(outputWithStaleMessage, BotJustCalculateOutput(evaluated, queryStrings))
             } else {
-                arrayOf(output)
+                arrayOf(outputWithStaleMessage)
             }
         }
+
         is ErrorResult -> {
             val messages = BotMessages.errors.of(settings.language)
             val output = result.toBotOutput(query, messages)
@@ -107,7 +118,11 @@ private fun makeMissingCurrenciesMessage(
     val messages = BotMessages.errors.of(settings.language)
     val apiDisplayName = displayNames.getValue(api.name)
     val message = if (alternativeApiName != null) {
-        messages.unsupportedCurrencyWithAlternative.format(currencyCodes.joinToString(), apiDisplayName, alternativeApiName)
+        messages.unsupportedCurrencyWithAlternative.format(
+            currencyCodes.joinToString(),
+            apiDisplayName,
+            alternativeApiName
+        )
     } else {
         messages.unsupportedCurrency.format(currencyCodes.joinToString(), apiDisplayName)
     }

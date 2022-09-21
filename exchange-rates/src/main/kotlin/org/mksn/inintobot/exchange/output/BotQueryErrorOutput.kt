@@ -6,6 +6,7 @@ import com.github.h0tk3y.betterParse.parser.NoMatchingToken
 import com.github.h0tk3y.betterParse.parser.UnparsedRemainder
 import org.mksn.inintobot.common.misc.escapeMarkdown
 import org.mksn.inintobot.common.misc.trimToLength
+import org.mksn.inintobot.exchange.grammar.InvalidDate
 import org.mksn.inintobot.exchange.output.strings.BotMessages
 import org.mksn.inintobot.exchange.output.strings.ErrorMessages
 
@@ -36,5 +37,6 @@ fun ErrorResult.toBotOutput(rawInput: String, messages: ErrorMessages) = when (t
     }
     is MismatchedToken -> BotQueryErrorOutput(rawInput, found.column, messages.mismatchedToken.format(found.text))
     is NoMatchingToken -> BotQueryErrorOutput(rawInput, tokenMismatch.column, messages.noMatchingToken.format(tokenMismatch.text))
+    is InvalidDate -> BotQueryErrorOutput(rawInput, match.column, messages.noMatchingToken.format(match.text))
     else -> BotQueryErrorOutput(rawInput, 1, messages.unexpectedError)
 }

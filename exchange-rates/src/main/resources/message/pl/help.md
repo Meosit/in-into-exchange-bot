@@ -8,9 +8,11 @@ Przykład:
 - `12 + 7`
 - `2.4к zloty ECB #4`
 - `43.3 uah !CZK !NOK`
-- `(23 + 7)*6k USD +PLN`
+- `(23 + 7)*6k USD &PLN`
 - `(1+2) USD + 8 EUR / 4 Fixer`
 - `(12keuro + 8k bucks)*2 !pounds`
+- `$1 on 2022-09-14`
+- `13 EUR at -2`
 
 Właściwości:
 - Waluty obsługiwane (❗zależy od wybranego API): {currency_list}
@@ -18,10 +20,11 @@ Właściwości:
 - Domyślnie się używa `OpenExchangeRates` API, wyświetla się 4 waluty: `BYN`, `USD`, `EUR`, `RUB`
 - Waluta `USD` się używa domyślnie; jeżeli nie jest obsługiwana, używa się waluty podstawowej wybranego API 
 - Liczby się wyświetlają do dwóch miejsc po przecinku (1.99), można to zmienić opcją `#<znaków po przecinku>`  
-- Walutę można opisać w języku polskim (`euro`, `rubel`), używając symboli (`$`,`€`) oraz znaki walut (`BYN`, `CZK`), dodatkowo używając różnego rodzaju skrótów (`zl`, `rub`, `dol`, `grn`) - zobacz /patterns
+- Walutę można opisać w języku rosyjskim, angelskim (`euro`, `рубль`), używając symboli (`$`,`€`), nazwiska krajów (`Sweden`, `Венгрии`) oraz znaki walut (`BYN`, `CZK`), dodatkowo używając różnego rodzaju skrótów (`zl`, `rub`, `dol`, `grn`) - zobacz /patterns
 - Oprócz sumy są dopuszczalne wyrażenia arytmetyczne z użyciem operatorów `*`, `/`, `+`, `-` oraz nawiasów.
 - Dopuszczalne jest użycie przyrostków _kilo-_ oraz _mega-_ (`10к`/`1kk`/`1.9M`/etc.) przy liczbach.
 - Istnieje możliwość dodania innych walut do wyniku poprzez dodanie symbolu ! lub spójnika (`na złotówki`, `!JPY`, `in $`) (każda składnia powinna być oddzielona spacjami).
+- Kursy na szczególny dzień można dostać za pomocą opcji `at 2022-09-14` lub poprzez wykorzystanie daty względnej `? -4` (cztery dni temu)
 - W celu zmiany domyślnych ustawień proszę używać polecenie /settings
 - W celu sprawdzenie ostatniej aktualizacji kursów wymiany proszę używać polecenie /apistatus
 
