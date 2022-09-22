@@ -186,8 +186,8 @@ class BotInputGrammarPositiveTest {
 
     @Test
     fun simple_expression_with_different_currency() {
-        val input = "1 + 1 гривна"
-        val expectedExpr = CurrenciedExpression(Add(1.asConst, 1.asConst), "UAH".toCurrency())
+        val input = "1 - 1 гривна"
+        val expectedExpr = CurrenciedExpression(Subtract(1.asConst, 1.asConst), "UAH".toCurrency())
 
         val (actualExpr, additionalCurrencies) = grammar.parseToEnd(input)
 
@@ -332,7 +332,7 @@ class BotInputGrammarPositiveTest {
 
     @Test
     fun additional_currencies_russian_unions() {
-        val input = "10 бун в доллар на евро"
+        val input = "10 бун в доллар в евро"
         val expectedAdditionalCurrencies = setOf(
             "USD".toCurrency(),
             "EUR".toCurrency()
@@ -628,7 +628,7 @@ class BotInputGrammarPositiveTest {
 
     @Test
     fun value_with_date_spec_with_relative_notation() {
-        val input = "10 byn at -12"
+        val input = "10 byn at -  12"
         val expectedExpr = CurrenciedExpression(10.asConst, "BYN".toCurrency())
 
         val (actualExpr, additionalCurrencies, _, _, onDate) = grammar.parseToEnd(input)

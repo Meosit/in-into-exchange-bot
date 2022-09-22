@@ -60,7 +60,7 @@ class NbuRateFetcherTest {
     @Test
     fun successful_fetch_and_parse() {
         val json = Json { ignoreUnknownKeys = true; isLenient = true }
-        val apiConfig = RateApi("NBY", arrayOf(), Currencies["UAH"], testUrl, testUrl, setOf(), 1)
+        val apiConfig = RateApi("NBY", arrayOf(), Currencies["UAH"], testUrl, testUrl, setOf(), 1, 24)
         val fetcher = NbuRateFetcher(apiConfig, httpClient, json)
         val testCurrencies = Currencies.filter { it.code in setOf("UAH", "USD", "EUR", "KZT", "BYN") }
         val expectedRates = mapOf(

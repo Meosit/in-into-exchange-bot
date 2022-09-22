@@ -34,15 +34,17 @@ object BotInputGrammar : Grammar<BotInput>() {
     private val additionalCurrenciesChain by zeroOrMore(currencyKey)
 
     private val rateApiParser: Parser<RateApi> = tokenDict.apiAlias.map { RateAliasMatcher.match(it.text) }
-    private val onDateParser: Parser<LocalDate> = tokenDict.date.mapOrError(::InvalidDate) { match ->
-        match.text.takeIf { it.startsWith("-") }
-            ?.let { LocalDate.now().minusDays(it.removePrefix("-").toLong()) }
-            ?: runCatching { LocalDate.parse(match.text, universalTimeFormatter) }
-            .recoverCatching { LocalDate.parse(match.text, englishTimeFormatter) }
-            .getOrNull()
+    private val onDateParser: Parser<LocalDate> = tokenDict.dateKey.mapOrError(::InvalidDate) { match ->
+        with(match.text.removeRange(0, match.text.indexOfFirst { it.isDigit() })) {
+            this.toLongOrNull()
+                ?.let { LocalDate.now().minusDays(it) }
+                ?: runCatching { LocalDate.parse(this, universalTimeFormatter) }
+                    .recoverCatching { LocalDate.parse(this, englishTimeFormatter) }
+                    .getOrNull()
+        }
     }
 
-    private val dateConfig = optionalNotIgnoring(InvalidDate::class, skip(tokenDict.question or tokenDict.dateUnion) and onDateParser map { it })
+    private val dateConfig = optional(onDateParser)
     private val apiConfig = optional(skip(tokenDict.whitespace) and rateApiParser map { it })
 
     private val decimalDigitsNumber = tokenDict.number map { it.text.toIntOrNull() }
@@ -89,7 +91,7 @@ object BotInputGrammar : Grammar<BotInput>() {
                 } ?: result
 
                 else -> result
-            }.also { println(tokens.joinToString("\n")) }
+            }
     }
 
 }

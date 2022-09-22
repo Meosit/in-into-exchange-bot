@@ -79,7 +79,7 @@ class CbrRateFetcherTest {
     @Test
     fun successful_fetch_and_parse() {
         val json = Json
-        val apiConfig = RateApi("CBR", arrayOf(), Currencies["RUB"], testUrl, testUrl, setOf(), 1)
+        val apiConfig = RateApi("CBR", arrayOf(), Currencies["RUB"], testUrl, testUrl, setOf(), 1, 24)
         val fetcher = CbrRateFetcher(apiConfig, httpClient, json)
         val testCurrencies = Currencies.filter { it.code in setOf("UAH", "USD", "EUR", "KZT", "BYN", "PLN") }
         val expectedRates = mapOf(

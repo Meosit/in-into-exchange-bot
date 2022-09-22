@@ -35,12 +35,10 @@ class TokenDictionary(
     val ampersand = literalToken("'&'", "&")
     val hashtag = literalToken("'#'", "#")
 
-    // currency and date unions can be added with this prefix to allow expressions like '1 dollar into euro on 2022-01-02'
+    // currency union can be added with this prefix to allow expressions like '1 dollar into euro on 2022-01-02'
     val inIntoUnion = configurableRegexToken("union 'в'/'in'/'into'/'to'", "(?<=\\s)(?iu)(into|in|to|в)(?-iu)(?=\\s)", useTransparentBounds = true)
-    val dateUnion = configurableRegexToken("union 'на'/'за'/'on'/'at'", "(?<=\\s)(?iu)(on|at|на|за)(?-iu)", useTransparentBounds = true)
 
-    val date = regexToken("date", "-\\s*\\d+|[12]\\d{3}-(0[1-9]|1[0-2])-(0[1-9]|[12]\\d|3[01])|(0[1-9]|[12]\\d|3[01])/(0[1-9]|1[0-2])/[12]\\d{3}")
-    val question = literalToken("'?'", "?")
+    val dateKey = configurableRegexToken("dateKey", "([?]|(?<=\\s)(?iu)(on|at|на|за))\\s*([-<]\\s*\\d+|[12]\\d{3}-(0[1-9]|1[0-2])-(0[1-9]|[12]\\d|3[01])|(0[1-9]|[12]\\d|3[01])/(0[1-9]|1[0-2])/[12]\\d{3})", useTransparentBounds = true)
 
     val whitespace = regexToken("space", "\\s+", ignore = true)
 
@@ -53,22 +51,21 @@ class TokenDictionary(
     val plus = literalToken("'+'", "+")
 
     val allTokens: List<Token> = listOf(
-        date,
         number,
-        // inIntoUnion and date must be placed before currency or API regexToken to avoid 'в' letter
+        // inIntoUnion must be placed before currency or API regexToken to avoid 'в' letter
         // to be treated as dollar alias rather than additional currency union.
         // There is a drawback that ' в ' will always be treated as additional currency
         // union but the cases where this is not expected are extremely rare, so it's OK
         // to live with that
         inIntoUnion,
-        dateUnion,
         currencyAlias,
         apiAlias,
         kilo, mega,
-        exclamation, question, ampersand,
+        exclamation, ampersand,
         hashtag,
         whitespace,
         leftPar, rightPar,
-        multiply, divide, minus, plus
+        multiply, divide, minus, plus,
+        dateKey
     )
 }

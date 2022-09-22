@@ -25,20 +25,22 @@ import java.time.ZonedDateTime
 import java.util.logging.Logger
 
 private const val numRetries = 3
-private val logger: Logger = Logger.getLogger(Function::class.simpleName)
-private val store: ApiExchangeRateStore = StoreProvider.load().exchangeRateStore()
+private val logger: Logger = Logger.getLogger(FetchFunction::class.simpleName)
 
 @Suppress("unused")
-class Function : HttpBotFunction {
-
-    val json = Json { ignoreUnknownKeys = true; isLenient = true }
-    val httpClient = HttpClient(Java) {
+class FetchFunction(
+    private val storeProvider: StoreProvider = StoreProvider.load(),
+    private val json: Json = Json { ignoreUnknownKeys = true; isLenient = true },
+    private val httpClient: HttpClient = HttpClient(Java) {
         install(ContentNegotiation) {
             json(json)
         }
     }
+) : HttpBotFunction {
+
+
     override suspend fun serve(input: InputStream): Int {
-        val jobs = RateApis.map { CoroutineScope(Dispatchers.Default).async { reloadOne(it, store, httpClient, json) } }
+        val jobs = RateApis.map { CoroutineScope(Dispatchers.Default).async { reloadOne(it, storeProvider.exchangeRateStore(), httpClient, json) } }
         jobs.forEach { it.await() }
         return HttpStatusCode.OK.value
     }

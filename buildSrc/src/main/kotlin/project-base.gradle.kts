@@ -12,8 +12,8 @@ plugins {
     kotlin("jvm")
 }
 
-val serializationVersion = "1.4.0"
-val ktorVersion = "2.1.1"
+val serializationVersion: String by project
+val ktorVersion: String by project
 
 dependencies {
     constraints {

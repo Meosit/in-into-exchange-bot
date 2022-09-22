@@ -187,12 +187,33 @@ class BotInputGrammarNegativeTest {
 
     @Test
     fun currency_only_query_with_invalid_date() {
-        val input = "доллар ? 2022-02-30 "
+        val input = "доллар ? 2022-03-35"
 
         val result = grammar.tryParseToEnd(input)
 
-        assertIs<InvalidDate>(result)
-        assertEquals(10, result.match.column)
+        assertIs<UnparsedRemainder>(result)
+        assertEquals(8, result.startsWith.column)
+    }
+
+    @Test
+    fun currency_only_query_with_no_spaces() {
+        val input = "долларon 2022-03-35"
+
+        val result = grammar.tryParseToEnd(input)
+
+        assertIs<NoMatchingToken>(result)
+        assertEquals(1, result.tokenMismatch.column)
+    }
+
+
+    @Test
+    fun currency_only_query_with_no_spaces_with_precision() {
+        val input = "доллар #14on 2022-03-35"
+
+        val result = grammar.tryParseToEnd(input)
+
+        assertIs<UnparsedRemainder>(result)
+        assertEquals(11, result.startsWith.column)
     }
 
     @Test

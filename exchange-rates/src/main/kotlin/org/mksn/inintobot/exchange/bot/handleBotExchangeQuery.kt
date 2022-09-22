@@ -45,6 +45,7 @@ fun handleBotExchangeQuery(query: String, settings: UserSettings, rateStore: Api
                 } else {
                     return arrayOf(BotSimpleErrorOutput(BotMessages.errors.of(settings.language).ratesOnDateUnavailable))
                 }
+            logger.info("Loaded rates for API ${rates.api.name} for date $onDate")
 
             val evaluator = ExpressionEvaluator(defaultCurrency, apiBaseCurrency, rates::exchange)
             val evaluated = try {

@@ -1,0 +1,14 @@
+runtime: java11
+entrypoint: 'java -jar server.jar'
+inbound_services:
+  - warmup
+automatic_scaling:
+  max_idle_instances: 1
+  min_idle_instances: 1
+  min_instances: 1
+  max_instances: 1
+env_variables:
+  FILL###ME###UP
+#  BOT_TOKEN: <bot_token>
+#  BOT_USERNAME: <username of bot>
+#  CREATOR_ID: <id of owner>

@@ -28,7 +28,7 @@ data class BotSuccessOutput(
     private val markdown by lazy {
         if (expression.type != ExpressionType.CURRENCY_DIVISION) {
             val apiHeader = apiName?.let { strings.headers.api.format(it) } ?: ""
-            val apiTime = if (expression.type == ExpressionType.ONE_UNIT) strings.headers.apiTime.format(apiTime) else ""
+            val apiTime =  apiTime?.let { strings.headers.apiTime.format(it) } ?: ""
             val exchangeBody = exchanges
                 .joinToString("\n") { "`${it.currency.emoji}${it.currency.code}`  `${it.value.toStr(decimalDigits)}`" }
             (expressionHeader + apiHeader + apiTime + exchangeBody).trimToLength(BotMessages.maxOutputLength, "… ${strings.outputTooBigMessage}")

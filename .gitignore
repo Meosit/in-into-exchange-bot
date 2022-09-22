@@ -35,4 +35,4 @@ gradle-app.setting
 *.iml
 
 # Credentials file
-credentials.json
+credentials.properties
