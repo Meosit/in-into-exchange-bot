@@ -1,22 +1,27 @@
 package org.mksn.inintobot.common.store
 
+import org.mksn.inintobot.common.currency.Currency
+import org.mksn.inintobot.common.expression.EvaluatedExpression
 import org.mksn.inintobot.common.rate.RateApi
 import org.mksn.inintobot.common.user.UserAggregateStats
-import java.util.*
+import org.mksn.inintobot.common.user.UserSettings
 
 interface UserAggregateStatsStore {
 
     fun get(): UserAggregateStats
 
-    fun logRequestUsage(
-        errorRequest: Boolean,
-        inlineRequest: Boolean,
-        expressionRequest: Boolean,
-        involvedCurrencies: List<Currency>,
+    fun logExchangeRequestUsage(
+        expression: EvaluatedExpression,
         rateApi: RateApi,
-    )
+        outputCurrencies: List<Currency>,
+        inlineRequest: Boolean,
+        historyRequest: Boolean
+    ): Result<Unit>
 
-    fun logSettingsUsage()
+    fun logExchangeErrorRequest(errorType: String, inlineRequest: Boolean): Result<Unit>
 
+    fun logSettingsChange(old: UserSettings, new: UserSettings): Result<Unit>
+
+    fun logBotCommandUsage(command: String): Result<Unit>
 
 }

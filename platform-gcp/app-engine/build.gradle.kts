@@ -11,7 +11,7 @@ dependencies {
     runtimeOnly(project(":fetch-rates"))
     runtimeOnly(project(":exchange-rates"))
     runtimeOnly(project(":compound-server"))
-    implementation("com.google.cloud:google-cloud-logging:3.11.1")
+    runtimeOnly("com.google.cloud:google-cloud-logging:3.11.3")
 }
 
 
@@ -20,6 +20,7 @@ tasks.getByPath("appengineStage").dependsOn("shadowJar")
 configure<AppEngineAppYamlExtension> {
     stage {
         setArtifact("build/libs/server.jar")
+        setExtraFilesDirectories("src/main/resources")
     }
     deploy {
         version = "GCLOUD_CONFIG"

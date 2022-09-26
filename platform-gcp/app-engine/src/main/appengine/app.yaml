@@ -1,5 +1,5 @@
 runtime: java11
-entrypoint: 'java -jar server.jar'
+entrypoint: 'java -jar -Djava.util.logging.config.file=/workspace/logging.properties server.jar'
 inbound_services:
   - warmup
 automatic_scaling:

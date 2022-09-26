@@ -19,7 +19,4 @@ data class Currency(val code: String, val emoji: String, val aliases: Array<Stri
     override fun hashCode(): Int {
         return code.hashCode()
     }
-    companion object {
-
-    }
 }

@@ -26,10 +26,12 @@ suspend fun Message.handle(
             logger.info("'$text' message text received")
             val errorMessages = BotMessages.errors.of(settings.language)
             context.sender.sendChatMessage(chat.id.toString(), BotTextOutput(errorMessages.queryExpected))
+            context.statsStore.logExchangeErrorRequest("queryExpected", inlineRequest = false)
         }
         "/start" -> {
             logger.info("Handling /start command")
             Setting.START_COMMAND.handle(null, this, settings, context)
+            context.statsStore.logBotCommandUsage(text)
         }
         "/help", "/patterns", "/apis" -> {
             logger.info("Handling bot command $text")
@@ -57,6 +59,7 @@ suspend fun Message.handle(
             }
             val formattedMessage = BotTextOutput(message)
             context.sender.sendChatMessage(chat.id.toString(), formattedMessage)
+            context.statsStore.logBotCommandUsage(text)
         }
         "/apistatus" -> {
             val statusFormat = BotMessages.apiStatusCommand.of(settings.language)
@@ -72,10 +75,42 @@ suspend fun Message.handle(
             }
             val formattedMessage = BotTextOutput(message)
             context.sender.sendChatMessage(chat.id.toString(), formattedMessage)
+            context.statsStore.logBotCommandUsage(text)
         }
         "/settings" -> {
             logger.info("Handling settings command")
             Setting.ROOT.handle(null, this, settings, context)
+            context.statsStore.logBotCommandUsage(text)
+        }
+        "/stats" -> {
+            if (this.chat.id.toString() == context.creatorId) {
+                val stats = context.statsStore.get()
+                val markdown = """
+*Total*: `${stats.totalRequests}` (chat: `${stats.totalRequests - stats.inlineRequests}`; inline: `${stats.inlineRequests}`)
+*Errors*: `${stats.totalRequestsErrors}` (chat: `${stats.totalRequestsErrors - stats.inlineRequestsErrors}`; inline: `${stats.inlineRequestsErrors}`)
+*With History*: `${stats.totalRequestsWithHistory}` (chat: `${stats.totalRequestsWithHistory - stats.inlineRequestsWithHistory}`; inline: `${stats.inlineRequestsWithHistory}`)
+*Errors*:
+${stats.errorUsage.asSequence().sortedByDescending { it.value }.joinToString("\n") { (k, v) -> "- $k: `$v`" } }
+*Commands*:
+${stats.botCommandUsage.asSequence().sortedByDescending { it.value }.joinToString("\n") { (k, v) -> "- $k: `$v`" } }
+*Expressions*:
+${stats.expressionTypeUsage.asSequence().sortedByDescending { it.value }.joinToString("\n") { (k, v) -> "- $k: `$v`" } }
+*Rate Apis*:
+${stats.requestsRateApiUsage.asSequence().sortedByDescending { it.value }.joinToString("\n") { (k, v) -> "- $k: `$v`" } }
+*Base Currency*:
+${stats.requestsBaseCurrencyUsage.asSequence().sortedByDescending { it.value }.joinToString("\n") { (k, v) -> "- $k: `$v`" } }
+*Involved Currency*:
+${stats.requestsInvolvedCurrencyUsage.asSequence().sortedByDescending { it.value }.joinToString("\n") { (k, v) -> "- $k: `$v`" } }
+*Output Currency*:
+${stats.requestsInvolvedCurrencyUsage.asSequence().sortedByDescending { it.value }.joinToString("\n") { (k, v) -> "- $k: `$v`" } }
+                """.trim()
+                context.sender.sendChatMessage(context.creatorId, BotTextOutput(markdown))
+                context.statsStore.logBotCommandUsage(text)
+            } else {
+                val outputs = handleBotExchangeQuery(isInline = false, text, settings, context)
+                outputs.firstOrNull()?.let { context.sender.sendChatMessage(chat.id.toString(), it) }
+                context.statsStore.logExchangeErrorRequest("unauthorizedAdminCommand", inlineRequest = false)
+            }
         }
         else -> {
             logger.info("Handling '$text' chat message")
@@ -83,8 +118,9 @@ suspend fun Message.handle(
                 logger.info("Bot inline query output used as chat input")
                 val messages = BotMessages.errors.of(settings.language)
                 context.sender.sendChatMessage(chat.id.toString(), BotSimpleErrorOutput(messages.inlineOutputAsChatInput))
+                context.statsStore.logExchangeErrorRequest("inlineOutputAsChatInput", inlineRequest = false)
             } else {
-                val outputs = handleBotExchangeQuery(text, settings, context.rateStore)
+                val outputs = handleBotExchangeQuery(isInline = false, text, settings, context)
                 outputs.firstOrNull()?.let { context.sender.sendChatMessage(chat.id.toString(), it) }
             }
         }

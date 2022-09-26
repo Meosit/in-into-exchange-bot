@@ -79,6 +79,7 @@ abstract class SettingHandler(id: Int) {
                     if (output.markdown() lettersDiffer message.text) {
                         context.sender.editChatMessage(message.chat.id.toString(), message.messageId, output)
                     }
+                    context.statsStore.logSettingsChange(current, newSettings)
                 } catch (e: Exception) {
                     val error = BotMessages.errors.of(current.language).unableToSave
                     context.sender.editChatMessage(message.chat.id.toString(), message.messageId, BotTextOutput(error))

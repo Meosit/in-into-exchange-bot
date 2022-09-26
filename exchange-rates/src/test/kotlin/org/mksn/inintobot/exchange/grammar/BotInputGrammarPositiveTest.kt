@@ -3,9 +3,9 @@ package org.mksn.inintobot.exchange.grammar
 import com.github.h0tk3y.betterParse.grammar.parseToEnd
 import org.mksn.inintobot.common.currency.Currencies
 import org.mksn.inintobot.common.currency.Currency
+import org.mksn.inintobot.common.expression.*
 import org.mksn.inintobot.common.misc.toFixedScaleBigDecimal
 import org.mksn.inintobot.common.rate.RateApis
-import org.mksn.inintobot.exchange.expression.*
 import java.time.LocalDate
 import kotlin.test.Test
 import kotlin.test.assertEquals

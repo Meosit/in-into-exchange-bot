@@ -3,8 +3,8 @@ package org.mksn.inintobot.exchange.grammar.parsers
 import com.github.h0tk3y.betterParse.combinators.*
 import com.github.h0tk3y.betterParse.grammar.parser
 import com.github.h0tk3y.betterParse.parser.Parser
+import org.mksn.inintobot.common.expression.*
 import org.mksn.inintobot.common.misc.toFixedScaleBigDecimal
-import org.mksn.inintobot.exchange.expression.*
 
 /**
  * Container class for the parsers of the basic math expression terms

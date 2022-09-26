@@ -1,10 +1,10 @@
 package org.mksn.inintobot.exchange.output
 
+import org.mksn.inintobot.common.expression.EvaluatedExpression
+import org.mksn.inintobot.common.expression.ExpressionType
 import org.mksn.inintobot.common.misc.toStr
 import org.mksn.inintobot.common.misc.trimToLength
 import org.mksn.inintobot.common.rate.Exchange
-import org.mksn.inintobot.exchange.expression.EvaluatedExpression
-import org.mksn.inintobot.exchange.expression.ExpressionType
 import org.mksn.inintobot.exchange.output.strings.BotMessages
 import org.mksn.inintobot.exchange.output.strings.QueryStrings
 
@@ -22,19 +22,21 @@ data class BotSuccessOutput(
         ExpressionType.SINGLE_VALUE, ExpressionType.CURRENCY_DIVISION -> ""
         ExpressionType.SINGLE_CURRENCY_EXPR -> strings.headers.singleCurrencyExpression
             .format(expression.stringRepr, expression.involvedCurrencies.first().code)
+
         ExpressionType.MULTI_CURRENCY_EXPR -> strings.headers.multiCurrencyExpression.format(expression.stringRepr)
     }
 
-    private val markdown by lazy {
-        if (expression.type != ExpressionType.CURRENCY_DIVISION) {
-            val apiHeader = apiName?.let { strings.headers.api.format(it) } ?: ""
-            val apiTime =  apiTime?.let { strings.headers.apiTime.format(it) } ?: ""
-            val exchangeBody = exchanges
-                .joinToString("\n") { "`${it.currency.emoji}${it.currency.code}`  `${it.value.toStr(decimalDigits)}`" }
-            (expressionHeader + apiHeader + apiTime + exchangeBody).trimToLength(BotMessages.maxOutputLength, "… ${strings.outputTooBigMessage}")
-        } else {
-            "`${expression.stringRepr}` = `${expression.result.toStr()}`"
-        }
+    private val markdown = if (expression.type != ExpressionType.CURRENCY_DIVISION) {
+        val apiHeader = apiName?.let { strings.headers.api.format(it) } ?: ""
+        val apiTime = apiTime?.let { strings.headers.apiTime.format(it) } ?: ""
+        val exchangeBody = exchanges
+            .joinToString("\n") { "`${it.currency.emoji}${it.currency.code}`  `${it.value.toStr(decimalDigits)}`" }
+        (expressionHeader + apiHeader + apiTime + exchangeBody).trimToLength(
+            BotMessages.maxOutputLength,
+            "… ${strings.outputTooBigMessage}"
+        )
+    } else {
+        "`${expression.stringRepr}` = `${expression.result.toStr()}`"
     }
 
     override fun inlineTitle() = when (expression.type) {
@@ -48,6 +50,7 @@ data class BotSuccessOutput(
                     .map { it.currency.code }
                     .joinToString(",")
             )
+
         else ->
             strings.inlineTitles.exchange.format(expression.result.toStr(),
                 expression.involvedCurrencies.joinToString(",") { it.code },

@@ -2,14 +2,14 @@ package org.mksn.inintobot.exchange.bot
 
 import org.mksn.inintobot.common.currency.Currencies
 import org.mksn.inintobot.common.currency.Currency
+import org.mksn.inintobot.common.expression.EvaluatedExpression
+import org.mksn.inintobot.common.expression.ExpressionType
 import org.mksn.inintobot.common.misc.toFixedScaleBigDecimal
 import org.mksn.inintobot.common.rate.ApiExchangeRates
 import org.mksn.inintobot.common.rate.MissingCurrenciesException
 import org.mksn.inintobot.common.rate.RateApis
 import org.mksn.inintobot.common.user.UserSettings
 import org.mksn.inintobot.exchange.BotContext
-import org.mksn.inintobot.exchange.expression.EvaluatedExpression
-import org.mksn.inintobot.exchange.expression.ExpressionType
 import org.mksn.inintobot.exchange.output.BotSimpleErrorOutput
 import org.mksn.inintobot.exchange.output.BotStaleRatesOutput
 import org.mksn.inintobot.exchange.output.BotSuccessOutput
@@ -43,11 +43,12 @@ suspend fun InlineQuery.handle(settings: UserSettings, context: BotContext) {
                 .toList().toTypedArray()
         } else {
             logger.severe("Rates unavailable for API ${api.name}")
+            context.statsStore.logExchangeErrorRequest("ratesUnavailable", inlineRequest = true)
             arrayOf(BotSimpleErrorOutput(BotMessages.errors.of(settings.language).ratesUnavailable))
         }
     } else {
         logger.info("Handling inline query '$query'")
-        handleBotExchangeQuery(query, settings, context.rateStore)
+        handleBotExchangeQuery(isInline = true, query, settings, context)
     }
 
     context.sender.sendInlineQuery(id, *outputs)

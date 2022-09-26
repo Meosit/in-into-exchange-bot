@@ -1,9 +1,9 @@
-package org.mksn.inintobot.exchange.expression
+package org.mksn.inintobot.common.expression
 
 import org.mksn.inintobot.common.currency.Currency
+import org.mksn.inintobot.common.expression.ExpressionType.*
 import org.mksn.inintobot.common.misc.toFixedScaleBigDecimal
 import org.mksn.inintobot.common.misc.toStr
-import org.mksn.inintobot.exchange.expression.ExpressionType.*
 import java.math.BigDecimal
 
 /**

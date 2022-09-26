@@ -6,16 +6,16 @@ import org.mksn.inintobot.common.user.UserSettings
 
 class FirestoreUserSettingsStore(private val db: Firestore) : UserSettingsStore {
 
-    private val collectionSuffix = "inintobot-user-settings"
+    private val collectionName = "inintobot-user-settings"
 
     override fun save(id: String, settings: UserSettings) {
-        db.collection(collectionSuffix)
+        db.collection(collectionName)
             .document(id)
             .set(settings.toFirestoreMap())
             .get()
     }
 
-    override fun get(id: String): UserSettings? = db.collection(collectionSuffix)
+    override fun get(id: String): UserSettings? = db.collection(collectionName)
         .document(id).get().get().data?.fromFirestoreMap()
 
     private fun UserSettings.toFirestoreMap(): Map<String, Any> = mapOf(

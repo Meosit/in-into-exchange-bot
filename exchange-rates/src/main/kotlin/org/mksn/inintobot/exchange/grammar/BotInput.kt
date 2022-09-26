@@ -3,8 +3,8 @@ package org.mksn.inintobot.exchange.grammar
 import com.github.h0tk3y.betterParse.lexer.TokenMatch
 import com.github.h0tk3y.betterParse.parser.ErrorResult
 import org.mksn.inintobot.common.currency.Currency
+import org.mksn.inintobot.common.expression.Expression
 import org.mksn.inintobot.common.rate.RateApi
-import org.mksn.inintobot.exchange.expression.Expression
 import java.time.LocalDate
 
 /**

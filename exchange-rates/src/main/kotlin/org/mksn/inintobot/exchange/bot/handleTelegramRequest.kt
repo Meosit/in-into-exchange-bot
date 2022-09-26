@@ -9,8 +9,7 @@ import org.mksn.inintobot.exchange.bot.settings.Setting
 import org.mksn.inintobot.exchange.output.BotTextOutput
 import org.mksn.inintobot.exchange.output.strings.BotMessages
 import org.mksn.inintobot.exchange.telegram.Update
-import java.io.PrintWriter
-import java.io.StringWriter
+import java.time.LocalDateTime
 import java.util.logging.Logger
 
 
@@ -39,19 +38,17 @@ suspend fun handleTelegramRequest(
         val cause = (e as? ResponseException)?.response?.bodyAsText() ?: "${e::class.simpleName} ${e.message}"
         val queryString = (update.message ?: update.editedMessage)?.text ?: update.inlineQuery?.query
         val user = update.userReadableName()
-        logger.info("Error for query '$queryString': $cause")
+        logger.severe("Error for query '$queryString': $cause")
         if ("query is too old" !in cause) {
-            val message = BotTextOutput("Error received.\n```\nQuery: $queryString\nUser: $user\n\nCause: $cause```")
+            val message = BotTextOutput("Error received.\n```\nQuery: $queryString\nTime: ${LocalDateTime.now()}\nUser: $user\n\nCause: $cause```")
             context.sender.sendChatMessage(context.creatorId, message)
         }
-        val sw = StringWriter()
-        e.printStackTrace(PrintWriter(sw))
-        logger.severe(sw.toString())
+        logger.severe(e.stackTraceToString())
     }
     return
 }
 
-fun UserSettingsStore.loadSettings(update: Update) = with(update) {
+private fun UserSettingsStore.loadSettings(update: Update) = with(update) {
     val chat = message?.chat ?: editedMessage?.chat ?: callbackQuery?.message?.chat
     val telegramUser = inlineQuery?.from ?: message?.from ?: editedMessage?.from ?: callbackQuery?.from
     val userId = chat?.id ?: telegramUser?.id

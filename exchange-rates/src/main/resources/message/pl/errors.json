@@ -9,7 +9,7 @@
   "unsupportedCurrency": "❗Waluty %s nie jest obsługiwana przez API %s (lub czasowo niedostępna), rozważ użycie innego API, zobacz /apis",
   "unsupportedCurrencyWithAlternative": "❗Waluty %s nie jest obsługiwana przez API %s (lub czasowo niedostępna), rozważ użycie innego API: `%s`",
   "ratesUnavailable": "❗Kurs wymiany dla API jest czasowo niedostępny, rozważ użycie innego API, zobacz /apis",
-  "ratesOnDateUnavailable": "❗Kursy nie są dostępne w zaznaczonym datę",
+  "ratesOnDateUnavailable": "❗Kursy nie są dostępne w zaznaczonym datę (minimalna data %s)",
   "staleApiRates": "ℹ️️Kursy wymian dla API %s nie zmieniły się od %s z przyczyn zewnętrznych, rozważ użycie innego API, zobacz /apis",
   "unableToSave": "❗Błąd zapisu ustawień",
   "inlineOutputAsChatInput": "Wydaję się, że już dostałeś niezbędną odpowiedź \uD83D\uDE43",

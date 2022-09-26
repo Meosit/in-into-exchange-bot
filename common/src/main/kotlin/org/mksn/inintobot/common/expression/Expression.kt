@@ -1,4 +1,4 @@
-package org.mksn.inintobot.exchange.expression
+package org.mksn.inintobot.common.expression
 
 import org.mksn.inintobot.common.currency.Currency
 import org.mksn.inintobot.common.misc.toFixedScaleBigDecimal
