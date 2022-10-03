@@ -10,10 +10,13 @@
 - `(120рублей + 8 злотых)*2 !фунты`
 - `$1 on 2022-09-14`
 - `13 EUR at -2`
+- `złoty into dollar ?22.09.2022`
 
 Доступні команди: 
 /help - докладний опис можливостей бота
-/settings - секція для зміни налаштувань за умовчанням 
-/apis - список доступних API з курсами валют 
 /apistatus - інформація про останні зміни курсів 
+/settings - секція для зміни налаштувань за умовчанням 
+/donate - підтримати розробку 
+/apis - список доступних API з курсами валют 
 /patterns - список валют із всіми доступними псевдонімами
+Money conversion with support of historical rates, math and multi currency expressions. Rates are for info purposes only

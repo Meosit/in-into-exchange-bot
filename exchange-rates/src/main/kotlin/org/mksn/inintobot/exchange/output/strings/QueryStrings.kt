@@ -15,8 +15,10 @@ data class QueryStrings(
     @Serializable
     data class MessageHeaders(
         val rate: String,
+        val history: String,
         val api: String,
         val apiTime: String,
+        val apiDate: String,
         val singleCurrencyExpression: String,
         val multiCurrencyExpression: String
     )
@@ -25,6 +27,7 @@ data class QueryStrings(
     data class Inlines(
         val exchange: String,
         val calculate: String,
-        val dashboard: String
+        val dashboard: String,
+        val history: String,
     )
 }

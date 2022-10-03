@@ -38,7 +38,7 @@ class TokenDictionary(
     // currency union can be added with this prefix to allow expressions like '1 dollar into euro on 2022-01-02'
     val inIntoUnion = configurableRegexToken("union 'в'/'in'/'into'/'to'", "(?<=\\s)(?iu)(into|in|to|в)(?-iu)(?=\\s)", useTransparentBounds = true)
 
-    val dateKey = configurableRegexToken("dateKey", "([?]|(?<=\\s)(?iu)(on|at|на|за))\\s*([-<]\\s*\\d+|[12]\\d{3}-(0[1-9]|1[0-2])-(0[1-9]|[12]\\d|3[01])|(0[1-9]|[12]\\d|3[01])/(0[1-9]|1[0-2])/[12]\\d{3})", useTransparentBounds = true)
+    val dateKey = configurableRegexToken("dateKey", "([?]|(?<=\\s)(?iu)(on|at|на|за))\\s*([-<]\\s*\\d+|[12]\\d{3}-(0[1-9]|1[0-2])-(0[1-9]|[12]\\d|3[01])|(0[1-9]|[12]\\d|3[01])[./](0[1-9]|1[0-2])[./][12]\\d{3})", useTransparentBounds = true)
 
     val whitespace = regexToken("space", "\\s+", ignore = true)
 

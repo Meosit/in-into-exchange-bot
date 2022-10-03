@@ -10,9 +10,9 @@ import org.mksn.inintobot.common.rate.MissingCurrenciesException
 import org.mksn.inintobot.common.rate.RateApis
 import org.mksn.inintobot.common.user.UserSettings
 import org.mksn.inintobot.exchange.BotContext
+import org.mksn.inintobot.exchange.output.BotQuerySuccessOutput
 import org.mksn.inintobot.exchange.output.BotSimpleErrorOutput
 import org.mksn.inintobot.exchange.output.BotStaleRatesOutput
-import org.mksn.inintobot.exchange.output.BotSuccessOutput
 import org.mksn.inintobot.exchange.output.strings.BotMessages
 import org.mksn.inintobot.exchange.telegram.InlineQuery
 import java.util.logging.Logger
@@ -37,7 +37,7 @@ suspend fun InlineQuery.handle(settings: UserSettings, context: BotContext) {
                 .map { EvaluatedExpression(1.toFixedScaleBigDecimal(), ExpressionType.ONE_UNIT, "1", it, listOf(it)) }
                 .map { it to exchangeAllGracefully(rates, it, currencies) }
                 .map { (expression, exchanged) ->
-                    BotSuccessOutput(expression, exchanged, queryStrings, settings.decimalDigits, apiDisplayNames[settings.apiName], apiTime)
+                    BotQuerySuccessOutput(expression, exchanged, queryStrings, settings.decimalDigits, apiDisplayNames[settings.apiName], apiTime)
                 }
                 .map { if (rates.staleData()) BotStaleRatesOutput(it, api.name, apiTime, settings.language) else it }
                 .toList().toTypedArray()

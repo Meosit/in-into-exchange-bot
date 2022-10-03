@@ -10,10 +10,13 @@ Przykłady:
 - `(12keuro + 8k bucks)*2 !pounds`
 - `$1 on 2022-09-14`
 - `13 EUR at -2`
+- `złoty into dollar ?22.09.2022`
 
 Dostępne polecenia: 
 /help - szczegółowy opis możliwości bota
-/settings - sekca zmiany ustawień domyślnych 
-/apis - lista dostępnych API wraz z kursami wymiany walut 
 /apistatus - informacja o ostatniej aktualizacji kursów wymiany walut 
+/settings - sekca zmiany ustawień domyślnych 
+/donate - wspierać rozwój
+/apis - lista dostępnych API wraz z kursami wymiany walut 
 /patterns - lista walut ze wszystkimi dostępnymi skrótami
+/delete - aby usunąć ustawienia

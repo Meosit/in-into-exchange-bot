@@ -10,13 +10,17 @@ import org.mksn.inintobot.common.misc.BigDecimalSerializer
 import org.mksn.inintobot.common.misc.toFixedScaleBigDecimal
 import org.mksn.inintobot.common.rate.RateApi
 import java.math.BigDecimal
+import java.time.LocalDate
 
 @Serializable
 data class NbuResponseEntry(
-    @SerialName("cc")
+    @SerialName("CurrencyCodeL")
     val code: String,
     @Serializable(with = BigDecimalSerializer::class)
-    @SerialName("rate")
+    @SerialName("Units")
+    val units: BigDecimal,
+    @Serializable(with = BigDecimalSerializer::class)
+    @SerialName("Amount")
     val rate: BigDecimal
 )
 
@@ -24,7 +28,7 @@ class NbuRateFetcher(rateApi: RateApi, client: HttpClient, json: Json) :
     BaseApiRateFetcher<List<NbuResponseEntry>>(rateApi, client, json) {
     override val serializer: KSerializer<List<NbuResponseEntry>> = ListSerializer(NbuResponseEntry.serializer())
 
-    override suspend fun parseResponse(response: List<NbuResponseEntry>) =
-        response.associateBy({ it.code }, { 1.toFixedScaleBigDecimal() / it.rate })
+    override suspend fun parseResponse(response: List<NbuResponseEntry>, date: LocalDate?) =
+        response.associateBy({ it.code }, { 1.toFixedScaleBigDecimal() / (it.rate / it.units) })
 
 }

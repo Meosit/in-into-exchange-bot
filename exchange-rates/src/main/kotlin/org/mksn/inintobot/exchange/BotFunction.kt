@@ -23,7 +23,7 @@ private val logger: Logger = Logger.getLogger(BotFunction::class.simpleName)
 
 @Suppress("unused")
 class BotFunction(
-    private val storeProvider: StoreProvider = StoreProvider.load(),
+    storeProvider: StoreProvider = StoreProvider.load(),
     private val json: Json = Json { ignoreUnknownKeys = true; isLenient = true },
     httpClient: HttpClient = HttpClient(Java) {
         install(ContentNegotiation) {
@@ -42,6 +42,8 @@ class BotFunction(
     )
 
     val botToken = context.botToken
+    val botSender = context.sender
+    val creatorId = context.creatorId
 
     @OptIn(ExperimentalSerializationApi::class)
     override suspend fun serve(input: InputStream): Int {

@@ -19,7 +19,8 @@ data class BotInput(
     val expression: Expression,
     val additionalCurrencies: Set<Currency>,
     val rateApi: RateApi?,
+    val onDate: LocalDate?,
     val decimalDigits: Int?,
-    val onDate: LocalDate?
+    val historyView: Boolean = false
 )
 data class InvalidDate(val match: TokenMatch): ErrorResult()

@@ -14,6 +14,8 @@ sealed class Expression
 
 data class CurrenciedExpression(val e: Expression, val currency: Currency) : Expression()
 
+data class ConversionHistoryExpression(val source: Currency, val target: Currency) : Expression()
+
 data class Const(val number: BigDecimal) : Expression()
 
 data class ConstWithSuffixes(val number: BigDecimal, val suffixCount: Int, val suffixType: SuffixType) : Expression()

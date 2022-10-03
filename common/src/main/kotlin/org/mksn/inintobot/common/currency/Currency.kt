@@ -16,6 +16,8 @@ data class Currency(val code: String, val emoji: String, val aliases: Array<Stri
         else -> false
     }
 
+    override fun toString() = "Currency[$code]"
+
     override fun hashCode(): Int {
         return code.hashCode()
     }

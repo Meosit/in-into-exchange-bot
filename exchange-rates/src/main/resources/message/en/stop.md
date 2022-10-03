@@ -1,0 +1,1 @@
+Your settings have been successfully deleted 

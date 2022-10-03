@@ -31,6 +31,10 @@ class ExpressionEvaluator(
         fun findCurrencies(expr: Expression, inDenominator: Boolean): Any = when (expr) {
             is Const -> Unit
             is ConstWithSuffixes -> Unit
+            is ConversionHistoryExpression -> {
+                involvedCurrencies.add(expr.source)
+                involvedCurrencies.add(expr.target)
+            }
             is Negate -> findCurrencies(expr.e, inDenominator)
             is Add -> {
                 findCurrencies(expr.e1, inDenominator)
@@ -79,8 +83,13 @@ class ExpressionEvaluator(
                 }
             }
             else -> {
-                baseCurrency = apiBaseCurrency
-                expressionType = if (isCurrencyInDenominator) CURRENCY_DIVISION else MULTI_CURRENCY_EXPR
+                if (rootExpr is ConversionHistoryExpression) {
+                    baseCurrency = involvedCurrencies.first()
+                    expressionType = CONVERSION_HISTORY
+                } else {
+                    baseCurrency = apiBaseCurrency
+                    expressionType = if (isCurrencyInDenominator) CURRENCY_DIVISION else MULTI_CURRENCY_EXPR
+                }
             }
         }
         return CurrencyMetadata(
@@ -121,8 +130,9 @@ class ExpressionEvaluator(
                 else -> "${valueFormatWithParsRespect(expr.e1)}/${if (expr.e2 is Const || expr.e2 is CurrenciedExpression) "%s" else "(%s)"}"
                     .format(stringRepr(expr.e1), stringRepr(expr.e2))
             }
+            is ConversionHistoryExpression -> "1"
             is CurrenciedExpression -> when (expressionType) {
-                ONE_UNIT -> "1"
+                ONE_UNIT, CONVERSION_HISTORY -> "1"
                 SINGLE_VALUE, SINGLE_CURRENCY_EXPR -> stringRepr(expr.e)
                 MULTI_CURRENCY_EXPR, CURRENCY_DIVISION -> when (expr.e) {
                     is Add, is Subtract -> "(${stringRepr(expr.e)}) ${expr.currency.code}"
@@ -143,6 +153,7 @@ class ExpressionEvaluator(
 
         fun eval(expr: Expression): BigDecimal = when (expr) {
             is Const -> expr.number
+            is ConversionHistoryExpression -> 1.toFixedScaleBigDecimal()
             is ConstWithSuffixes -> expr.evalNumber()
             is Negate -> eval(expr.e).negate()
             is Add -> eval(expr.e1) + eval(expr.e2)

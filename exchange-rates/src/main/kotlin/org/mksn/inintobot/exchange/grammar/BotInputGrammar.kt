@@ -8,6 +8,7 @@ import com.github.h0tk3y.betterParse.lexer.TokenMatchesSequence
 import com.github.h0tk3y.betterParse.lexer.Tokenizer
 import com.github.h0tk3y.betterParse.parser.*
 import org.mksn.inintobot.common.expression.Const
+import org.mksn.inintobot.common.expression.ConversionHistoryExpression
 import org.mksn.inintobot.common.expression.CurrenciedExpression
 import org.mksn.inintobot.common.misc.toFixedScaleBigDecimal
 import org.mksn.inintobot.common.rate.RateApi
@@ -22,7 +23,7 @@ import java.time.format.DateTimeFormatter
 
 object BotInputGrammar : Grammar<BotInput>() {
     private val universalTimeFormatter: DateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
-    private val englishTimeFormatter: DateTimeFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy")
+    private val englishTimeFormatter: DateTimeFormatter = DateTimeFormatter.ofPattern("dd[./]MM[./]yyyy")
 
     private val tokenDict = TokenDictionary(CurrencyAliasMatcher, RateAliasMatcher)
 
@@ -55,18 +56,21 @@ object BotInputGrammar : Grammar<BotInput>() {
         CurrenciedExpression(Const(1.toFixedScaleBigDecimal()), it)
     }
 
+    private val conversionHistoryExpressionParser by currParsers.currency and currencyKeyPrefix and currParsers.currency map
+            { (from, to) -> ConversionHistoryExpression(from, to)  }
+
     private val singleCurrencyExpressionParser by mathParsers.subSumChain and optional(currParsers.currency) map { (expr, currency) ->
         if (currency == null) expr else CurrenciedExpression(expr, currency)
     }
 
     private val multiCurrencyExpressionParser by currParsers.currenciedSubSumChain
-    private val allValidExpressionParsers by multiCurrencyExpressionParser or singleCurrencyExpressionParser or onlyCurrencyExpressionParser
+    private val allValidExpressionParsers by multiCurrencyExpressionParser or singleCurrencyExpressionParser or conversionHistoryExpressionParser or onlyCurrencyExpressionParser
 
-    private val botInputParser by allValidExpressionParsers and apiConfig and additionalCurrenciesChain and decimalDigitsConfig and dateConfig map
-            { (expr, api, keys, decimalDigits, onDate) -> BotInput(expr, keys.toSet(), api, decimalDigits, onDate) }
+    private val botInputParser by allValidExpressionParsers and additionalCurrenciesChain and apiConfig and dateConfig and decimalDigitsConfig map
+            { (expr, keys, api, onDate, decimalDigits) -> BotInput(expr, keys.toSet(), api, onDate, decimalDigits) }
 
-    private val botCurrencyDivisionInputParser by currParsers.currenciedDivisionSubSumChain and apiConfig and decimalDigitsConfig and dateConfig map
-            { (expr, api, decimalDigits, onDate) -> BotInput(expr, setOf(), api, decimalDigits, onDate) }
+    private val botCurrencyDivisionInputParser by currParsers.currenciedDivisionSubSumChain and apiConfig and dateConfig and decimalDigitsConfig map
+            { (expr, api, onDate, decimalDigits) -> BotInput(expr, setOf(), api, onDate, decimalDigits) }
 
     override val tokens = tokenDict.allTokens
 

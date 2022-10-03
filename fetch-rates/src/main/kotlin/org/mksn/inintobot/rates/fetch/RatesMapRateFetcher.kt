@@ -7,6 +7,7 @@ import kotlinx.serialization.json.Json
 import org.mksn.inintobot.common.misc.BigDecimalSerializer
 import org.mksn.inintobot.common.rate.RateApi
 import java.math.BigDecimal
+import java.time.LocalDate
 
 /**
  * Standard currency rate API response which have nested object with `"code": rate` pairs
@@ -19,5 +20,5 @@ data class RatesMapResponse(
 class RatesMapRateFetcher(rateApi: RateApi, client: HttpClient, json: Json) :
     BaseApiRateFetcher<RatesMapResponse>(rateApi, client, json) {
     override val serializer: KSerializer<RatesMapResponse> = RatesMapResponse.serializer()
-    override suspend fun parseResponse(response: RatesMapResponse): Map<String, BigDecimal> = response.rates
+    override suspend fun parseResponse(response: RatesMapResponse, date: LocalDate?): Map<String, BigDecimal> = response.rates
 }

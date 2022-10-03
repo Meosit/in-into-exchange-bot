@@ -20,7 +20,7 @@ class FirestoreApiExchangeRateStore(private val db: Firestore) : ApiExchangeRate
         .whereEqualTo("api", name)
         .limit(1)
         .get().get().documents.firstOrNull()?.data?.fromFirestoreMap()?.date
-        ?: LocalDate.MAX
+        ?: LocalDate.now().plusDays(1)
 
     override fun save(rates: ApiExchangeRates) {
         val id = "${rates.api.name}-${rates.date}"
@@ -32,7 +32,8 @@ class FirestoreApiExchangeRateStore(private val db: Firestore) : ApiExchangeRate
 
     override fun getForDate(name: String, date: LocalDate, backtrackDays: Int): ApiExchangeRates? {
         return with(db.collection(collectionName).whereEqualTo("api", name)) {
-            if (backtrackDays != 0) whereLessThanOrEqualTo("date", date.toString())
+            if (backtrackDays != 0)
+                whereLessThanOrEqualTo("date", date.toString())
                 .whereGreaterThanOrEqualTo("date", date.minusDays(backtrackDays.toLong()).toString())
                 .orderBy("date", Query.Direction.DESCENDING)
                 .limit(1)
@@ -42,10 +43,11 @@ class FirestoreApiExchangeRateStore(private val db: Firestore) : ApiExchangeRate
 
     override fun getHistoryForDate(name: String, date: LocalDate, backtrackDays: Int): List<ApiExchangeRates> {
         return with(db.collection(collectionName).whereEqualTo("api", name)) {
-            if (backtrackDays != 0) whereLessThanOrEqualTo("date", date.toString())
+            if (backtrackDays != 0)
+                whereLessThanOrEqualTo("date", date.toString())
                 .whereGreaterThanOrEqualTo("date", date.minusDays(backtrackDays.toLong()).toString())
                 .orderBy("date", Query.Direction.DESCENDING)
-                .limit(backtrackDays)
+                .limit(backtrackDays + 1)
             else whereEqualTo("date", date.toString())
         }.get().get().documents.map { it.data.fromFirestoreMap() }
     }

@@ -22,6 +22,8 @@ fun Double.toFixedScaleBigDecimal(): BigDecimal = toBigDecimal().setScale(DEFAUL
 
 fun BigDecimal.toFixedScaleBigDecimal(): BigDecimal = setScale(DEFAULT_DECIMAL_DIGITS, DEFAULT_ROUNDING_MODE)
 
+fun BigDecimal.scaled(decimalDigits: Int): BigDecimal = setScale(decimalDigits, DEFAULT_ROUNDING_MODE)
+
 /**
  * Shortcut for converting number to string without scientific notation
  */
@@ -30,5 +32,12 @@ fun BigDecimal.toStr(): String = stripTrailingZeros().toPlainString()
 /**
  * Converts a value to string with rounding to [decimalDigits] after decimal point
  */
-fun BigDecimal.toStr(decimalDigits: Int): String =
-    setScale(decimalDigits, DEFAULT_ROUNDING_MODE).stripTrailingZeros().toPlainString()
+fun BigDecimal.toStr(decimalDigits: Int, stripZeros: Boolean = true, precise: Boolean = true): String {
+    val actualScale = if (precise) {
+        val precision = stripTrailingZeros().precision()
+        val scale = stripTrailingZeros().scale()
+        kotlin.math.max(decimalDigits, kotlin.math.min(DEFAULT_DECIMAL_DIGITS, scale - precision + decimalDigits))
+    } else decimalDigits
+    return setScale(actualScale, DEFAULT_ROUNDING_MODE)
+        .let { if (stripZeros) it.stripTrailingZeros() else it }.toPlainString()
+}

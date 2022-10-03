@@ -15,6 +15,13 @@ class FirestoreUserSettingsStore(private val db: Firestore) : UserSettingsStore 
             .get()
     }
 
+    override fun delete(id: String) {
+        db.collection(collectionName)
+            .document(id)
+            .delete()
+            .get()
+    }
+
     override fun get(id: String): UserSettings? = db.collection(collectionName)
         .document(id).get().get().data?.fromFirestoreMap()
 
@@ -34,5 +41,6 @@ class FirestoreUserSettingsStore(private val db: Firestore) : UserSettingsStore 
         apiName = this["apiName"].toString(),
         outputCurrencies = (this["outputCurrencies"] as List<*>).map { it.toString() },
         dashboardCurrencies = (this["dashboardCurrencies"] as List<*>).map { it.toString() },
+        persisted = true,
     )
 }

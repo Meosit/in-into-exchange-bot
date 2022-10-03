@@ -71,7 +71,7 @@ abstract class SettingHandler(id: Int) {
             }
         } else {
             if (isValidPayload(payload)) {
-                val newSettings = createNewSettings(current, payload)
+                val newSettings = createNewSettings(current, payload).copy(persisted = true)
                 try {
                     context.settingsStore.save(message.chat.id.toString(), newSettings)
                     logger.info("Settings successfully updated: $newSettings")

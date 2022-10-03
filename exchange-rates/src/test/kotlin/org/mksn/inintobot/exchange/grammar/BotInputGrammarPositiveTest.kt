@@ -108,7 +108,7 @@ class BotInputGrammarPositiveTest {
         val input = "(1 * 1) / (7 - 2) #4"
         val expectedExpr = Divide(Multiply(1.asConst, 1.asConst), Subtract(7.asConst, 2.asConst))
 
-        val (actualExpr, additionalCurrencies, _, decimalDigits) = grammar.parseToEnd(input)
+        val (actualExpr, additionalCurrencies, _, _, decimalDigits) = grammar.parseToEnd(input)
 
         assertTrue(additionalCurrencies.isEmpty())
         assertEquals(expectedExpr, actualExpr)
@@ -348,16 +348,19 @@ class BotInputGrammarPositiveTest {
 
     @Test
     fun additional_currencies_symbol_prefixes() {
-        val input = "10 euro ! бр !dollars"
+        val input = "10 euro ! бр !dollars forex #12"
         val expectedAdditionalCurrencies = setOf(
             "BYN".toCurrency(),
             "USD".toCurrency()
         )
         val expectedExpr = CurrenciedExpression(10.asConst, "EUR".toCurrency())
+        val expectedApi = RateApis["Forex"]
 
-        val (actualExpr, additionalCurrencies) = grammar.parseToEnd(input)
+        val (actualExpr, additionalCurrencies, rateApi, _, decimalDigits) = grammar.parseToEnd(input)
 
         assertEquals(expectedExpr, actualExpr)
+        assertEquals(expectedApi, rateApi)
+        assertEquals(12, decimalDigits)
 
         assertEqualsUnordered(expectedAdditionalCurrencies, additionalCurrencies)
     }
@@ -377,7 +380,7 @@ class BotInputGrammarPositiveTest {
 
     @Test
     fun explicit_currency_api() {
-        val input = "10 euro nbp into usd"
+        val input = "10 euro into usd nbp"
         val expectedExpr = CurrenciedExpression(10.asConst, "EUR".toCurrency())
 
         val expectedAdditionalCurrencies = setOf("USD".toCurrency())
@@ -408,7 +411,7 @@ class BotInputGrammarPositiveTest {
 
     @Test
     fun explicit_currency_api_with_name_collision() {
-        val input = "10 euro tm into usd"
+        val input = "10 euro into usd tm"
         val expectedExpr = CurrenciedExpression(10.asConst, "EUR".toCurrency())
 
         val expectedAdditionalCurrencies = setOf("USD".toCurrency())
@@ -607,7 +610,7 @@ class BotInputGrammarPositiveTest {
         val input = "10 byn ? 2022-01-01"
         val expectedExpr = CurrenciedExpression(10.asConst, "BYN".toCurrency())
 
-        val (actualExpr, additionalCurrencies, _, _, onDate) = grammar.parseToEnd(input)
+        val (actualExpr, additionalCurrencies, _, onDate) = grammar.parseToEnd(input)
 
         assertTrue(additionalCurrencies.isEmpty())
         assertEquals(LocalDate.of(2022, 1, 1), onDate)
@@ -619,7 +622,7 @@ class BotInputGrammarPositiveTest {
         val input = "10 byn at 2022-01-01"
         val expectedExpr = CurrenciedExpression(10.asConst, "BYN".toCurrency())
 
-        val (actualExpr, additionalCurrencies, _, _, onDate) = grammar.parseToEnd(input)
+        val (actualExpr, additionalCurrencies, _, onDate) = grammar.parseToEnd(input)
 
         assertTrue(additionalCurrencies.isEmpty())
         assertEquals(LocalDate.of(2022, 1, 1), onDate)
@@ -631,10 +634,35 @@ class BotInputGrammarPositiveTest {
         val input = "10 byn at -  12"
         val expectedExpr = CurrenciedExpression(10.asConst, "BYN".toCurrency())
 
-        val (actualExpr, additionalCurrencies, _, _, onDate) = grammar.parseToEnd(input)
+        val (actualExpr, additionalCurrencies, _, onDate) = grammar.parseToEnd(input)
 
         assertTrue(additionalCurrencies.isEmpty())
         assertEquals(LocalDate.now().minusDays(12), onDate)
         assertEquals(expectedExpr, actualExpr)
+    }
+
+    @Test
+    fun conversion_history_expression() {
+        val input = "рубли в евро ?-12"
+        val expectedExpr = ConversionHistoryExpression("RUB".toCurrency(), "EUR".toCurrency())
+
+        val (actualExpr, additionalCurrencies, _, onDate) = grammar.parseToEnd(input)
+
+        assertTrue(additionalCurrencies.isEmpty())
+        assertEquals(expectedExpr, actualExpr)
+        assertEquals(LocalDate.now().minusDays(12), onDate)
+    }
+
+    @Test
+    fun conversion_history_expression_with_exclamation() {
+        val input = "PLN ! USD NBP #12"
+        val expectedExpr = ConversionHistoryExpression("PLN".toCurrency(), "USD".toCurrency())
+
+        val (actualExpr, additionalCurrencies, api, _, digits) = grammar.parseToEnd(input)
+
+        assertTrue(additionalCurrencies.isEmpty())
+        assertEquals(expectedExpr, actualExpr)
+        assertEquals(12, digits)
+        assertEquals(RateApis["NBP"], api)
     }
 }

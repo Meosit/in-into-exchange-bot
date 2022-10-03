@@ -1,6 +1,8 @@
 package org.mksn.inintobot.common.rate
 
 import org.mksn.inintobot.common.currency.Currency
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 
 /**
  * Currency API Configuration
@@ -37,7 +39,9 @@ data class RateApi(
     /**
      * Number of hours when rates are considered as stale
      */
-    val staleTimeoutHours: Int,
+    val staleTimeoutHours: Int = refreshHours + 1,
+
+    val backFillInfo: RateApiBackFillInfo?,
 ) {
     /**
      * Comparison is performed only over the API name.
@@ -48,7 +52,17 @@ data class RateApi(
         else -> false
     }
 
+    override fun toString() = "RateApi[$name]"
+
     override fun hashCode(): Int {
         return name.hashCode()
     }
 }
+
+
+data class RateApiBackFillInfo(
+    val url: String,
+    val backFillLimit: LocalDate,
+    val backFillDisabled: Boolean = false,
+    val dateFormat: DateTimeFormatter = DateTimeFormatter.ISO_DATE,
+)

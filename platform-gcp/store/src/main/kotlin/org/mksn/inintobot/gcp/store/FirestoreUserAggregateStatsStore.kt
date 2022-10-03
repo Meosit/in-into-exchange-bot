@@ -39,6 +39,7 @@ class FirestoreUserAggregateStatsStore(private val db: Firestore) : UserAggregat
             inlineRequests = data["inlineRequests"] as? Long ?: 0L,
             inlineRequestsWithHistory = data["inlineRequestsWithHistory"] as? Long ?: 0L,
             requestsRateApiUsage = data["requestsRateApiUsage"].toMap(RateApis::get),
+            requestsCustomRateApiUsage = data["requestsCustomRateApiUsage"].toMap(RateApis::get),
             requestsBaseCurrencyUsage = data["requestsBaseCurrencyUsage"].toMap(Currencies::get),
             requestsInvolvedCurrencyUsage = data["requestsInvolvedCurrencyUsage"].toMap(Currencies::get),
             requestsOutputCurrencyUsage = data["requestsOutputCurrencyUsage"].toMap(Currencies::get),
@@ -63,7 +64,8 @@ class FirestoreUserAggregateStatsStore(private val db: Firestore) : UserAggregat
         rateApi: RateApi,
         outputCurrencies: List<Currency>,
         inlineRequest: Boolean,
-        historyRequest: Boolean
+        historyRequest: Boolean,
+        customApi: Boolean
     ) = runCatching<Unit> {
         db.collection(collectionName).document(objectId).update(sequence {
             yield("totalRequests" to FieldValue.increment(1))
@@ -71,8 +73,9 @@ class FirestoreUserAggregateStatsStore(private val db: Firestore) : UserAggregat
             yield("inlineRequests" to FieldValue.increment(inlineRequest.toIncrement()))
             yield("inlineRequestsWithHistory" to FieldValue.increment((inlineRequest && historyRequest).toIncrement()))
             yield("requestsRateApiUsage.${rateApi.name}" to FieldValue.increment(1))
+            yield("requestsCustomRateApiUsage.${rateApi.name}" to FieldValue.increment(customApi.toIncrement()))
             yield("requestsBaseCurrencyUsage.${expression.baseCurrency.code}" to FieldValue.increment(1))
-            expression.involvedCurrencies.filterNot { it.code == expression.baseCurrency.code }.forEach { c ->
+            expression.involvedCurrencies.forEach { c ->
                 yield("requestsInvolvedCurrencyUsage.${c.code}" to FieldValue.increment(1))
             }
             outputCurrencies.forEach { c ->
@@ -92,33 +95,52 @@ class FirestoreUserAggregateStatsStore(private val db: Firestore) : UserAggregat
         )
     }.onFailure { logger.warning("Error Type: $errorType, inline: $inlineRequest. ${it.stackTraceToString()}") }
 
-    override fun logSettingsChange(old: UserSettings, new: UserSettings) = runCatching {
+    override fun logSettingsChange(old: UserSettings, new: UserSettings?) = runCatching {
         val value = sequence {
-            val dec = if (old.containDefaultsOnly()) 0L else -1L
-            if (new.defaultCurrency != old.defaultCurrency) {
-                yield("settingsDefaultCurrencyUsage.${new.defaultCurrency}" to FieldValue.increment(1))
-                yield("settingsDefaultCurrencyUsage.${old.defaultCurrency}" to FieldValue.increment(dec))
-            }
-            if (new.apiName != old.apiName) {
-                yield("settingsDefaultRateApiUsage.${new.apiName}" to FieldValue.increment(1))
-                yield("settingsDefaultRateApiUsage.${old.apiName}" to FieldValue.increment(dec))
-            }
-            if (new.language != old.language) {
-                yield("settingsLanguageUsage.${new.language}" to FieldValue.increment(1))
-                yield("settingsLanguageUsage.${old.language}" to FieldValue.increment(dec))
-            }
-            (old.outputCurrencies - new.outputCurrencies).forEach {
-                yield("settingsOutputCurrencyUsage.$it" to FieldValue.increment(dec))
-            }
-            (new.outputCurrencies - old.outputCurrencies).forEach {
-                yield("settingsOutputCurrencyUsage.$it" to FieldValue.increment(1))
-            }
             when {
-                old.containDefaultsOnly() && !new.containDefaultsOnly() ->
+                new == null -> {
+                    if (old.persisted) {
+                        yield("usersWithCustomizedSettings" to FieldValue.increment(-1))
+                        yield("settingsDefaultCurrencyUsage.${old.defaultCurrency}" to FieldValue.increment(-1))
+                        yield("settingsDefaultRateApiUsage.${old.apiName}" to FieldValue.increment(-1))
+                        yield("settingsLanguageUsage.${old.language}" to FieldValue.increment(-1))
+                        old.outputCurrencies.forEach {
+                            yield("settingsOutputCurrencyUsage.$it" to FieldValue.increment(-1))
+                        }
+                    }
+                }
+                old.persisted -> {
+                    if (new.defaultCurrency != old.defaultCurrency) {
+                        yield("settingsDefaultCurrencyUsage.${new.defaultCurrency}" to FieldValue.increment(1))
+                        yield("settingsDefaultCurrencyUsage.${old.defaultCurrency}" to FieldValue.increment(-1))
+                    }
+                    if (new.apiName != old.apiName) {
+                        yield("settingsDefaultRateApiUsage.${new.apiName}" to FieldValue.increment(1))
+                        yield("settingsDefaultRateApiUsage.${old.apiName}" to FieldValue.increment(-1))
+                    }
+                    if (new.language != old.language) {
+                        yield("settingsLanguageUsage.${new.language}" to FieldValue.increment(1))
+                        yield("settingsLanguageUsage.${old.language}" to FieldValue.increment(-1))
+                    }
+                    if (old.outputCurrencies != new.outputCurrencies) {
+                        (old.outputCurrencies - new.outputCurrencies).forEach {
+                            yield("settingsOutputCurrencyUsage.$it" to FieldValue.increment(-1))
+                        }
+                        (new.outputCurrencies - old.outputCurrencies).forEach {
+                            yield("settingsOutputCurrencyUsage.$it" to FieldValue.increment(1))
+                        }
+                    }
+                }
+                else -> {
                     yield("usersWithCustomizedSettings" to FieldValue.increment(1))
-
-                !old.containDefaultsOnly() && new.containDefaultsOnly() ->
-                    yield("usersWithCustomizedSettings" to FieldValue.increment(-1))
+                    yield("settingsDefaultCurrencyUsage.${new.defaultCurrency}" to FieldValue.increment(1))
+                    yield("settingsDefaultRateApiUsage.${new.apiName}" to FieldValue.increment(1))
+                    yield("settingsLanguageUsage.${new.language}" to FieldValue.increment(1))
+                    yield("settingsLanguageUsage.${new.language}" to FieldValue.increment(1))
+                    new.outputCurrencies.forEach {
+                        yield("settingsOutputCurrencyUsage.$it" to FieldValue.increment(1))
+                    }
+                }
             }
         }.toMap()
         if (value.isNotEmpty()) {
@@ -132,6 +154,14 @@ class FirestoreUserAggregateStatsStore(private val db: Firestore) : UserAggregat
             Precondition.NONE
         )
     }.onFailure { logger.warning("command: $command. ${it.stackTraceToString()}") }
+
+
+    override fun logMigratedTotalUsage(requests: Long, inlineRequests: Long): Result<Unit> = runCatching<Unit> {
+        db.collection(collectionName).document(objectId).update(mapOf(
+            "totalRequests" to FieldValue.increment(requests),
+            "inlineRequests" to FieldValue.increment(inlineRequests)
+        ), Precondition.NONE)
+    }.onFailure { logger.warning("Requests: $requests, inline: $inlineRequests. ${it.stackTraceToString()}") }
 
     private fun Boolean.toIncrement() = this.compareTo(false).toLong()
 

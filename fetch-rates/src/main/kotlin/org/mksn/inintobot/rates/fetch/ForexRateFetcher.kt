@@ -8,6 +8,7 @@ import kotlinx.serialization.json.Json
 import org.mksn.inintobot.common.misc.BigDecimalSerializer
 import org.mksn.inintobot.common.rate.RateApi
 import java.math.BigDecimal
+import java.time.LocalDate
 
 
 @Serializable
@@ -17,10 +18,10 @@ data class ForexResponse(
 
 @Serializable
 data class ForexResponseEntry(
-    @SerialName("symbol")
+    @SerialName("s")
     val code: String,
     @Serializable(with = BigDecimalSerializer::class)
-    @SerialName("price")
+    @SerialName("c")
     val rate: BigDecimal
 )
 
@@ -28,7 +29,7 @@ class ForexRateFetcher(private val rateApi: RateApi, client: HttpClient, json: J
     BaseApiRateFetcher<ForexResponse>(rateApi, client, json) {
     override val serializer: KSerializer<ForexResponse> = ForexResponse.serializer()
 
-    override suspend fun parseResponse(response: ForexResponse) =
+    override suspend fun parseResponse(response: ForexResponse, date: LocalDate?) =
         response.response.associateBy({ it.code.replace("${rateApi.base.code}/", "") }, { it.rate })
 
 }

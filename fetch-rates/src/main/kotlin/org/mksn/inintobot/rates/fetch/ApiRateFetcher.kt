@@ -5,10 +5,11 @@ import kotlinx.serialization.json.Json
 import org.mksn.inintobot.common.currency.Currency
 import org.mksn.inintobot.common.rate.RateApi
 import java.math.BigDecimal
+import java.time.LocalDate
 
 interface ApiRateFetcher {
 
-    suspend fun fetch(supported: Iterable<Currency>): Map<Currency, BigDecimal>
+    suspend fun fetch(supported: Iterable<Currency>, date: LocalDate? = null): Map<Currency, BigDecimal>
 
     companion object {
         fun forApi(api: RateApi, client: HttpClient, json: Json): ApiRateFetcher {

@@ -8,6 +8,7 @@ import kotlinx.serialization.json.Json
 import org.mksn.inintobot.common.misc.BigDecimalSerializer
 import org.mksn.inintobot.common.rate.RateApi
 import java.math.BigDecimal
+import java.time.LocalDate
 
 @Serializable
 data class CbrResponseEntry(
@@ -48,7 +49,7 @@ class CbrRateFetcher(rateApi: RateApi, client: HttpClient, json: Json) :
 
     override val serializer: KSerializer<List<CbrResponseEntry>> = ListSerializer(CbrResponseEntry.serializer())
 
-    override suspend fun parseResponse(response: List<CbrResponseEntry>) =
+    override suspend fun parseResponse(response: List<CbrResponseEntry>, date: LocalDate?) =
         response.associateBy({ it.code }, { it.scale / it.rate })
 
 }

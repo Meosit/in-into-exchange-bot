@@ -19,6 +19,7 @@ data class UserAggregateStats(
 
     val expressionTypeUsage: Map<ExpressionType, Long>,
     val requestsRateApiUsage: Map<RateApi, Long>,
+    val requestsCustomRateApiUsage: Map<RateApi, Long>,
     val requestsBaseCurrencyUsage: Map<Currency, Long>,
     val requestsInvolvedCurrencyUsage: Map<Currency, Long>,
     val requestsOutputCurrencyUsage: Map<Currency, Long>,

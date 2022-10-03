@@ -10,10 +10,12 @@ Examples:
 - `(12keuro + 8k bucks)*2 !pounds`
 - `$1 on 2022-09-14`
 - `13 EUR at -2`
+- `złoty into dollar ?22.09.2022`
 
 Available commands: 
 /help - extended and verbose description
-/settings - section to change default settings
-/apis - list of supported rate APIs
 /apistatus - get info about last rates update  
+/settings - section to change default settings
+/donate - support development
+/apis - list of supported rate APIs
 /patterns - all available aliases for all currencies

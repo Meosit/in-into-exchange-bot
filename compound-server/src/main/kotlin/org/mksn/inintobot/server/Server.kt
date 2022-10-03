@@ -13,6 +13,7 @@ import kotlinx.coroutines.launch
 import kotlinx.serialization.json.Json
 import org.mksn.inintobot.common.store.StoreProvider
 import org.mksn.inintobot.exchange.BotFunction
+import org.mksn.inintobot.exchange.output.BotTextOutput
 import org.mksn.inintobot.rates.FetchFunction
 import java.io.InputStream
 import java.time.Duration
@@ -50,8 +51,10 @@ fun Application.module() {
             val now = LocalTime.now()
             if (now.minute == 0) {
                 runCatching { fetchRatesFunction.serve(InputStream.nullInputStream()) }
-                    .onFailure {
-                        log.error("Unknown error while reloading rates", it)
+                    .recoverCatching {
+                        exchangeRateFunction.botSender.sendChatMessage(
+                            exchangeRateFunction.creatorId, BotTextOutput("```${it.message}```")
+                        )
                     }
             }
             delay(60000)

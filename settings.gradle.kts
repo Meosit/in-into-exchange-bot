@@ -1,7 +1,7 @@
 rootProject.name = "in-into-exchange-bot"
-include(":common", ":fetch-rates", ":exchange-rates", ":compound-server")
+include(":common", ":fetch-rates", ":exchange-rates", ":migrate-settings", ":compound-server")
 include(":platform-gcp:store", ":platform-gcp:function")
-include(":platform-gcp:function-exchange-rates", ":platform-gcp:function-fetch-rates", ":platform-gcp:app-engine")
+include(":platform-gcp:function-exchange-rates", ":platform-gcp:function-fetch-rates", ":platform-gcp:function-migrate-settings", ":platform-gcp:app-engine")
 
 pluginManagement {
     repositories {

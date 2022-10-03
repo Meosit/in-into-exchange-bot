@@ -8,7 +8,7 @@ import org.mksn.inintobot.common.rate.Exchange
 import org.mksn.inintobot.exchange.output.strings.BotMessages
 import org.mksn.inintobot.exchange.output.strings.QueryStrings
 
-data class BotSuccessOutput(
+data class BotQuerySuccessOutput(
     val expression: EvaluatedExpression,
     val exchanges: List<Exchange>,
     val strings: QueryStrings,
@@ -19,6 +19,10 @@ data class BotSuccessOutput(
 
     private val expressionHeader = when (expression.type) {
         ExpressionType.ONE_UNIT -> strings.headers.rate.format(expression.baseCurrency.code)
+        ExpressionType.CONVERSION_HISTORY -> {
+            val (from, to) = expression.involvedCurrencies
+            strings.headers.history.format("${from.emoji}${from.code}", "${to.emoji}${to.code}")
+        }
         ExpressionType.SINGLE_VALUE, ExpressionType.CURRENCY_DIVISION -> ""
         ExpressionType.SINGLE_CURRENCY_EXPR -> strings.headers.singleCurrencyExpression
             .format(expression.stringRepr, expression.involvedCurrencies.first().code)
@@ -28,7 +32,7 @@ data class BotSuccessOutput(
 
     private val markdown = if (expression.type != ExpressionType.CURRENCY_DIVISION) {
         val apiHeader = apiName?.let { strings.headers.api.format(it) } ?: ""
-        val apiTime = apiTime?.let { strings.headers.apiTime.format(it) } ?: ""
+        val apiTime = apiTime?.let { (if (":" in it) strings.headers.apiTime else strings.headers.apiDate).format(it) } ?: ""
         val exchangeBody = exchanges
             .joinToString("\n") { "`${it.currency.emoji}${it.currency.code}`  `${it.value.toStr(decimalDigits)}`" }
         (expressionHeader + apiHeader + apiTime + exchangeBody).trimToLength(
@@ -42,6 +46,10 @@ data class BotSuccessOutput(
     override fun inlineTitle() = when (expression.type) {
         ExpressionType.ONE_UNIT -> strings.inlineTitles.dashboard.format(expression.involvedCurrencies.first().code)
         ExpressionType.CURRENCY_DIVISION -> strings.inlineTitles.calculate
+        ExpressionType.CONVERSION_HISTORY -> {
+            val (from, to) = expression.involvedCurrencies
+            strings.inlineTitles.history.format("${from.emoji}${from.code}", "${to.emoji}${to.code}")
+        }
         ExpressionType.MULTI_CURRENCY_EXPR ->
             strings.inlineTitles.exchange.format("\uD83D\uDCB1",
                 expression.involvedCurrencies.joinToString(",") { it.code },
@@ -67,7 +75,7 @@ data class BotSuccessOutput(
         .replace("\n", " ")
 
     override fun inlineThumbUrl() = when (expression.type) {
-        ExpressionType.ONE_UNIT -> strings.inlineThumbs.dashboard
+        ExpressionType.ONE_UNIT, ExpressionType.CONVERSION_HISTORY -> strings.inlineThumbs.dashboard
         ExpressionType.CURRENCY_DIVISION -> strings.inlineThumbs.calculate
         else -> strings.inlineThumbs.exchange
     }

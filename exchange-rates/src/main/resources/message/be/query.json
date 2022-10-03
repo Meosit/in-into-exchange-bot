@@ -1,21 +1,24 @@
 {
   "headers": {
     "rate": "\uD83D\uDCB9 Курс `%s`\n",
+    "history": "\uD83D\uDCB9 Гісторыя `%s` да `%s`\n",
     "api": "\uD83C\uDF10 _%s_\n",
     "apiTime":"\uD83D\uDD59 _На %s (UTC)_\n",
+    "apiDate":"\uD83D\uDD59 _На %s_\n",
     "singleCurrencyExpression": "#️⃣ _%s (%s) =_\n",
-    "multiCurrencyExpression": "#️⃣ _%s =_\n",
-    "currencyDivision": "#️⃣ _%s =_\n"
+    "multiCurrencyExpression": "#️⃣ _%s =_\n"
   },
   "inlineTitles": {
     "exchange": "%s %s ⇒ %s",
     "calculate": "Толькі палічыць",
-    "dashboard": "Курс %s"
+    "dashboard": "Курс %s",
+    "history": "Гісторыя %s да %s"
   },
   "inlineThumbs": {
     "exchange": "https://i.imgur.com/wR13J26.png",
     "calculate": "https://i.imgur.com/aYmzJbg.png",
-    "dashboard": "https://i.imgur.com/Y506WlE.png"
+    "dashboard": "https://i.imgur.com/Y506WlE.png",
+    "history": "https://i.imgur.com/Y506WlE.png"
   },
   "outputTooBigMessage": "❗Занадта шмат сімвалаў"
 }

@@ -18,6 +18,7 @@ data class ErrorMessages(
     val unsupportedCurrencyWithAlternative: String,
     val ratesUnavailable: String,
     val ratesOnDateUnavailable: String,
+    val ratesOnDateNotExact: String,
     val staleApiRates: String,
     val inlineOutputAsChatInput: String,
     val unableToSave: String,

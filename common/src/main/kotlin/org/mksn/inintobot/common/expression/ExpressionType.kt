@@ -28,5 +28,10 @@ enum class ExpressionType {
     /**
      * The expression is a division of two math expression where each has it's own currency. `"10 EUR / 12 USD"`
      */
-    CURRENCY_DIVISION
+    CURRENCY_DIVISION,
+
+    /**
+     * The expression is conversion history from source to target for some period, e.g. `PLN to USD`
+     */
+    CONVERSION_HISTORY,
 }

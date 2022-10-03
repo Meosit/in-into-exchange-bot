@@ -38,7 +38,7 @@ suspend fun handleTelegramRequest(
         val cause = (e as? ResponseException)?.response?.bodyAsText() ?: "${e::class.simpleName} ${e.message}"
         val queryString = (update.message ?: update.editedMessage)?.text ?: update.inlineQuery?.query
         val user = update.userReadableName()
-        logger.severe("Error for query '$queryString': $cause")
+        logger.info("Error for query '$queryString': $cause")
         if ("query is too old" !in cause) {
             val message = BotTextOutput("Error received.\n```\nQuery: $queryString\nTime: ${LocalDateTime.now()}\nUser: $user\n\nCause: $cause```")
             context.sender.sendChatMessage(context.creatorId, message)
@@ -61,6 +61,6 @@ private fun UserSettingsStore.loadSettings(update: Update) = with(update) {
             ?.take(2)
             ?.lowercase()
             ?.takeIf { it in BotMessages.supportedLanguages }
-        inferredLanguage?.let { UserSettings(language = it) } ?: UserSettings()
+        inferredLanguage?.let { UserSettings(language = it, persisted = false) } ?: UserSettings(persisted = false)
     }
 }

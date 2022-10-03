@@ -7,16 +7,19 @@ import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.json.Json
 import org.mksn.inintobot.common.currency.Currencies
 import org.mksn.inintobot.common.misc.toFixedScaleBigDecimal
-import org.mksn.inintobot.common.rate.RateApi
+import org.mksn.inintobot.common.rate.RateApis
 import org.mksn.inintobot.rates.assertEqualsUnordered
 import org.mksn.inintobot.rates.fullUrl
+import java.time.LocalDate
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 
 class EcbRateFetcherTest {
 
     private lateinit var httpClient: HttpClient
-    private val testUrl = "http://test-url.org/getResponse"
+    private val apiConfig = RateApis["ECB"]
+    private val date1 = LocalDate.of(2020, 6, 6)
+    private val date2 = LocalDate.of(2020, 6, 4)
 
     private val testResponseString = """
     <?xml version="1.0" encoding="UTF-8"?>
@@ -60,6 +63,10 @@ class EcbRateFetcherTest {
                 <Cube currency='THB' rate='35.650'/>
                 <Cube currency='ZAR' rate='19.0823'/>
             </Cube>
+            <Cube time='2020-06-04'>
+                <Cube currency='USD' rate='1.222222'/>
+                <Cube currency='PLN' rate='4.55555'/>
+            </Cube>
         </Cube>
     </gesmes:Envelope>
     """.trimIndent()
@@ -70,7 +77,10 @@ class EcbRateFetcherTest {
             engine {
                 addHandler { request ->
                     when (request.url.fullUrl) {
-                        testUrl -> {
+                        apiConfig.url,
+                        apiConfig.backFillInfo.url.replace("<date>", date1.toString()),
+                        apiConfig.backFillInfo.url.replace("<date>", date2.toString())
+                        -> {
                             val responseHeaders =
                                 headersOf("Content-Type" to listOf(ContentType.Application.Json.toString()))
                             respond(testResponseString, headers = responseHeaders)
@@ -85,7 +95,6 @@ class EcbRateFetcherTest {
     @Test
     fun successful_fetch_and_parse() {
         val json = Json
-        val apiConfig = RateApi("ECB", arrayOf(), Currencies["EUR"], testUrl, testUrl, setOf(), 1, 24)
         val fetcher = EcbRateFetcher(apiConfig, httpClient, json)
         val testCurrencies = Currencies.filter { it.code in setOf("USD", "EUR", "PLN") }
         val expectedRates = mapOf(
@@ -95,6 +104,38 @@ class EcbRateFetcherTest {
         )
         runBlocking {
             val actualRates = fetcher.fetch(testCurrencies)
+            assertEqualsUnordered(expectedRates.entries, actualRates.entries)
+        }
+    }
+
+    @Test
+    fun successful_fetch_and_parse_on_date_latest() {
+        val json = Json
+        val fetcher = EcbRateFetcher(apiConfig, httpClient, json)
+        val testCurrencies = Currencies.filter { it.code in setOf("USD", "EUR", "PLN") }
+        val expectedRates = mapOf(
+            testCurrencies.first { it.code == "USD" } to "1.1330".toFixedScaleBigDecimal(),
+            testCurrencies.first { it.code == "EUR" } to "1".toFixedScaleBigDecimal(),
+            testCurrencies.first { it.code == "PLN" } to "4.4425".toFixedScaleBigDecimal()
+        )
+        runBlocking {
+            val actualRates = fetcher.fetch(testCurrencies, date1)
+            assertEqualsUnordered(expectedRates.entries, actualRates.entries)
+        }
+    }
+
+    @Test
+    fun successful_fetch_and_parse_on_date_not_first() {
+        val json = Json
+        val fetcher = EcbRateFetcher(apiConfig, httpClient, json)
+        val testCurrencies = Currencies.filter { it.code in setOf("USD", "EUR", "PLN") }
+        val expectedRates = mapOf(
+            testCurrencies.first { it.code == "USD" } to "1.222222".toFixedScaleBigDecimal(),
+            testCurrencies.first { it.code == "EUR" } to "1".toFixedScaleBigDecimal(),
+            testCurrencies.first { it.code == "PLN" } to "4.55555".toFixedScaleBigDecimal()
+        )
+        runBlocking {
+            val actualRates = fetcher.fetch(testCurrencies, date2)
             assertEqualsUnordered(expectedRates.entries, actualRates.entries)
         }
     }

@@ -7,7 +7,7 @@ import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.json.Json
 import org.mksn.inintobot.common.currency.Currencies
 import org.mksn.inintobot.common.misc.toFixedScaleBigDecimal
-import org.mksn.inintobot.common.rate.RateApi
+import org.mksn.inintobot.common.rate.RateApis
 import org.mksn.inintobot.rates.assertEqualsUnordered
 import org.mksn.inintobot.rates.fullUrl
 import kotlin.test.BeforeTest
@@ -16,7 +16,7 @@ import kotlin.test.Test
 class RatesMapRateFetcherTest {
 
     private lateinit var httpClient: HttpClient
-    private val testUrl = "http://test-url.org/getResponse"
+    private val apiConfig = RateApis["Fixer"]
 
     private val testResponseString = """
         {
@@ -54,7 +54,7 @@ class RatesMapRateFetcherTest {
             engine {
                 addHandler { request ->
                     when (request.url.fullUrl) {
-                        testUrl -> {
+                        apiConfig.url -> {
                             val responseHeaders =
                                 headersOf("Content-Type" to listOf(ContentType.Application.Json.toString()))
                             respond(testResponseString, headers = responseHeaders)
@@ -69,7 +69,6 @@ class RatesMapRateFetcherTest {
     @Test
     fun successful_fetch_and_parse() {
         val json = Json { ignoreUnknownKeys = true; isLenient = true }
-        val apiConfig = RateApi("Fixer", arrayOf(), Currencies["USD"], testUrl, testUrl, setOf(), 1, 2)
         val fetcher = RatesMapRateFetcher(apiConfig, httpClient, json)
         val testCurrencies = Currencies.filter { it.code in setOf("UAH", "USD", "EUR", "KZT", "BYN", "PLN") }
         val expectedRates = mapOf(
