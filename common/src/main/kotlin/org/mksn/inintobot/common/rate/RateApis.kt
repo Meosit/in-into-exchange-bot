@@ -78,7 +78,7 @@ object RateApis: Iterable<RateApi> {
             refreshHours = 8,
             backFillInfo = RateApiBackFillInfo(
                 url = "http://data.fixer.io/api/<date>?access_key=${System.getenv("FIXER_ACCESS_KEY")}&symbols=BYN,USD,EUR,RUB,UAH,PLN,CZK,GBP,JPY,CNY,KZT,CHF,BGN,TRY,CAD,ISK,DKK,SEK,NOK,BTC,ILS,GEL,HUF,MXN,HRK,VND,KRW,MDL,HKD,RON,IDR,INR,THB,AMD,UZS,KGS,AUD,AED",
-                backFillLimit = LocalDate.of(2022, 7, 1),
+                backFillLimit = LocalDate.of(2020, 1, 1),
             )
         ),
         "OpenExchangeRates" to RateApi(
@@ -91,7 +91,7 @@ object RateApis: Iterable<RateApi> {
             refreshHours = 1,
             backFillInfo = RateApiBackFillInfo(
                 url = "https://openexchangerates.org/api/historical/<date>.json?app_id=${System.getenv("OPENEXCHANGERATES_ACCESS_KEY")}&symbols=BYN,USD,EUR,RUB,UAH,PLN,CZK,GBP,JPY,CNY,KZT,CHF,BGN,TRY,CAD,ISK,DKK,SEK,NOK,BTC,ILS,GEL,HUF,MXN,HRK,VND,KRW,MDL,HKD,RON,IDR,INR,THB,AMD,UZS,KGS,AUD,AED",
-                backFillLimit = LocalDate.of(2022, 4, 1),
+                backFillLimit = LocalDate.of(2020, 1, 1),
             ),
         ),
         "TraderMade" to RateApi(

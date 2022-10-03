@@ -38,10 +38,10 @@ class FetchFunction(
 ) : HttpBotFunction {
 
     init {
-//        System.getenv("FOREX_ACCESS_KEY").ifEmpty { throw Exception("FOREX_ACCESS_KEY env must be provided") }
-//        System.getenv("FIXER_ACCESS_KEY").ifEmpty { throw Exception("FIXER_ACCESS_KEY env must be provided") }
-//        System.getenv("TRADERMADE_ACCESS_KEY").ifEmpty { throw Exception("TRADERMADE_ACCESS_KEY env must be provided") }
-//        System.getenv("OPENEXCHANGERATES_ACCESS_KEY").ifEmpty { throw Exception("OPENEXCHANGERATES_ACCESS_KEY env must be provided") }
+        System.getenv("FOREX_ACCESS_KEY").ifEmpty { throw Exception("FOREX_ACCESS_KEY env must be provided") }
+        System.getenv("FIXER_ACCESS_KEY").ifEmpty { throw Exception("FIXER_ACCESS_KEY env must be provided") }
+        System.getenv("TRADERMADE_ACCESS_KEY").ifEmpty { throw Exception("TRADERMADE_ACCESS_KEY env must be provided") }
+        System.getenv("OPENEXCHANGERATES_ACCESS_KEY").ifEmpty { throw Exception("OPENEXCHANGERATES_ACCESS_KEY env must be provided") }
     }
 
     override suspend fun serve(input: InputStream): Int {
@@ -107,8 +107,12 @@ class FetchFunction(
                     }.getOrNull()
                 } else null
                 val now = LocalDate.now()
+
                 val rates =
-                    if (backFillInfo != null && onDate == null && oldRates != null && oldRates.date != now.minusDays(1)) {
+                    if (backFillInfo != null
+                        && onDate == null
+                        && oldRates != null
+                        && ChronoUnit.DAYS.between(oldRates.date, now) > 0) {
                         logger.warning(
                             "${api.name} Found gap in rates: latest ${oldRates.date} is ${
                                 ChronoUnit.DAYS.between(
