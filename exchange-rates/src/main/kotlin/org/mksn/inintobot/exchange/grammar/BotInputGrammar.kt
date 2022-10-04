@@ -23,7 +23,8 @@ import java.time.format.DateTimeFormatter
 
 object BotInputGrammar : Grammar<BotInput>() {
     private val universalTimeFormatter: DateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
-    private val englishTimeFormatter: DateTimeFormatter = DateTimeFormatter.ofPattern("dd[./]MM[./]yyyy")
+    private val englishTimeFormatter: DateTimeFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy")
+    private val slavicTimeFormatter: DateTimeFormatter = DateTimeFormatter.ofPattern("dd.MM.yyyy")
 
     private val tokenDict = TokenDictionary(CurrencyAliasMatcher, RateAliasMatcher)
 
@@ -41,6 +42,7 @@ object BotInputGrammar : Grammar<BotInput>() {
                 ?.let { LocalDate.now().minusDays(it) }
                 ?: runCatching { LocalDate.parse(this, universalTimeFormatter) }
                     .recoverCatching { LocalDate.parse(this, englishTimeFormatter) }
+                    .recoverCatching { LocalDate.parse(this, slavicTimeFormatter) }
                     .getOrNull()
         }
     }

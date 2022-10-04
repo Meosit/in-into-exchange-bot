@@ -12,6 +12,7 @@ abstract class AutocompleteAliasMatcher<T> : AliasMatcher<T> {
 
     override fun matchOrNull(candidate: String): T? = when (val alias = candidate.lowercase()) {
         "" -> null
+        in KILO_MEGA_CHARS -> null
         in aliases -> aliases[alias]
         // original value is a priority, then goes transliterated one, last if keyboard-switched
         else -> alias.length.takeIf { it > 1 }?.let {
@@ -34,6 +35,8 @@ abstract class AutocompleteAliasMatcher<T> : AliasMatcher<T> {
               """йцукенгшщзхъфывапролджэёячсмитьбюЙЦУКЕНГШЩЗХЪФЫВАПРОЛДЖЭЁЯЧСМИТЬБЮ"""
         private const val LATIN_KEYBOARD_LETTERS =
               """qwertyuiop[]asdfghjkl;'\zxcvbnm,.QWERTYUIOP{}ASDFGHJKL:"|ZXCVBNM<>"""
+
+        private const val KILO_MEGA_CHARS = "kKкКmMмМ"
 
         // Cyrillic-latin naive transliteration, only for letters which have exact one-letter alternative,
         // for example cyrillic 'Ш' transliterates to 'SH', hence not inclided

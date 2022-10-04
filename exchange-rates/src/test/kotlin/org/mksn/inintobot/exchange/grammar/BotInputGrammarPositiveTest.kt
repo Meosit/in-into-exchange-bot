@@ -434,6 +434,16 @@ class BotInputGrammarPositiveTest {
         assertTrue(additionalCurrencies.isEmpty())
         assertEquals(expectedExpr, actualExpr)
     }
+    @Test
+    fun kilo_suffix_cyrillic() {
+        val input = "10к"
+        val expectedExpr = ConstWithSuffixes(10.bigDecimal, 1, SuffixType.KILO)
+
+        val (actualExpr, additionalCurrencies) = grammar.parseToEnd(input)
+
+        assertTrue(additionalCurrencies.isEmpty())
+        assertEquals(expectedExpr, actualExpr)
+    }
 
     @Test
     fun kilo_suffixes_with_spaces() {
@@ -651,6 +661,19 @@ class BotInputGrammarPositiveTest {
         assertTrue(additionalCurrencies.isEmpty())
         assertEquals(expectedExpr, actualExpr)
         assertEquals(LocalDate.now().minusDays(12), onDate)
+    }
+
+
+    @Test
+    fun conversion_history_expression_dotted_date() {
+        val input = "złoty into dollar ?22.09.2022"
+        val expectedExpr = ConversionHistoryExpression("PLN".toCurrency(), "USD".toCurrency())
+
+        val (actualExpr, additionalCurrencies, _, onDate) = grammar.parseToEnd(input)
+
+        assertTrue(additionalCurrencies.isEmpty())
+        assertEquals(expectedExpr, actualExpr)
+        assertEquals(LocalDate.of(2022, 9, 22), onDate)
     }
 
     @Test
