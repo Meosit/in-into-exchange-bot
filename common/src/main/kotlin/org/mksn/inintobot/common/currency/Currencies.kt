@@ -4,7 +4,7 @@ object Currencies : Iterable<Currency> {
     // @formatter:off
     private val ALL = mapOf(
         "USD" to Currency(code = "USD", emoji = "🇺🇸",                       aliases = arrayOf("$", "d", "д", "dollar", "bucks", "бакс", "доллар", "USA", "США")),
-        "EUR" to Currency(code = "EUR", emoji = "🇪🇺",                       aliases = arrayOf("€", "euro", "евро", "European", "Евросоюз")),
+        "EUR" to Currency(code = "EUR", emoji = "🇪🇺",                       aliases = arrayOf("€", "e", "е", "euro", "евро", "European", "Евросоюз")),
         "BYN" to Currency(code = "BYN", emoji = "🇧🇾",                       aliases = arrayOf("b", "б", "br", "бун", "бур", "бр", "BYR", "Belarus", "Беларусь")),
         "RUB" to Currency(code = "RUB", emoji = "🇷🇺",                       aliases = arrayOf("₽", "r", "р", "rouble", "рубль", "RUR", "Russia", "Россия")),
         "UAH" to Currency(code = "UAH", emoji = "🇺🇦",                       aliases = arrayOf("₴", "u", "g", "grn", "гривна", "гривен", "грн", "Ukraine", "Украина")),

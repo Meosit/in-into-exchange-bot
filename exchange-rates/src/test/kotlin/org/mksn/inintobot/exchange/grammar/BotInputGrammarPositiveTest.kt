@@ -152,6 +152,28 @@ class BotInputGrammarPositiveTest {
     }
 
     @Test
+    fun value_with_different_currency_single_letter_euro() {
+        val input = "1234e"
+        val expectedExpr = CurrenciedExpression(1234.asConst, "EUR".toCurrency())
+
+        val (actualExpr, additionalCurrencies) = grammar.parseToEnd(input)
+
+        assertTrue(additionalCurrencies.isEmpty())
+        assertEquals(expectedExpr, actualExpr)
+    }
+
+    @Test
+    fun value_with_different_currency_single_letter_euro_cyrillic() {
+        val input = "1234е"
+        val expectedExpr = CurrenciedExpression(1234.asConst, "EUR".toCurrency())
+
+        val (actualExpr, additionalCurrencies) = grammar.parseToEnd(input)
+
+        assertTrue(additionalCurrencies.isEmpty())
+        assertEquals(expectedExpr, actualExpr)
+    }
+
+    @Test
     fun value_with_different_currency_prefix_transliterated() {
         val input = "1 tayl"
         val expectedExpr = CurrenciedExpression(1.asConst, "THB".toCurrency())
