@@ -6,6 +6,7 @@ import org.mksn.inintobot.common.currency.Currencies
 import org.mksn.inintobot.common.currency.Currency
 import org.mksn.inintobot.common.expression.ExpressionType
 import org.mksn.inintobot.common.rate.RateApis
+import org.mksn.inintobot.common.user.UserAggregateStats
 import org.mksn.inintobot.common.user.UserSettings
 import org.mksn.inintobot.exchange.BotContext
 import org.mksn.inintobot.exchange.bot.settings.Setting
@@ -19,7 +20,7 @@ import java.util.logging.Logger
 
 
 private val logger = Logger.getLogger("handleMessage")
-
+private val repeatCommands = setOf("same", "this", "repeat", "повтор", "повтори", "это")
 
 suspend fun Message.handle(
     settings: UserSettings,
@@ -117,7 +118,36 @@ suspend fun Message.handle(
             if (this.chat.id.toString() == context.creatorId) {
                 val stats = context.statsStore.get()
                 logger.info(stats.toString())
-                val markdown = """
+                val markdown = makeStatsMessageMarkdown(stats)
+                context.sender.sendChatMessage(chat.id.toString(), BotTextOutput(markdown))
+                context.statsStore.logBotCommandUsage(text)
+            } else {
+                val outputs = handleBotExchangeQuery(isInline = false, text, settings, context)
+                outputs.firstOrNull()?.let { context.sender.sendChatMessage(chat.id.toString(), it) }
+                context.statsStore.logExchangeErrorRequest("unauthorizedAdminCommand", inlineRequest = false)
+            }
+        }
+        else -> {
+            if (replyToMessage != null && text.lowercase() in repeatCommands) {
+                logger.info("Handling repeat request")
+                replyToMessage.handle(settings, context)
+            } else {
+                logger.info("Handling '$text' chat message")
+                if (context.botUsername in (viaBot?.username ?: "")) {
+                    logger.info("Bot inline query output used as chat input")
+                    val messages = BotMessages.errors.of(settings.language)
+                    context.sender.sendChatMessage(chat.id.toString(), BotSimpleErrorOutput(messages.inlineOutputAsChatInput))
+                    context.statsStore.logExchangeErrorRequest("inlineOutputAsChatInput", inlineRequest = false)
+                } else {
+                    val outputs = handleBotExchangeQuery(isInline = false, text, settings, context)
+                    outputs.firstOrNull()?.let { context.sender.sendChatMessage(chat.id.toString(), it) }
+                }
+            }
+        }
+    }
+}
+
+private fun makeStatsMessageMarkdown(stats: UserAggregateStats) = """
 *Total*: `${stats.totalRequests}` (chat: `${stats.totalRequests - stats.inlineRequests}`; inline: `${stats.inlineRequests}`)
 *Errors*: `${stats.totalRequestsErrors}` (chat: `${stats.totalRequestsErrors - stats.inlineRequestsErrors}`; inline: `${stats.inlineRequestsErrors}`)
 *With History*: `${stats.totalRequestsWithHistory}` (chat: `${stats.totalRequestsWithHistory - stats.inlineRequestsWithHistory}`; inline: `${stats.inlineRequestsWithHistory}`)
@@ -126,13 +156,18 @@ ${stats.errorUsage.toListString()}
 *Commands*:
 ${stats.botCommandUsage.toListString(2)}
 *Expressions*:
-${stats.expressionTypeUsage.toListString(5) { when(it) {
-                    ExpressionType.ONE_UNIT -> "OU"
-                    ExpressionType.SINGLE_VALUE -> "SV"
-                    ExpressionType.SINGLE_CURRENCY_EXPR -> "SE"
-                    ExpressionType.MULTI_CURRENCY_EXPR -> "ME"
-                    ExpressionType.CURRENCY_DIVISION -> "CD"
-                    ExpressionType.CONVERSION_HISTORY -> "CH"} }}
+${
+    stats.expressionTypeUsage.toListString(5) {
+        when (it) {
+            ExpressionType.ONE_UNIT -> "OU"
+            ExpressionType.SINGLE_VALUE -> "SV"
+            ExpressionType.SINGLE_CURRENCY_EXPR -> "SE"
+            ExpressionType.MULTI_CURRENCY_EXPR -> "ME"
+            ExpressionType.CURRENCY_DIVISION -> "CD"
+            ExpressionType.CONVERSION_HISTORY -> "CH"
+        }
+    }
+}
 *Rate Apis*:
 ${stats.requestsRateApiUsage.toListString(4) { it.name.uppercase().take(3) }}
 *Base Currency*:
@@ -151,28 +186,6 @@ ${stats.settingsDefaultRateApiUsage.toListString(4) { it.name.uppercase().take(3
 *Settings Output*:
 ${stats.settingsOutputCurrencyUsage.toListString(4, Currency::code)}
                 """.trim()
-                context.sender.sendChatMessage(chat.id.toString(), BotTextOutput(markdown))
-                context.statsStore.logBotCommandUsage(text)
-            } else {
-                val outputs = handleBotExchangeQuery(isInline = false, text, settings, context)
-                outputs.firstOrNull()?.let { context.sender.sendChatMessage(chat.id.toString(), it) }
-                context.statsStore.logExchangeErrorRequest("unauthorizedAdminCommand", inlineRequest = false)
-            }
-        }
-        else -> {
-            logger.info("Handling '$text' chat message")
-            if (context.botUsername in (viaBot?.username ?: "")) {
-                logger.info("Bot inline query output used as chat input")
-                val messages = BotMessages.errors.of(settings.language)
-                context.sender.sendChatMessage(chat.id.toString(), BotSimpleErrorOutput(messages.inlineOutputAsChatInput))
-                context.statsStore.logExchangeErrorRequest("inlineOutputAsChatInput", inlineRequest = false)
-            } else {
-                val outputs = handleBotExchangeQuery(isInline = false, text, settings, context)
-                outputs.firstOrNull()?.let { context.sender.sendChatMessage(chat.id.toString(), it) }
-            }
-        }
-    }
-}
 
 private fun <T> Map<T, Long>.toListString(entriesOnRow: Int = 1, selector: (T) -> String = { it.toString() }) = with(asSequence().sortedByDescending { it.value }) {
     if (entriesOnRow == 1)
