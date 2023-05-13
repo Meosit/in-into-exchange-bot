@@ -37,6 +37,7 @@ object RateApis : Iterable<RateApi> {
                 backFillLimit = LocalDate.of(2020, 1, 1),
             ),
         ),
+        // seems to be indefinitely failing, let's see for a while
         "CBR" to RateApi(
             name = "CBR",
             base = Currencies["RUB"],
@@ -44,7 +45,7 @@ object RateApis : Iterable<RateApi> {
             url = "http://www.cbr.ru/scripts/XML_daily.asp",
             displayLink = "http://www.cbr.ru/",
             unsupported = setOf("ILS", "GEL", "ISK", "THB", "IDR", "VND", "HRK", "MXN", "AED", "BTC", "ETH"),
-            refreshHours = 1,
+            refreshHours = 24,
             staleTimeoutHours = 25,
             backFillInfo = RateApiBackFillInfo(
                 url = "http://www.cbr.ru/scripts/XML_daily.asp?date_req=<date>",
