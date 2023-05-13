@@ -25,7 +25,7 @@ class NbrbMyfinRateFetcher(rateApi: RateApi, client: HttpClient, private val jso
     BaseApiRateFetcher<List<NbrbMyfinResponseEntry>>(rateApi, client, json) {
 
     private val options = setOf(RegexOption.MULTILINE, RegexOption.IGNORE_CASE)
-    private val currencyItem = "<td>([\\d.]+)\\s*?(<sup class=\"up\">.*?</sup>)?\\s*?</td>\\s*?<td>\\s*?<span class=\"flag.*?\">\\s*?</span>\\s*?([A-Z]{3})</td>\\s*?<td>\\s*?(\\d+)\\s*?</td>".toRegex(options)
+    private val currencyItem = "<td>([\\d.]+)\\s*?(<sup class=.*?</sup>)?\\s*?</td>\\s*?<td>\\s*?<span class=\"flag.*?\">\\s*?</span>\\s*?([A-Z]{3})</td>\\s*?<td>\\s*?(\\d+)\\s*?</td>".toRegex(options)
 
     override fun prepareResponseString(response: String): String {
         val entries = currencyItem.findAll(response)
