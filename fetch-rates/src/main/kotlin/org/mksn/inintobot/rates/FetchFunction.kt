@@ -61,7 +61,8 @@ class FetchFunction(
         val errors = jobs.mapNotNull { (api, job) -> job.await()?.let { api to it }  }
             .associateBy({ it.first }, { it.second })
         if (errors.isNotEmpty()) {
-            throw Exception("Failed to load rates for ${errors.keys.joinToString { it.name }}:\n${errors.entries.joinToString("\n") { (k, v) -> "${k.name} -> ${v.message}" }}")
+            val message = "Failed to load rates for ${errors.keys.joinToString { it.name }}:\n${errors.entries.joinToString("\n") { (k, v) -> "${k.name} -> ${v.message}" }}"
+            throw Exception(message)
         }
         return HttpStatusCode.OK.value
     }

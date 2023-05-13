@@ -11,6 +11,7 @@ import io.ktor.server.routing.*
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.serialization.json.Json
+import org.mksn.inintobot.common.misc.trimToLength
 import org.mksn.inintobot.common.store.StoreProvider
 import org.mksn.inintobot.exchange.BotFunction
 import org.mksn.inintobot.exchange.output.BotTextOutput
@@ -18,7 +19,9 @@ import org.mksn.inintobot.rates.FetchFunction
 import java.io.InputStream
 import java.time.Duration
 import java.time.LocalTime
+import java.util.logging.Logger
 
+private val logger: Logger = Logger.getLogger("MainKt")
 fun main(args: Array<String>): Unit = io.ktor.server.jetty.EngineMain.main(args)
 
 fun Application.module() {
@@ -34,9 +37,11 @@ fun Application.module() {
 
     routing {
         get("/") {
+            logger.warning("Root endpoint accessed")
             call.respond("What are you looking here?")
         }
         get("/_ah/warmup") {
+            logger.info("Warming up")
             call.respond("Warmed up")
         }
         post("/handle/${exchangeRateFunction.botToken}") {
@@ -52,8 +57,9 @@ fun Application.module() {
             if (now.minute == 0) {
                 runCatching { fetchRatesFunction.serve(InputStream.nullInputStream()) }
                     .recoverCatching {
+                        logger.severe(it.message)
                         exchangeRateFunction.botSender.sendChatMessage(
-                            exchangeRateFunction.creatorId, BotTextOutput("```${it.message}```")
+                            exchangeRateFunction.creatorId, BotTextOutput("```\n${it.message?.trimToLength(3000)}\n```")
                         )
                     }
             }

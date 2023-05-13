@@ -78,8 +78,8 @@ class EcbRateFetcherTest {
                 addHandler { request ->
                     when (request.url.fullUrl) {
                         apiConfig.url,
-                        apiConfig.backFillInfo.url.replace("<date>", date1.toString()),
-                        apiConfig.backFillInfo.url.replace("<date>", date2.toString())
+                        apiConfig.backFillInfo?.url?.replace("<date>", date1.toString()),
+                        apiConfig.backFillInfo?.url?.replace("<date>", date2.toString())
                         -> {
                             val responseHeaders =
                                 headersOf("Content-Type" to listOf(ContentType.Application.Json.toString()))

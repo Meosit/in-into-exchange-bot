@@ -16,7 +16,7 @@ import kotlin.test.Test
 class RatesMapRateFetcherTest {
 
     private lateinit var httpClient: HttpClient
-    private val apiConfig = RateApis["Fixer"]
+    private val apiConfig = RateApis["OpenExchangeRates"]
 
     private val testResponseString = """
         {
