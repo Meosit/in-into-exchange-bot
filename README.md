@@ -30,7 +30,7 @@ The implementation consists of the following components:
    * `store` - GCP Firestore implementation of common storage interfaces
    * `function-exchange-rates` - GCP version of `exchange-rates` project. **To deploy:**
      ```shell
-     gcloud functions deploy inintobot-exchange-rates \ 
+     gcloud functions deploy inintobot-exchange-rates \
        --entry-point=org.mksn.inintobot.gcp.function.Function \
        --memory=512MB --runtime=java11 --trigger-http --source=build/libs \
        --region=europe-central2 --min-instances=1 \
@@ -38,7 +38,7 @@ The implementation consists of the following components:
      ```
    * `function-fetch-rates` - GCP version of `exchange-rates` project. **To deploy:**  
      ```shell
-     gcloud functions deploy inintobot-fetch-rates \ 
+     gcloud functions deploy inintobot-fetch-rates \
        --entry-point=org.mksn.inintobot.gcp.function.Function \
        --memory=512MB --runtime=java11 --trigger-http --source=build/libs \
        --region=europe-central2 \
@@ -46,7 +46,7 @@ The implementation consists of the following components:
      ```
    * `function-migrate-settings` - GCP version of `migrate-settings` project. **To deploy:**
      ```shell
-     gcloud functions deploy inintobot-migrate-settings \ 
+     gcloud functions deploy inintobot-migrate-settings \
        --entry-point=org.mksn.inintobot.gcp.function.Function \
        --memory=512MB --runtime=java11 --trigger-http --source=build/libs \
        --region=europe-central2

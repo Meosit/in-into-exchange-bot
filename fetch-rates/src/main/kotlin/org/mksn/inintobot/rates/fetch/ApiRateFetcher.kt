@@ -14,7 +14,7 @@ interface ApiRateFetcher {
     companion object {
         fun forApi(api: RateApi, client: HttpClient, json: Json): ApiRateFetcher {
             return when (api.name) {
-                "NBRB" -> NbrbRateFetcher(api, client, json)
+                "NBRB" -> NbrbMyfinRateFetcher(api, client, json)
                 "NBU" -> NbuRateFetcher(api, client, json)
                 "NBP" -> NbpRateFetcher(api, client, json)
                 "NBG" -> NbgRateFetcher(api, client, json)

@@ -7,6 +7,21 @@ import java.time.format.DateTimeFormatter
 
 object RateApis : Iterable<RateApi> {
     private val ALL = mapOf(
+        "NBRB" to RateApi(
+            name = "NBRB",
+            base = Currencies["BYN"],
+            aliases = arrayOf(),
+            url = "https://myfin.by/bank/kursy_valjut_nbrb",
+            displayLink = "https://myfin.by/bank/kursy_valjut_nbrb",
+            unsupported = setOf("KRW", "HKD", "AMD", "UZS", "ILS", "AED", "GEL", "THB", "IDR", "INR", "VND", "HUF", "RON", "HRK", "MXN", "BRL", "BTC", "ETH",),
+            refreshHours = 1,
+            staleTimeoutHours = 25,
+            backFillInfo = RateApiBackFillInfo(
+                url = "https://myfin.by/bank/kursy_valjut_nbrb/<date>",
+                backFillLimit = LocalDate.of(2020, 1, 1),
+                dateFormat = DateTimeFormatter.ofPattern("dd-MM-yyyy"),
+            ),
+        ),
         "NBU" to RateApi(
             name = "NBU",
             base = Currencies["UAH"],
