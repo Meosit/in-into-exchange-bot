@@ -13,6 +13,8 @@ data class ErrorMessages(
     val noMatchingToken: String,
     val invalidDate: String,
     val divisionByZero: String,
+    val percentPlacement: String,
+    val percentCurrency: String,
     val queryExpected: String,
     val unsupportedCurrency: String,
     val unsupportedCurrencyWithAlternative: String,

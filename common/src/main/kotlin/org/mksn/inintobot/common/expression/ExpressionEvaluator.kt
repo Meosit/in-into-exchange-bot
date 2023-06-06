@@ -28,39 +28,43 @@ class ExpressionEvaluator(
         val involvedCurrencies = linkedSetOf<Currency>()
         var isCurrencyInDenominator = false
 
-        fun findCurrencies(expr: Expression, inDenominator: Boolean): Any = when (expr) {
+        fun findCurrencies(expr: Expression, inDenominator: Boolean, inPercentColumn: Int?): Any = when (expr) {
             is Const -> Unit
             is ConstWithSuffixes -> Unit
             is ConversionHistoryExpression -> {
                 involvedCurrencies.add(expr.source)
                 involvedCurrencies.add(expr.target)
             }
-            is Negate -> findCurrencies(expr.e, inDenominator)
+            is Negate -> findCurrencies(expr.e, inDenominator, inPercentColumn)
+            is Percent -> findCurrencies(expr.e, inDenominator, inPercentColumn = expr.column)
             is Add -> {
-                findCurrencies(expr.e1, inDenominator)
-                findCurrencies(expr.e2, inDenominator)
+                findCurrencies(expr.e1, inDenominator, inPercentColumn)
+                findCurrencies(expr.e2, inDenominator, inPercentColumn)
             }
             is Subtract -> {
-                findCurrencies(expr.e1, inDenominator)
-                findCurrencies(expr.e2, inDenominator)
+                findCurrencies(expr.e1, inDenominator, inPercentColumn)
+                findCurrencies(expr.e2, inDenominator, inPercentColumn)
             }
             is Multiply -> {
-                findCurrencies(expr.e1, inDenominator)
-                findCurrencies(expr.e2, inDenominator)
+                findCurrencies(expr.e1, inDenominator, inPercentColumn)
+                findCurrencies(expr.e2, inDenominator, inPercentColumn)
             }
             is Divide -> {
-                findCurrencies(expr.e1, inDenominator)
-                findCurrencies(expr.e2, inDenominator = true)
+                findCurrencies(expr.e1, inDenominator, inPercentColumn)
+                findCurrencies(expr.e2, inDenominator = true, inPercentColumn)
             }
             is CurrenciedExpression -> {
-                if (inDenominator) {
+                if (inDenominator && !isCurrencyInDenominator) {
                     isCurrencyInDenominator = true
+                }
+                if (inPercentColumn != null) {
+                    throw PercentCurrencyException(inPercentColumn)
                 }
                 involvedCurrencies.add(expr.currency)
             }
         }
 
-        findCurrencies(rootExpr, false)
+        findCurrencies(rootExpr, inDenominator = false, inPercentColumn = null)
 
         val expressionType: ExpressionType?
         val baseCurrency: Currency?
@@ -116,6 +120,10 @@ class ExpressionEvaluator(
                 is Negate -> "${stringRepr(expr.e1)} - (${stringRepr(expr.e2)})"
                 else -> "${stringRepr(expr.e1)} - ${stringRepr(expr.e2)}"
             }
+            is Percent -> when(expr.e) {
+                is Const -> "${stringRepr(expr.e)}%"
+                else -> "(${stringRepr(expr.e)})%"
+            }
             is Multiply -> when (expr.e1) {
                 is CurrenciedExpression -> stringRepr(CurrenciedExpression(Multiply(expr.e1.e, expr.e2), expr.e1.currency))
                 else -> "${valueFormatWithParsRespect(expr.e1)}*${valueFormatWithParsRespect(expr.e2)}"
@@ -151,13 +159,23 @@ class ExpressionEvaluator(
     fun evaluate(rootExpr: Expression): EvaluatedExpression {
         val (type, base, involved) = captureCurrencyMetadata(rootExpr)
 
-        fun eval(expr: Expression): BigDecimal = when (expr) {
+        fun eval(expr: Expression, percentInitial: BigDecimal? = null): BigDecimal = when (expr) {
             is Const -> expr.number
             is ConversionHistoryExpression -> 1.toFixedScaleBigDecimal()
             is ConstWithSuffixes -> expr.evalNumber()
             is Negate -> eval(expr.e).negate()
-            is Add -> eval(expr.e1) + eval(expr.e2)
-            is Subtract -> eval(expr.e1) - eval(expr.e2)
+            is Add -> {
+                val left = eval(expr.e1)
+                left + eval(expr.e2, left)
+            }
+            is Subtract -> {
+                val left = eval(expr.e1)
+                left - eval(expr.e2, left)
+            }
+            is Percent -> {
+                val v = percentInitial ?: throw PercentPlacementException(expr.column)
+                v * eval(expr.e) / "100".toFixedScaleBigDecimal()
+            }
             is Multiply -> eval(expr.e1) * eval(expr.e2)
             is Divide -> eval(expr.e1) / eval(expr.e2)
             is CurrenciedExpression -> when (type) {

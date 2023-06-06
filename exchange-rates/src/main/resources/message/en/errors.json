@@ -5,6 +5,8 @@
   "noMatchingToken": "❗Illegal token '%s'",
   "invalidDate": "❗Invalid date '%s'",
   "divisionByZero": "❗Expression contains division by zero",
+  "percentPlacement": "❗Percents (%) allowed only as a second argument of addition and subtraction",
+  "percentCurrency": "❗Currencies cannot be used with percents (%)",
   "queryExpected": "❗Not blank query string expected",
   "unsupportedCurrency": "❗Unsupported currencies %s for %s API for date %s, please consider using other API, see /apis",
   "unsupportedCurrencyWithAlternative": "❗Unsupported currencies %s for %s API for date %s, please consider using other API: `%s`, see /apis",

@@ -15,6 +15,7 @@ Examples:
 - `(12keuro + 8k bucks)*2 !pounds`
 - `$1 on 2022-09-14`
 - `13 EUR at -2`
+- `4.99 + 12%`
 - `złoty into dollar ?22.09.2022`
 
 Features:

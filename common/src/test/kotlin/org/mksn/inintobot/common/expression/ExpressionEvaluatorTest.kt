@@ -7,6 +7,7 @@ import org.mksn.inintobot.common.rate.UnknownCurrencyException
 import java.math.BigDecimal
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertFailsWith
 
 class ExpressionEvaluatorTest {
 
@@ -91,6 +92,46 @@ class ExpressionEvaluatorTest {
 
         assertEquals(124.000099.bigDecimal, value)
         assertEquals("1.000099 + 123", stringRepr)
+        assertEquals(ExpressionType.SINGLE_CURRENCY_EXPR, exprType)
+        assertEquals(apiBaseCurrency, baseCurrency)
+        assertEqualsOrdered(listOf(apiBaseCurrency), involvedCurrencies)
+    }
+
+    @Test
+    fun simple_percent_add_expression() {
+        val expr = Add(200.asConst, Percent(20.asConst, 12))
+
+        val (value, exprType, stringRepr, baseCurrency, involvedCurrencies) = expressionEvaluator.evaluate(expr)
+
+        assertEquals(240.bigDecimal, value)
+        assertEquals("200 + 20%", stringRepr)
+        assertEquals(ExpressionType.SINGLE_CURRENCY_EXPR, exprType)
+        assertEquals(apiBaseCurrency, baseCurrency)
+        assertEqualsOrdered(listOf(apiBaseCurrency), involvedCurrencies)
+    }
+
+    @Test
+    fun simple_percent_subtract_expression() {
+        val expr = Subtract(1000.asConst, Percent(115.asConst, 12))
+
+        val (value, exprType, stringRepr, baseCurrency, involvedCurrencies) = expressionEvaluator.evaluate(expr)
+
+        assertEquals((-150).bigDecimal, value)
+        assertEquals("1000 - 115%", stringRepr)
+        assertEquals(ExpressionType.SINGLE_CURRENCY_EXPR, exprType)
+        assertEquals(apiBaseCurrency, baseCurrency)
+        assertEqualsOrdered(listOf(apiBaseCurrency), involvedCurrencies)
+    }
+
+
+    @Test
+    fun complex_percent_add_expression() {
+        val expr = Add(200.asConst, Percent(Divide(Add(20.asConst, 180.asConst), Multiply(2.asConst, "2.5".asConst)), 12))
+
+        val (value, exprType, stringRepr, baseCurrency, involvedCurrencies) = expressionEvaluator.evaluate(expr)
+
+        assertEquals(280.bigDecimal, value)
+        assertEquals("200 + ((20 + 180)/(2*2.5))%", stringRepr)
         assertEquals(ExpressionType.SINGLE_CURRENCY_EXPR, exprType)
         assertEquals(apiBaseCurrency, baseCurrency)
         assertEqualsOrdered(listOf(apiBaseCurrency), involvedCurrencies)
@@ -194,13 +235,12 @@ class ExpressionEvaluatorTest {
 
     @Test
     fun simple_expression_with_different_currency() {
-        val expr =
-            CurrenciedExpression(Add("1.2222222003030330000000099999999".asConst, 2.3333333.asConst), Currencies["UAH"])
+        val expr = CurrenciedExpression(Add("1.2222222003030330000000099999999".asConst, 2.3333333.asConst), Currencies["UAH"])
 
         val (value, exprType, stringRepr, baseCurrency, involvedCurrencies) = expressionEvaluator.evaluate(expr)
 
-        assertEquals("3.555555500303033".bigDecimal, value)
         assertEquals("1.222222200303033 + 2.3333333", stringRepr)
+        assertEquals("3.555555500303033".bigDecimal, value)
         assertEquals(ExpressionType.SINGLE_CURRENCY_EXPR, exprType)
         assertEquals(Currencies["UAH"], baseCurrency)
         assertEqualsOrdered(listOf(Currencies["UAH"]), involvedCurrencies)
@@ -380,15 +420,16 @@ class ExpressionEvaluatorTest {
 
     @Test
     fun simple_currencied_expression() {
-        val expr = CurrenciedExpression(10.asConst, Currencies["USD"])
+        val currency = Currencies["USD"]
+        val expr = CurrenciedExpression(10.asConst, currency)
 
         val (value, exprType, stringRepr, baseCurrency, involvedCurrencies) = expressionEvaluator.evaluate(expr)
 
         assertEquals(10.bigDecimal, value)
-        assertEquals("8/(2*2)", stringRepr)
-        assertEquals(ExpressionType.SINGLE_CURRENCY_EXPR, exprType)
-        assertEquals(apiBaseCurrency, baseCurrency)
-        assertEqualsOrdered(listOf(apiBaseCurrency), involvedCurrencies)
+        assertEquals("10", stringRepr)
+        assertEquals(ExpressionType.SINGLE_VALUE, exprType)
+        assertEquals(currency, baseCurrency)
+        assertEqualsOrdered(listOf(currency), involvedCurrencies)
     }
 
     @Test
@@ -432,6 +473,45 @@ class ExpressionEvaluatorTest {
         assertEquals(ExpressionType.SINGLE_CURRENCY_EXPR, exprType)
         assertEquals(targetCurrency, baseCurrency)
         assertEqualsOrdered(listOf(targetCurrency), involvedCurrencies)
+    }
+
+    @Test
+    fun must_throw_currency_inside_percent_placement() {
+        val expr = Divide(
+            Divide(
+                Add(
+                    Percent(CurrenciedExpression(Subtract(Add(4.06.asConst, 1.asConst), 1.asConst), Currencies["USD"]), 12),
+                    CurrenciedExpression(10.asConst, Currencies["UAH"])
+                ),
+                CurrenciedExpression(10.asConst, Currencies["UAH"])
+            ),
+            Divide(CurrenciedExpression(10.asConst, Currencies["USD"]), CurrenciedExpression(15.asConst, Currencies["BYN"]))
+        )
+
+
+        val t = assertFailsWith<PercentCurrencyException> { expressionEvaluator.evaluate(expr) }
+
+        assertEquals(12, t.column)
+    }
+
+
+    @Test
+    fun must_throw_invalid_percent_placement() {
+        val expr = Divide(
+            Divide(
+                Add(
+                    CurrenciedExpression(Subtract(Add(Percent(4.06.asConst, 42), 1.asConst), 1.asConst), Currencies["USD"]),
+                    CurrenciedExpression(10.asConst, Currencies["UAH"])
+                ),
+                CurrenciedExpression(10.asConst, Currencies["UAH"])
+            ),
+            Divide(CurrenciedExpression(10.asConst, Currencies["USD"]), CurrenciedExpression(15.asConst, Currencies["BYN"]))
+        )
+
+
+        val t = assertFailsWith<PercentPlacementException> { expressionEvaluator.evaluate(expr) }
+
+        assertEquals(42, t.column)
     }
 
 }

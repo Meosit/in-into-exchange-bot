@@ -60,6 +60,17 @@ class BotInputGrammarPositiveTest {
     }
 
     @Test
+    fun simple_add_expression_percent() {
+        val input = "1 + 10%"
+        val expectedExpr = Add(1.asConst, Percent(10.asConst, 7))
+
+        val (actualExpr, additionalCurrencies) = grammar.parseToEnd(input)
+
+        assertTrue(additionalCurrencies.isEmpty())
+        assertEquals(expectedExpr, actualExpr)
+    }
+
+    @Test
     fun simple_multiply_expression() {
         val input = "1 * 1"
         val expectedExpr = Multiply(1.asConst, 1.asConst)
@@ -115,12 +126,39 @@ class BotInputGrammarPositiveTest {
         assertEquals(4, decimalDigits)
     }
 
+
+    @Test
+    fun expression_with_brackets_percent() {
+        val input = "(1 * 1) + (7 - 2)% #4"
+        val expectedExpr = Add(Multiply(1.asConst, 1.asConst), Percent(Subtract(7.asConst, 2.asConst), 18))
+
+        val (actualExpr, additionalCurrencies, _, _, decimalDigits) = grammar.parseToEnd(input)
+
+        assertTrue(additionalCurrencies.isEmpty())
+        assertEquals(expectedExpr, actualExpr)
+        assertEquals(4, decimalDigits)
+    }
+
     @Test
     fun expression_with_nested_brackets() {
         val input = "(1 + (2 - 1)) * ((7 - 2) / 2)"
         val expectedExpr = Multiply(
             Add(1.asConst, Subtract(2.asConst, 1.asConst)),
             Divide(Subtract(7.asConst, 2.asConst), 2.asConst)
+        )
+
+        val (actualExpr, additionalCurrencies) = grammar.parseToEnd(input)
+
+        assertTrue(additionalCurrencies.isEmpty())
+        assertEquals(expectedExpr, actualExpr)
+    }
+
+    @Test
+    fun expression_with_nested_brackets_percent() {
+        val input = "(1 + (2 - 1)) - ((7 - 2) / 2)%"
+        val expectedExpr = Subtract(
+            Add(1.asConst, Subtract(2.asConst, 1.asConst)),
+            Percent(Divide(Subtract(7.asConst, 2.asConst), 2.asConst), 30)
         )
 
         val (actualExpr, additionalCurrencies) = grammar.parseToEnd(input)
@@ -301,6 +339,30 @@ class BotInputGrammarPositiveTest {
                 Divide(
                     Add(
                         CurrenciedExpression(Subtract(Add(4.06.asConst, 1.asConst), 1.asConst), "USD".toCurrency()),
+                        CurrenciedExpression(10.asConst, "UAH".toCurrency())
+                    ),
+                    CurrenciedExpression(2.03.asConst, "BYN".toCurrency())
+                ),
+                10.asConst
+            ),
+            Divide(CurrenciedExpression(10.asConst, "USD".toCurrency()), CurrenciedExpression(15.asConst, "BYN".toCurrency()))
+        )
+
+        val (actualExpr, additionalCurrencies) = grammar.parseToEnd(input)
+
+        assertTrue(additionalCurrencies.isEmpty())
+        assertEquals(expectedExpr, actualExpr)
+    }
+
+
+    @Test
+    fun multiple_currencies_division_complicated_percent() {
+        val input = "((4.06 + 1   % - 1)$ + 10uah) / 2, 03 беларуси + 10 - (10в/15,)"
+        val expectedExpr = Subtract(
+            Add(
+                Divide(
+                    Add(
+                        CurrenciedExpression(Subtract(Add(4.06.asConst, Percent(1.asConst, 14)), 1.asConst), "USD".toCurrency()),
                         CurrenciedExpression(10.asConst, "UAH".toCurrency())
                     ),
                     CurrenciedExpression(2.03.asConst, "BYN".toCurrency())

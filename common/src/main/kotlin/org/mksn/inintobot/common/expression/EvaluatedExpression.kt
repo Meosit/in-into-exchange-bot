@@ -20,3 +20,6 @@ data class EvaluatedExpression(
     val baseCurrency: Currency,
     val involvedCurrencies: List<Currency>
 )
+
+class PercentPlacementException(val column: Int) : RuntimeException()
+class PercentCurrencyException(val column: Int) : RuntimeException()

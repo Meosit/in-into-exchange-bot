@@ -19,6 +19,7 @@ class ApiExchangeRatesTest {
         unsupported = setOf(),
         refreshHours = 1,
         staleTimeoutHours = 25,
+        backFillInfo = null
     )
     private val rates = ApiExchangeRates(
         LocalTime.MAX,

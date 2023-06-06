@@ -5,6 +5,8 @@
   "noMatchingToken": "❗Nieznane dane wejściowe '%s'",
   "invalidDate": "❗Błędna data '%s'",
   "divisionByZero": "❗Wyraz zawiera dzielenie przez 0",
+  "percentPlacement": "❗Procenty (%) dozwolone tylko jako drugi argument dodawania i odejmowania",
+  "percentCurrency": "❗Waluty nie mogą być używane z procentami (%)",
   "queryExpected": "❗Oczekiwano niepustego zapytania",
   "unsupportedCurrency": "❗Waluty %s nie jest obsługiwana przez API %s na datę %s, rozważ użycie innego API, zobacz /apis",
   "unsupportedCurrencyWithAlternative": "❗Waluty %s nie jest obsługiwana przez API %s na datę %s, rozważ użycie innego API: `%s`, zobacz /apis",

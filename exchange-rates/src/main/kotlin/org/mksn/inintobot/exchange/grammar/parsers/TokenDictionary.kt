@@ -12,9 +12,6 @@ import org.mksn.inintobot.exchange.grammar.configurableRegexToken
 
 /**
  * Container class for the all available expression tokens
- *
- * @param currencyOrApiRegex regular expression which matches all available currency or api name aliases to
- *                           determine which token is a currency or api name and which is just a malformed input
  */
 class TokenDictionary(
     currencyAliasMatcher: AliasMatcher<Currency>,
@@ -34,6 +31,7 @@ class TokenDictionary(
     val exclamation = literalToken("'!'", "!")
     val ampersand = literalToken("'&'", "&")
     val hashtag = literalToken("'#'", "#")
+    val percent = literalToken("'%'", "%")
 
     // currency union can be added with this prefix to allow expressions like '1 dollar into euro on 2022-01-02'
     val inIntoUnion = configurableRegexToken("union 'в'/'in'/'into'/'to'", "(?<=\\s)(?iu)(into|in|to|в)(?-iu)(?=\\s)", useTransparentBounds = true)
@@ -62,7 +60,7 @@ class TokenDictionary(
         apiAlias,
         kilo, mega,
         exclamation, ampersand,
-        hashtag,
+        hashtag, percent,
         whitespace,
         leftPar, rightPar,
         multiply, divide, minus, plus,

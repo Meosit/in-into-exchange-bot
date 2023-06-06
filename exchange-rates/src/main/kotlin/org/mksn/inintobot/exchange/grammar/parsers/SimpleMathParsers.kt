@@ -45,9 +45,9 @@ class SimpleMathParsers(tokenDict: TokenDictionary) {
 
     val divMulChain: Parser<Expression> = leftAssociative(term, tokenDict.divide or tokenDict.multiply) { a, op, b ->
         if (op.type == tokenDict.multiply) Multiply(a, b) else Divide(a, b)
-    }
+    } and optional(tokenDict.percent) map { (expr, p) -> if(p != null) Percent(expr, p.column) else expr }
 
-    val subSumChain = leftAssociative(divMulChain, tokenDict.plus or tokenDict.minus use { type }) { a, op, b ->
+    val subSumChain: Parser<Expression> = leftAssociative(divMulChain, tokenDict.plus or tokenDict.minus use { type }) { a, op, b ->
         if (op == tokenDict.plus) Add(a, b) else Subtract(a, b)
     }
 

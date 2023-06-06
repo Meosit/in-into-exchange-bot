@@ -5,9 +5,7 @@ import com.github.h0tk3y.betterParse.parser.ErrorResult
 import com.github.h0tk3y.betterParse.parser.Parsed
 import org.mksn.inintobot.common.currency.Currencies
 import org.mksn.inintobot.common.currency.Currency
-import org.mksn.inintobot.common.expression.ConversionHistoryExpression
-import org.mksn.inintobot.common.expression.ExpressionEvaluator
-import org.mksn.inintobot.common.expression.ExpressionType
+import org.mksn.inintobot.common.expression.*
 import org.mksn.inintobot.common.misc.DEFAULT_DECIMAL_DIGITS
 import org.mksn.inintobot.common.misc.toFixedScaleBigDecimal
 import org.mksn.inintobot.common.rate.*
@@ -17,6 +15,7 @@ import org.mksn.inintobot.exchange.grammar.BotInput
 import org.mksn.inintobot.exchange.grammar.BotInputGrammar
 import org.mksn.inintobot.exchange.output.*
 import org.mksn.inintobot.exchange.output.strings.BotMessages
+import java.lang.Exception
 import java.time.LocalDate
 import java.util.logging.Logger
 import kotlin.math.min
@@ -71,16 +70,31 @@ fun handleBotExchangeQuery(
             val evaluator = ExpressionEvaluator(defaultCurrency, api.base, rates::exchange)
             val evaluated = try {
                 evaluator.evaluate(expression)
-            } catch (e: ArithmeticException) {
-                logger.info("Division by zero occurred")
-                val messages = BotMessages.errors.of(settings.language)
-                context.statsStore.logExchangeErrorRequest("divisionByZero", isInline)
-                return arrayOf(BotSimpleErrorOutput(messages.divisionByZero))
-            } catch (e: UnknownCurrencyException) {
-                logger.info("Unknown currency ${e.currency.code} when evaluating expression for api ${api.name}")
-                val message = makeMissingCurrenciesMessage(listOf(e.currency), api, settings, rates.date.toString())
-                context.statsStore.logExchangeErrorRequest("unsupportedCurrency", isInline)
-                return arrayOf(BotSimpleErrorOutput(message))
+            } catch (e: Exception) {
+                val output = when(e) {
+                    is ArithmeticException -> {
+                        logger.info("Division by zero occurred")
+                        context.statsStore.logExchangeErrorRequest("divisionByZero", isInline)
+                        BotSimpleErrorOutput(BotMessages.errors.of(settings.language).divisionByZero)
+                    }
+                    is UnknownCurrencyException -> {
+                        logger.info("Unknown currency ${e.currency.code} when evaluating expression for api ${api.name}")
+                        context.statsStore.logExchangeErrorRequest("unsupportedCurrency", isInline)
+                        BotSimpleErrorOutput(makeMissingCurrenciesMessage(listOf(e.currency), api, settings, rates.date.toString()))
+                    }
+                    is PercentPlacementException -> {
+                        logger.info("Percent sign in invalid place for input '${query}' ")
+                        context.statsStore.logExchangeErrorRequest("percentPlacement", isInline)
+                        BotQueryErrorOutput(query, e.column, BotMessages.errors.of(settings.language).percentPlacement)
+                    }
+                    is PercentCurrencyException -> {
+                        logger.info("Percent expression contains currency for input '${query}' ")
+                        context.statsStore.logExchangeErrorRequest("percentCurrency", isInline)
+                        BotQueryErrorOutput(query, e.column, BotMessages.errors.of(settings.language).percentCurrency)
+                    }
+                    else -> throw e
+                }
+                return arrayOf(output)
             }
             val outputCurrencies = apiCurrencies.filter {
                 it in evaluated.involvedCurrencies || it.code in settings.outputCurrencies || it in additionalCurrencies

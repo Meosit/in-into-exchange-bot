@@ -45,13 +45,13 @@ class BotInputGrammarNegativeTest {
 
     @Test
     fun invalid_operator_at_start() {
-        val input = "%23"
+        val input = "^23"
 
         val result = grammar.tryParseToEnd(input)
 
         assertIs<NoMatchingToken>(result)
         assertEquals(1, result.tokenMismatch.column)
-        assertEquals("%23", result.tokenMismatch.text)
+        assertEquals("^23", result.tokenMismatch.text)
     }
 
     @Test
@@ -251,13 +251,13 @@ class BotInputGrammarNegativeTest {
 
     @Test
     fun api_wrong_placement() {
-        val input = "10 euro !usd nbrb"
+        val input = "10 euro nbrb !usd"
 
         val result = grammar.tryParseToEnd(input)
         println(result)
         assertIs<UnparsedRemainder>(result)
         assertEquals(14, result.startsWith.column)
-        assertEquals("nbrb", result.startsWith.text)
+        assertEquals("!", result.startsWith.text)
     }
 
     @Test

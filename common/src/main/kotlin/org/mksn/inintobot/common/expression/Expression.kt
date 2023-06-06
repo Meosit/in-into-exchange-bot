@@ -10,7 +10,7 @@ enum class SuffixType(val factor: BigDecimal) {
     MEGA(1_000_000.toFixedScaleBigDecimal())
 }
 
-sealed class Expression
+sealed class Expression()
 
 data class CurrenciedExpression(val e: Expression, val currency: Currency) : Expression()
 
@@ -29,6 +29,8 @@ data class Multiply(val e1: Expression, val e2: Expression) : Expression()
 data class Divide(val e1: Expression, val e2: Expression) : Expression()
 
 data class Negate(val e: Expression) : Expression()
+
+data class Percent(val e: Expression, val column: Int): Expression()
 
 
 fun ConstWithSuffixes.evalNumber() = number * suffixType.factor.pow(suffixCount)
