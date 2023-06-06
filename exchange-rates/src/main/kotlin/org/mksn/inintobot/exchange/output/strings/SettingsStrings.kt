@@ -6,7 +6,8 @@ import kotlinx.serialization.Serializable
 data class SettingsStrings(
     val messages: MessagesSettingsStrings,
     val rootButtons: Map<String, String>,
-    val buttons: ButtonSettingsStrings
+    val buttons: ButtonSettingsStrings,
+    val customiseSettingsLabel: String,
 ) {
     @Serializable
     data class MessagesSettingsStrings(

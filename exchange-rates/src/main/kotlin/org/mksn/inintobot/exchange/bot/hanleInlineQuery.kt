@@ -51,7 +51,8 @@ suspend fun InlineQuery.handle(settings: UserSettings, context: BotContext) {
         handleBotExchangeQuery(isInline = true, query, settings, context)
     }
 
-    context.sender.sendInlineQuery(id, *outputs)
+    val label = if (settings.persisted) null else BotMessages.settings.of(settings.language).customiseSettingsLabel
+    context.sender.sendInlineQuery(id, label, outputs=outputs)
 }
 
 private fun exchangeAllGracefully(

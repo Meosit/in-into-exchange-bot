@@ -38,6 +38,11 @@ suspend fun Message.handle(
             Setting.START_COMMAND.handle(null, this, settings, context)
             context.statsStore.logBotCommandUsage(text)
         }
+        "/settings", "/start customise_settings" -> {
+            logger.info("Handling $text command")
+            Setting.ROOT.handle(null, this, settings, context)
+            context.statsStore.logBotCommandUsage(text.replace(" customise_settings", "_set"))
+        }
         "/stop", "/delete" -> {
             logger.info("Handling $text command")
             runCatching { context.settingsStore.delete(chat.id.toString()) }
@@ -101,11 +106,6 @@ suspend fun Message.handle(
             }
             val formattedMessage = BotTextOutput(message)
             context.sender.sendChatMessage(chat.id.toString(), formattedMessage)
-            context.statsStore.logBotCommandUsage(text)
-        }
-        "/settings" -> {
-            logger.info("Handling $text command")
-            Setting.ROOT.handle(null, this, settings, context)
             context.statsStore.logBotCommandUsage(text)
         }
         "/donate" -> {

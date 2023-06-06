@@ -20,5 +20,6 @@
     "checked": "✅ %s",
     "back": "↩️️ Back",
     "close": "⏹ Close"
-  }
+  },
+  "customiseSettingsLabel": "Customise settings"
 }

@@ -50,13 +50,16 @@ class BotOutputSender(private val httpClient: HttpClient, apiToken: String) {
         }
     }
 
-    suspend fun sendInlineQuery(queryId: String, vararg outputs: BotOutput) {
+    suspend fun sendInlineQuery(queryId: String, startButtonLabel: String?, vararg outputs: BotOutput) {
         val jsonQueryResults = outputs
             .joinToString(prefix = "[", postfix = "]") { it.toInlineQueryResultArticle() }
         httpClient.post {
             url("$apiUrl/answerInlineQuery")
             parameter("inline_query_id", queryId)
             parameter("results", jsonQueryResults)
+            if (startButtonLabel != null) {
+                parameter("button", """{"text":${JsonPrimitive(startButtonLabel)},"start_parameter":"customise_settings"}""")
+            }
         }
     }
 

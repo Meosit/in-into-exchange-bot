@@ -20,5 +20,6 @@
     "checked": "✅ %s",
     "back": "↩️️ Powrót",
     "close": "⏹ Zamknij"
-  }
+  },
+  "customiseSettingsLabel": "Zmodyfikować ustawienia"
 }
