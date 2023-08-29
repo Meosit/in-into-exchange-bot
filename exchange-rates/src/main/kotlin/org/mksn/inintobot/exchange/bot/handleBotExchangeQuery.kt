@@ -170,7 +170,7 @@ fun handleBotExchangeQuery(
     }
 }
 
-private fun BotInput.handleBotQueryHistoryRequest(
+fun BotInput.handleBotQueryHistoryRequest(
     expression: ConversionHistoryExpression,
     api: RateApi,
     context: BotContext,

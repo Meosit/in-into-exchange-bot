@@ -21,6 +21,5 @@ data class BotInput(
     val rateApi: RateApi?,
     val onDate: LocalDate?,
     val decimalDigits: Int?,
-    val historyView: Boolean = false
 )
 data class InvalidDate(val match: TokenMatch): ErrorResult()
