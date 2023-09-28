@@ -28,7 +28,7 @@ class CbrRateFetcher(rateApi: RateApi, client: HttpClient, json: Json) :
     private val arrayItemHeader = "<Valute.*?>".toRegex(options)
     private val arrayItemFooter = "</Valute>".toRegex(options)
     private val unusedElementRegex =
-        "<\\?.*?\\?>|<Name>.*?</Name>|<NumCode>.*?</NumCode>|<ParentCode>.*?</ParentCode>".toRegex(options)
+        "<\\?.*?\\?>|<Name>.*?</Name>|<NumCode>.*?</NumCode>|<ParentCode>.*?</ParentCode>|<VunitRate>.*?</VunitRate>".toRegex(options)
     private val scaleRegex = "<Nominal>(\\d+)</Nominal>".toRegex(options)
     private val codeRegex = "<CharCode>(\\w{3})</CharCode>".toRegex(options)
     private val rateRegex = "<Value>([\\d,]+)</Value>".toRegex(options)
