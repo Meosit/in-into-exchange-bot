@@ -58,7 +58,7 @@ object BotInputGrammar : Grammar<BotInput>() {
         CurrenciedExpression(Const(1.toFixedScaleBigDecimal()), it)
     }
 
-    private val conversionHistoryExpressionParser by currParsers.currency and currencyKeyPrefix and currParsers.currency map
+    private val conversionHistoryExpressionParser by currParsers.currency and skip(tokenDict.inIntoUnion or tokenDict.divide) and currParsers.currency map
             { (from, to) -> ConversionHistoryExpression(from, to)  }
 
     private val singleCurrencyExpressionParser by mathParsers.subSumChain and optional(currParsers.currency) map { (expr, currency) ->

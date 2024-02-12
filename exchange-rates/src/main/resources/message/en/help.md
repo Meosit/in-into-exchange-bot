@@ -3,7 +3,7 @@ Money conversion with support of {currency_count} currencies, math and multi cur
 Query syntax:
 1) `<number/expr> [<currency>] [<extra currencies>...] [<API name>] [?<date>] [#<decimal digits>]`
 2) `<currencied expr> [<extra currencies>...] [<API name>] [?<date>] [#<decimal digits>]`
-3) `<currency> <union or !> <currency> [<API name>] [?<date>] [#<decimal digits>]`
+3) `<currency> <union or '/'> <currency> [<API name>] [?<date>] [#<decimal digits>]`
 
 
 Examples:

@@ -25,5 +25,6 @@ configure<AppEngineAppYamlExtension> {
     deploy {
         version = "GCLOUD_CONFIG"
         projectId = "GCLOUD_CONFIG"
+        stopPreviousVersion = true
     }
 }

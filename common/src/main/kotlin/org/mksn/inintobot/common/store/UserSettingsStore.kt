@@ -4,6 +4,7 @@ import org.mksn.inintobot.common.user.UserSettings
 
 interface UserSettingsStore {
     fun get(id: String): UserSettings?
+
     fun save(id: String, settings: UserSettings)
 
     fun delete(id: String)

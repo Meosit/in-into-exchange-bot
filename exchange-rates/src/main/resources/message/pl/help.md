@@ -3,7 +3,7 @@ Przeliczanie kwot, wyrażeń arytmetycznych i wielowalutowych dla ponad {currenc
 Składnia zapytania:
 1) `<liczba/wyrażenie> [<waluta>] [<waluty dodatkowe>...] [<nazwa API>] [?<dzień>] [#<znaków po przecinku>]`
 2) `<wyrażenie walutowe> [<waluty dodatkowe>...] [<nazwa API>] [?<dzień>] [#<znaków po przecinku>]`
-3) `<waluta> <spójnik lub !> <waluta> [<nazwa API>] [?<dzień>] [#<znaków po przecinku>]`
+3) `<waluta> <spójnik lub '/'> <waluta> [<nazwa API>] [?<dzień>] [#<znaków po przecinku>]`
 
 Przykłady:
 - `12 + 7`

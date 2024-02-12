@@ -761,9 +761,9 @@ class BotInputGrammarPositiveTest {
     }
 
     @Test
-    fun conversion_history_expression_with_exclamation() {
-        val input = "PLN ! USD NBP #12"
-        val expectedExpr = ConversionHistoryExpression("PLN".toCurrency(), "USD".toCurrency())
+    fun conversion_history_expression_with_slash() {
+        val input = "USD/PLN NBP #12"
+        val expectedExpr = ConversionHistoryExpression("USD".toCurrency(), "PLN".toCurrency())
 
         val (actualExpr, additionalCurrencies, api, _, digits) = grammar.parseToEnd(input)
 
