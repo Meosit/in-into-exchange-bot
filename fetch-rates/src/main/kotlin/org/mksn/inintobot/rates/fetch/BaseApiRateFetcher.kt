@@ -3,10 +3,12 @@ package org.mksn.inintobot.rates.fetch
 import io.ktor.client.*
 import io.ktor.client.call.*
 import io.ktor.client.request.*
+import io.ktor.http.*
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.json.Json
 import org.mksn.inintobot.common.currency.Currency
 import org.mksn.inintobot.common.misc.toFixedScaleBigDecimal
+import org.mksn.inintobot.common.misc.trimToLength
 import org.mksn.inintobot.common.rate.RateApi
 import java.math.BigDecimal
 import java.time.LocalDate
@@ -28,7 +30,12 @@ abstract class BaseApiRateFetcher<T>(
 
     override suspend fun fetch(supported: Iterable<Currency>, date: LocalDate?): Map<Currency, BigDecimal> {
         val url = date?.let { rateApi.backFillInfo!!.url.replace("<date>", rateApi.backFillInfo!!.dateFormat.format(date)) } ?: rateApi.url
-        val response = client.get(url).body<String>()
+        val get = client.get(url)
+        if (!get.status.isSuccess()) {
+            logger.severe("${rateApi.name} got status code ${get.status} from URL $url")
+            throw Exception("Status ${get.status}; Response: ${get.body<String>().trimToLength(100)}")
+        }
+        val response = get.body<String>()
         val preparedResponse = prepareResponseString(response)
         val parsed = runCatching { json.decodeFromString(serializer, preparedResponse) }
             .onFailure { logger.severe("${rateApi.name} Failed to parse response from url $url:\n$preparedResponse") }

@@ -42,7 +42,7 @@ The implementation consists of the following components:
        --entry-point=org.mksn.inintobot.gcp.function.Function \
        --memory=512MB --runtime=java11 --trigger-http --source=build/libs \
        --region=europe-central2 \
-       --set-env-vars FOREX_ACCESS_KEY=<token>,FIXER_ACCESS_KEY=<token>,TRADERMADE_ACCESS_KEY=<token>,OPENEXCHANGERATES_ACCESS_KEY=<token>
+       --set-env-vars FIXER_ACCESS_KEY=<token>,FOREX_ACCESS_KEY=<token>,OPENEXCHANGERATES_ACCESS_KEY=<token>,TRADERMADE_ACCESS_KEY=<token>
      ```
    * `function-migrate-settings` - GCP version of `migrate-settings` project. **To deploy:**
      ```shell
