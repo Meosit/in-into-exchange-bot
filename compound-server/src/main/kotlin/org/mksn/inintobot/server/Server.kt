@@ -55,7 +55,7 @@ fun Application.module() {
         while (true) {
             val now = LocalTime.now()
             if (now.minute == 0) {
-                runCatching { fetchRatesFunction.serve(InputStream.nullInputStream()) }
+                runCatching { fetchRatesFunction.serve("""{"skipApis": ["NBRB"]}""".byteInputStream()) }
                     .recoverCatching {
                         logger.severe(it.message)
                         exchangeRateFunction.botSender.sendChatMessage(
