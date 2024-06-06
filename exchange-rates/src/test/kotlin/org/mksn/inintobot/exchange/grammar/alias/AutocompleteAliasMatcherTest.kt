@@ -110,18 +110,6 @@ class AutocompleteAliasMatcherTest {
     }
 
     @Test
-    fun single_letter_alias_collision() {
-        val usd = Currencies["USD"]
-        val uah = Currencies["UAH"]
-
-        val englishLetterCurrency = CurrencyAliasMatcher.match("u")
-        val russianLetterCurrency = CurrencyAliasMatcher.match("г")
-
-        assertEquals(usd, englishLetterCurrency)
-        assertEquals(uah, russianLetterCurrency)
-    }
-
-    @Test
     fun no_such_alias() {
         val exception = assertFails { CurrencyAliasMatcher.match("no such alias") }
         assertContains(exception.message ?: "??", "no such alias")

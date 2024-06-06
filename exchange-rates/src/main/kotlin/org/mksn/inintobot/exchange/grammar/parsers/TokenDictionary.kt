@@ -20,7 +20,7 @@ class TokenDictionary(
 
     // greedy whitespace occupation and optional integer part, also with optional thousand separators
     // regex parts : "decimal with thousands" or "decimal with optional integer part" or "regular integer"
-    val number = regexToken("number", "(\\d\\s*){1,3}[,.]((\\d\\s*){3}[,.])+(\\s*\\d)+|((\\d\\s*)+)?[.,](\\s*\\d)+|(\\d\\s*)*\\d")
+    val number = regexToken("number", "(\\d[\\s ]*){1,3}[,.]((\\d\\s*){3}[,.])+([\\s ]*\\d)+|((\\d[\\s ]*)+)?[.,](\\s*\\d)+|(\\d[\\s ]*)*\\d")
     val currencyAlias = aliasMatchToken("currency alias", currencyAliasMatcher)
     val apiAlias = aliasMatchToken("api alias", apiAliasMatcher)
 
@@ -34,11 +34,11 @@ class TokenDictionary(
     val percent = literalToken("'%'", "%")
 
     // currency union can be added with this prefix to allow expressions like '1 dollar into euro on 2022-01-02'
-    val inIntoUnion = configurableRegexToken("union 'в'/'in'/'into'/'to'", "(?<=\\s)(?iu)(into|in|to|в)(?-iu)(?=\\s)", useTransparentBounds = true)
+    val inIntoUnion = configurableRegexToken("union 'в'/'in'/'into'/'to'", "(?<=[\\s ])(?iu)(into|in|to|в)(?-iu)(?=\\s)", useTransparentBounds = true)
 
-    val dateKey = configurableRegexToken("dateKey", "([?]|(?<=\\s)(?iu)(on|at|на|за))\\s*([-<]\\s*\\d+|[12]\\d{3}-(0[1-9]|1[0-2])-(0[1-9]|[12]\\d|3[01])|(0[1-9]|[12]\\d|3[01])[./](0[1-9]|1[0-2])[./][12]\\d{3})", useTransparentBounds = true)
+    val dateKey = configurableRegexToken("dateKey", "([?]|(?<=[\\s ])(?iu)(on|at|на|за))[\\s ]*([-<][\\s ]*\\d+|[12]\\d{3}-(0[1-9]|1[0-2])-(0[1-9]|[12]\\d|3[01])|(0[1-9]|[12]\\d|3[01])[./](0[1-9]|1[0-2])[./][12]\\d{3})", useTransparentBounds = true)
 
-    val whitespace = regexToken("space", "\\s+", ignore = true)
+    val whitespace = regexToken("space", "[\\s ]+", ignore = true)
 
     val leftPar = literalToken("'('", "(")
     val rightPar = literalToken("')'", ")")

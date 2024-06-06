@@ -82,6 +82,17 @@ class BotInputGrammarPositiveTest {
     }
 
     @Test
+    fun simple_multiply_expression_with_nbsp() {
+        val input = "1 000 *  1"
+        val expectedExpr = Multiply(1000.asConst, 1.asConst)
+
+        val (actualExpr, additionalCurrencies) = grammar.parseToEnd(input)
+
+        assertTrue(additionalCurrencies.isEmpty())
+        assertEquals(expectedExpr, actualExpr)
+    }
+
+    @Test
     fun simple_expression_with_priority() {
         val input = "1 * 1 + 2"
         val expectedExpr = Add(Multiply(1.asConst, 1.asConst), 2.asConst)

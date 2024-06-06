@@ -14,7 +14,7 @@ class SimpleMathParsers(tokenDict: TokenDictionary) {
     private val americanNotationRegex = """^\d+(,\d{3})+(\.\d+)?$""".toRegex()
     private val germanNotationRegex = """^\d+(\.\d{3})+(,\d+)?$""".toRegex()
     private fun String.toParsableNumber(): String {
-        val noSpaces = replace(" ", "")
+        val noSpaces = replace(" ", "").replace(" ", "").replace("\n", "").replace("\t", "")
         val americanNotation = noSpaces.matches(americanNotationRegex)
         val germanNotation = noSpaces.matches(germanNotationRegex)
         val separators = noSpaces.count { it == '.' || it == ',' }
