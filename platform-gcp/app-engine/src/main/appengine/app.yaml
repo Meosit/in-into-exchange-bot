@@ -16,3 +16,4 @@ env_variables:
   # OPENEXCHANGERATES_ACCESS_KEY: <token for api>
   # TRADERMADE_ACCESS_KEY: <token for api>
   # FOREX_ACCESS_KEY: <token for api>
+  # NBRB_PROXY_HOST: <host of NBRB api, put 'www.nbrb.by/API/ExRates/Rates' if you have it available>

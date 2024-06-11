@@ -11,15 +11,15 @@ object RateApis : Iterable<RateApi> {
             name = "NBRB",
             base = Currencies["BYN"],
             aliases = arrayOf(),
-            url = "https://myfin.by/bank/kursy_valjut_nbrb",
+            url = "https://${System.getenv("NBRB_PROXY_HOST")}?Periodicity=0",
             displayLink = "https://myfin.by/bank/kursy_valjut_nbrb",
             unsupported = setOf("KRW", "HKD", "AMD", "UZS", "ILS", "AED", "GEL", "THB", "IDR", "INR", "VND", "HUF", "RON", "HRK", "MXN", "BRL", "BTC", "ETH",),
             refreshHours = 1,
             staleTimeoutHours = 25,
             backFillInfo = RateApiBackFillInfo(
-                url = "https://myfin.by/bank/kursy_valjut_nbrb/<date>",
+                url = "https://${System.getenv("NBRB_PROXY_HOST")}?Periodicity=0&OnDate=<date>",
                 backFillLimit = LocalDate.of(2020, 1, 1),
-                dateFormat = DateTimeFormatter.ofPattern("dd-MM-yyyy"),
+                dateFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd"),
             ),
         ),
         "NBU" to RateApi(

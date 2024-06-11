@@ -42,6 +42,7 @@ class FetchFunction(
         System.getenv("FIXER_ACCESS_KEY").ifEmpty { throw Exception("FIXER_ACCESS_KEY env must be provided") }
         System.getenv("TRADERMADE_ACCESS_KEY").ifEmpty { throw Exception("TRADERMADE_ACCESS_KEY env must be provided") }
         System.getenv("OPENEXCHANGERATES_ACCESS_KEY").ifEmpty { throw Exception("OPENEXCHANGERATES_ACCESS_KEY env must be provided") }
+        System.getenv("NBRB_PROXY_HOST").ifEmpty { throw Exception("NBRB_PROXY_HOST env must be provided") }
     }
 
     override suspend fun serve(input: InputStream): Int {

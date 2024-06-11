@@ -24,6 +24,7 @@ import java.util.logging.Logger
 private val logger: Logger = Logger.getLogger("MainKt")
 fun main(args: Array<String>): Unit = io.ktor.server.jetty.EngineMain.main(args)
 
+@Suppress("unused")
 fun Application.module() {
     val storeProvider: StoreProvider = StoreProvider.load()
     val json = Json { ignoreUnknownKeys = true; isLenient = true }
@@ -55,7 +56,7 @@ fun Application.module() {
         while (true) {
             val now = LocalTime.now()
             if (now.minute == 0) {
-                runCatching { fetchRatesFunction.serve("""{"skipApis": ["NBRB"]}""".byteInputStream()) }
+                runCatching { fetchRatesFunction.serve(InputStream.nullInputStream()) }
                     .recoverCatching {
                         logger.severe(it.message)
                         exchangeRateFunction.botSender.sendChatMessage(
