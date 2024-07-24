@@ -1,4 +1,8 @@
 {
+  "dayShort": "д",
+  "dayOne": "день",
+  "dayTwoTillFour": "дні",
+  "dayFiveTillTen": "днів",
   "hourShort": "г",
   "hourOne": "година",
   "hourTwoTillFour": "години",

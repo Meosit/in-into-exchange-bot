@@ -1,6 +1,8 @@
 package org.mksn.inintobot.common.user
 
 import kotlinx.serialization.Serializable
+import org.mksn.inintobot.common.misc.BigDecimalSerializer
+import java.math.BigDecimal
 
 @Serializable
 data class UserSettings(
@@ -10,5 +12,6 @@ data class UserSettings(
     val apiName: String = UserDefaultSettings.API_NAME,
     val outputCurrencies: List<String> = UserDefaultSettings.OUTPUT_CURRENCIES,
     val dashboardCurrencies: List<String> = UserDefaultSettings.DASHBOARD_CURRENCIES,
+    val hourlyRateUSD: @Serializable(with = BigDecimalSerializer::class) BigDecimal? = null,
     val persisted: Boolean = true,
 )

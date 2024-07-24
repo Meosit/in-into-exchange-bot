@@ -10,6 +10,8 @@ import org.mksn.inintobot.common.user.UserAggregateStats
 import org.mksn.inintobot.common.user.UserSettings
 import org.mksn.inintobot.exchange.BotContext
 import org.mksn.inintobot.exchange.bot.settings.Setting
+import org.mksn.inintobot.exchange.output.BotOutputWithMessage
+import org.mksn.inintobot.exchange.output.BotQuerySuccessOutput
 import org.mksn.inintobot.exchange.output.BotSimpleErrorOutput
 import org.mksn.inintobot.exchange.output.BotTextOutput
 import org.mksn.inintobot.exchange.output.strings.BotMessages
@@ -77,8 +79,8 @@ suspend fun Message.handle(
                             .replace("{name}", displayName)
                             .replace("{link}", rateApi.displayLink)
                             .replace("{base}", "`${rateApi.base.code}`")
-                            .replace("{aliases}", rateApi.aliases.joinToString { "`$it`" })
-                            .replace("{unsupported}", if (rateApi.unsupported.isEmpty()) "`-/-`" else rateApi.unsupported.joinToString { "`$it`" })
+                            .replace("{aliases}", (listOf(rateApi.name) + rateApi.aliases).joinToString { "`$it`" })
+                            .replace("{unsupported}", rateApi.unsupported.ifEmpty { setOf("-/-") }.joinToString { "`$it`" })
                     }
                     BotMessages.apisCommand.of(settings.language).replace("{apis}", apisContent)
                 }
@@ -113,34 +115,61 @@ suspend fun Message.handle(
             context.sender.sendChatMessage(chat.id.toString(), BotTextOutput(BotMessages.donateCommand.of(settings.language)))
             context.statsStore.logBotCommandUsage(text)
         }
-        "/stats" -> {
-            logger.info("Handling $text command")
-            if (this.chat.id.toString() == context.creatorId) {
-                val stats = context.statsStore.get()
-                logger.info(stats.toString())
-                val markdown = makeStatsMessageMarkdown(stats)
-                context.sender.sendChatMessage(chat.id.toString(), BotTextOutput(markdown))
-                context.statsStore.logBotCommandUsage(text)
-            } else {
-                val outputs = handleBotExchangeQuery(isInline = false, text, settings, context)
-                outputs.firstOrNull()?.let { context.sender.sendChatMessage(chat.id.toString(), it) }
-                context.statsStore.logExchangeErrorRequest("unauthorizedAdminCommand", inlineRequest = false)
-            }
-        }
         else -> {
-            if (replyToMessage != null && text.lowercase() in repeatCommands) {
-                logger.info("Handling repeat request")
-                replyToMessage.handle(settings, context)
-            } else {
-                logger.info("Handling '$text' chat message")
-                if (context.botUsername in (viaBot?.username ?: "")) {
-                    logger.info("Bot inline query output used as chat input")
-                    val messages = BotMessages.errors.of(settings.language)
-                    context.sender.sendChatMessage(chat.id.toString(), BotSimpleErrorOutput(messages.inlineOutputAsChatInput))
-                    context.statsStore.logExchangeErrorRequest("inlineOutputAsChatInput", inlineRequest = false)
-                } else {
-                    val outputs = handleBotExchangeQuery(isInline = false, text, settings, context)
-                    outputs.firstOrNull()?.let { context.sender.sendChatMessage(chat.id.toString(), it) }
+            when {
+                replyToMessage != null && text.lowercase() in repeatCommands -> {
+                    logger.info("Handling repeat '$text' request")
+                    replyToMessage.handle(settings, context)
+                }
+                text.startsWith("/stats") && this.chat.id.toString() == context.creatorId -> {
+                    val stats = context.statsStore.get()
+                    logger.info(stats.toString())
+                    val markdown = makeStatsMessageMarkdown(stats)
+                    context.sender.sendChatMessage(chat.id.toString(), BotTextOutput(markdown))
+                    context.statsStore.logBotCommandUsage("/stats")
+                }
+                text.startsWith("/myhourlyrate") && this.chat.id.toString() == context.creatorId -> {
+                    logger.info("Handling '$text' command")
+                    val query = text.removePrefix("/myhourlyrate").trim()
+                    val output = handleBotExchangeQuery(isInline = false, query, settings.copy(outputCurrencies = listOf("USD")), context).first()
+                    when {
+                        output is BotQuerySuccessOutput || (output is BotOutputWithMessage && output.botOutput is BotQuerySuccessOutput) -> {
+                            val unwrapped = (if (output is BotOutputWithMessage) output.botOutput else output) as BotQuerySuccessOutput
+                            val usdExchange = unwrapped.exchanges.firstOrNull { it.currency.code == "USD" }
+                            if (usdExchange != null) {
+                                val hourlyRateUSD = usdExchange.value
+                                context.settingsStore.save(chat.id.toString(), settings.copy(hourlyRateUSD = hourlyRateUSD))
+                                context.sender.sendChatMessage(chat.id.toString(), unwrapped.copy(exchanges = listOf(usdExchange)))
+                            } else {
+                                val errorMessages = BotMessages.errors.of(settings.language)
+                                context.sender.sendChatMessage(chat.id.toString(), BotSimpleErrorOutput(errorMessages.invalidMyHourlyRateUSD))
+                                context.statsStore.logExchangeErrorRequest("unableToSaveHourlyRate", inlineRequest = false)
+                            }
+                        }
+                        output is BotSimpleErrorOutput -> {
+                            val errorMessages = BotMessages.errors.of(settings.language)
+                            context.sender.sendChatMessage(chat.id.toString(), BotSimpleErrorOutput(errorMessages.invalidMyHourlyRateUSD))
+                            context.statsStore.logExchangeErrorRequest("unableToSaveHourlyRate", inlineRequest = false)
+                        }
+                        else -> {
+                            val errorMessages = BotMessages.errors.of(settings.language)
+                            context.sender.sendChatMessage(chat.id.toString(), BotSimpleErrorOutput(errorMessages.invalidMyHourlyRateUSD))
+                            context.statsStore.logExchangeErrorRequest("unableToSaveHourlyRate", inlineRequest = false)
+                        }
+                    }
+                    context.statsStore.logBotCommandUsage("/myhourlyrate")
+                }
+                else -> {
+                    logger.info("Handling '$text' chat message")
+                    if (context.botUsername in (viaBot?.username ?: "")) {
+                        logger.info("Bot inline query output used as chat input")
+                        val messages = BotMessages.errors.of(settings.language)
+                        context.sender.sendChatMessage(chat.id.toString(), BotSimpleErrorOutput(messages.inlineOutputAsChatInput))
+                        context.statsStore.logExchangeErrorRequest("inlineOutputAsChatInput", inlineRequest = false)
+                    } else {
+                        val outputs = handleBotExchangeQuery(isInline = false, text, settings, context)
+                        outputs.firstOrNull()?.let { context.sender.sendChatMessage(chat.id.toString(), it) }
+                    }
                 }
             }
         }
@@ -175,7 +204,7 @@ ${stats.requestsBaseCurrencyUsage.toListString(4, Currency::code)}
 *Involved Currency*:
 ${stats.requestsInvolvedCurrencyUsage.toListString(4, Currency::code)}
 *Output Currency*:
-${stats.requestsInvolvedCurrencyUsage.toListString(4, Currency::code)}
+${stats.requestsOutputCurrencyUsage.toListString(4, Currency::code)}
 
 *Settings*: `${stats.usersWithCustomizedSettings}`
 ${stats.settingsLanguageUsage.toListString(5)}

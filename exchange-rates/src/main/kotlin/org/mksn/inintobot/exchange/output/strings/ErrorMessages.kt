@@ -24,5 +24,6 @@ data class ErrorMessages(
     val staleApiRates: String,
     val inlineOutputAsChatInput: String,
     val unableToSave: String,
+    val invalidMyHourlyRateUSD: String,
     val unexpectedError: String
 )

@@ -1,4 +1,5 @@
 Money conversion with support of {currency_count} currencies, math and multi currency math expressions
+Subscribe to @inintonews to get the latest news and tutorials about the bot.
 
 Query syntax:
 1) `<number/expr> [<currency>] [<extra currencies>...] [<API name>] [?<date>] [#<decimal digits>]`

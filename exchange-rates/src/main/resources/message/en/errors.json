@@ -15,6 +15,7 @@
   "ratesOnDateNotExact": "ℹ️Rates for requested date %s not found, rates are shown for %s",
   "staleApiRates": "ℹ️️Rates for %s API were not updated since %s due to external reasons, please consider using other API for now, see /apistatus",
   "unableToSave": "❗Unable to save settings",
+  "invalidMyHourlyRateUSD": "❗Invalid hourly rate, expected expression to convert to USD",
   "inlineOutputAsChatInput": "Seems like you've already got an answer \uD83D\uDE43",
   "unexpectedError": "❗Unexpected error"
 }

@@ -1,4 +1,5 @@
 Przeliczanie kwot, wyrażeń arytmetycznych i wielowalutowych dla ponad {currency_count} walut.
+Subskrybuj @inintonews, aby otrzymywać najnowsze wiadomości i samouczki dotyczące bota.
 
 Składnia zapytania:
 1) `<liczba/wyrażenie> [<waluta>] [<waluty dodatkowe>...] [<nazwa API>] [?<dzień>] [#<znaków po przecinku>]`

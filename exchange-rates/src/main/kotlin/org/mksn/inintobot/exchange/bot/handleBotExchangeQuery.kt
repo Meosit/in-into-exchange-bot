@@ -16,6 +16,7 @@ import org.mksn.inintobot.exchange.grammar.BotInputGrammar
 import org.mksn.inintobot.exchange.output.*
 import org.mksn.inintobot.exchange.output.strings.BotMessages
 import java.lang.Exception
+import java.math.BigDecimal
 import java.time.LocalDate
 import java.util.logging.Logger
 import kotlin.math.min
@@ -56,15 +57,7 @@ fun handleBotExchangeQuery(
             else
                 context.rateStore.getForDate(api.name, onDate, backtrackDays = 2))
 
-            rates ?: return arrayOf(BotSimpleErrorOutput(with(BotMessages.errors.of(settings.language)) {
-                if (onDate != null) {
-                    context.statsStore.logExchangeErrorRequest("ratesOnDateUnavailable", isInline)
-                    ratesOnDateUnavailable.format(onDate, context.rateStore.historyStart(api.name))
-                } else {
-                    context.statsStore.logExchangeErrorRequest("ratesUnavailable", isInline)
-                    ratesUnavailable
-                }
-            }))
+            rates ?: return errorRatesUnavailable(settings, context, isInline, api)
             logger.info("Loaded rates for API ${rates.api.name} for date $onDate")
 
             val evaluator = ExpressionEvaluator(defaultCurrency, api.base, rates::exchange)
@@ -132,7 +125,18 @@ fun handleBotExchangeQuery(
                 nonDefaultApiName,
                 nonDefaultApiTime,
             )
-            val outputWithNotice = (errorMessage?.let { BotOutputWithMessage(output, it) } ?: output)
+            val hourlyRateUSD = settings.hourlyRateUSD ?: BigDecimal.ZERO
+            val outputWithTime = if (isInline || hourlyRateUSD <= BigDecimal.ZERO) output else {
+                val maybeUsdExchange = exchanged.firstOrNull { it.currency.code == "USD" }
+                if (maybeUsdExchange != null) {
+                    val secondsSpent = ((maybeUsdExchange.value / hourlyRateUSD) * 3600.toFixedScaleBigDecimal()).toLong()
+                    val timeString = BotMessages.timeUnitNames.of(settings.language).encodeToStringDuration(secondsSpent)
+                    BotOutputWithMessage(output, "⏳$timeString")
+                } else {
+                    output
+                }
+            }
+            val outputWithNotice = (errorMessage?.let { BotOutputWithMessage(outputWithTime, it) } ?: outputWithTime)
             val outputWithStaleMessage = when {
                 onDate == null && rates.staleData() ->
                     BotStaleRatesOutput(outputWithNotice, api.name, rates.timeString(), settings.language)
@@ -187,15 +191,7 @@ fun BotInput.handleBotQueryHistoryRequest(
     val ratesHistory = date
         .let { context.rateStore.getHistoryForDate(api.name, it, backtrackDays) }
     if (ratesHistory.isEmpty()) {
-        return arrayOf(BotSimpleErrorOutput(with(BotMessages.errors.of(settings.language)) {
-            if (onDate != null) {
-                context.statsStore.logExchangeErrorRequest("ratesOnDateUnavailable", isInline)
-                ratesOnDateUnavailable.format(onDate, context.rateStore.historyStart(api.name))
-            } else {
-                context.statsStore.logExchangeErrorRequest("ratesUnavailable", isInline)
-                ratesUnavailable
-            }
-        }))
+        return errorRatesUnavailable(settings, context, isInline, api)
     } else {
         val noSource = ratesHistory.filter { source !in it.rates }.map { it.date }.takeIf { it.isNotEmpty() }
             ?.let { makeMissingCurrenciesMessage(listOf(source), api, settings, it.joinToString()) }
@@ -238,6 +234,22 @@ fun BotInput.handleBotQueryHistoryRequest(
         } else it }
     )
 }
+
+private fun BotInput.errorRatesUnavailable(
+    settings: UserSettings,
+    context: BotContext,
+    isInline: Boolean,
+    api: RateApi
+): Array<BotOutput> =
+    arrayOf(BotSimpleErrorOutput(with(BotMessages.errors.of(settings.language)) {
+        if (onDate != null) {
+            context.statsStore.logExchangeErrorRequest("ratesOnDateUnavailable", isInline)
+            ratesOnDateUnavailable.format(onDate, context.rateStore.historyStart(api.name))
+        } else {
+            context.statsStore.logExchangeErrorRequest("ratesUnavailable", isInline)
+            ratesUnavailable
+        }
+    }))
 
 private fun makeMissingCurrenciesMessage(
     currencies: List<Currency>,

@@ -2,7 +2,6 @@ package org.mksn.inintobot.exchange.bot
 
 import org.mksn.inintobot.common.currency.Currencies
 import org.mksn.inintobot.common.currency.Currency
-import org.mksn.inintobot.common.expression.ConversionHistoryExpression
 import org.mksn.inintobot.common.expression.EvaluatedExpression
 import org.mksn.inintobot.common.expression.ExpressionType
 import org.mksn.inintobot.common.misc.toFixedScaleBigDecimal
@@ -11,7 +10,6 @@ import org.mksn.inintobot.common.rate.MissingCurrenciesException
 import org.mksn.inintobot.common.rate.RateApis
 import org.mksn.inintobot.common.user.UserSettings
 import org.mksn.inintobot.exchange.BotContext
-import org.mksn.inintobot.exchange.grammar.BotInput
 import org.mksn.inintobot.exchange.output.BotQuerySuccessOutput
 import org.mksn.inintobot.exchange.output.BotSimpleErrorOutput
 import org.mksn.inintobot.exchange.output.BotStaleRatesOutput
@@ -23,7 +21,8 @@ private val logger = Logger.getLogger("handleInlineQuery")
 
 suspend fun InlineQuery.handle(settings: UserSettings, context: BotContext) {
     val outputs = when {
-        query.isBlank() && this.from.id.toString() == context.creatorId -> {
+        /*query.isBlank() && this.from.id.toString() == context.creatorId -> {
+            mutableListOf<BotInput>()
             logger.info("Handling owner dashboard inline query")
             listOf(
                 BotInput(
@@ -59,11 +58,11 @@ suspend fun InlineQuery.handle(settings: UserSettings, context: BotContext) {
                     )
                 }
             }.flatMap { it.asIterable() }.toTypedArray()
-        }
+        }*/
         query.isBlank() -> {
             logger.info("Handling dashboard inline query")
             val api = RateApis[settings.apiName]
-            val currencies = Currencies.filterNot { it.code in api.unsupported }
+            val currencies = settings.outputCurrencies.map { Currencies[it] }.filterNot { it.code in api.unsupported }
             val apiBaseCurrency = currencies.first { it == api.base }
             logger.info("Api is ${api.name} (base: ${apiBaseCurrency.code}), currencies: ${currencies.joinToString { it.code }}")
 
@@ -93,7 +92,7 @@ suspend fun InlineQuery.handle(settings: UserSettings, context: BotContext) {
         }
     }
 
-    val label = if (settings.persisted) null else BotMessages.settings.of(settings.language).customiseSettingsLabel
+    val label = if (query.isNotBlank()) null else BotMessages.settings.of(settings.language).customiseSettingsLabel
     context.sender.sendInlineQuery(id, label, outputs=outputs)
 }
 

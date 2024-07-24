@@ -1,4 +1,8 @@
 {
+  "dayShort": "d",
+  "dayOne": "dzień",
+  "dayTwoTillFour": "dni",
+  "dayFiveTillTen": "dni",
   "hourShort": "g",
   "hourOne": "godzina",
   "hourTwoTillFour": "godziny",

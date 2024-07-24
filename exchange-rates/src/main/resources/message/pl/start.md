@@ -1,5 +1,6 @@
 Dziękujemy za wybór tego bota! 
 Przypominamy, że bot również działa inline w innych czatach.
+Subskrybuj @inintonews, aby otrzymywać najnowsze wiadomości i samouczki dotyczące bota.
 
 Przykłady:
 - `12 + 7`

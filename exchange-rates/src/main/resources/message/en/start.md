@@ -1,5 +1,6 @@
 Thanks for using this bot!
 Keep in mind that inline mode is also supported for other chats.
+Subscribe to @inintonews to get the latest news and tutorials about the bot.
 
 Examples:
 - `12 + 7`

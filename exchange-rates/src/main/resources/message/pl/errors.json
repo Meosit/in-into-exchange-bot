@@ -15,6 +15,7 @@
   "ratesOnDateNotExact": "ℹ️️Kursy nie są dostępne w zaznaczonym datę %s, używa się kursy na %s",
   "staleApiRates": "ℹ️️Kursy wymian dla API %s nie zmieniły się od %s z przyczyn zewnętrznych, rozważ użycie innego API, zobacz /apistatus",
   "unableToSave": "❗Błąd zapisu ustawień",
+  "invalidMyHourlyRateUSD": "❗Błędna stawka godzinowa, oczekiwane wyrażenie do konwersji na USD",
   "inlineOutputAsChatInput": "Wydaję się, że już dostałeś niezbędną odpowiedź \uD83D\uDE43",
   "unexpectedError": "❗Nieznany błąd"
 }
