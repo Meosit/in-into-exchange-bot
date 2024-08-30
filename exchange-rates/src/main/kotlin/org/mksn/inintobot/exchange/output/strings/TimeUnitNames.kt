@@ -52,9 +52,11 @@ data class TimeUnitNames(
         return encodeToStringDuration(seconds)
     }
 
-    fun encodeToStringDuration(seconds: Long): String {
-        val days = seconds / 86400
-        val hours = (seconds % 86400) / 3600
+    fun encodeToStringDuration(seconds: Long, useWorkDays: Boolean = false): String {
+        val secondsPerDay = (if (useWorkDays) 8 else 24) * 3600
+
+        val days = seconds / secondsPerDay
+        val hours = (seconds % secondsPerDay) / 3600
         val minutes = (seconds % 3600) / 60
         return when {
             days != 0L && hours == 0L && minutes == 0L -> "`$days` ${nameOfDays(days)}"

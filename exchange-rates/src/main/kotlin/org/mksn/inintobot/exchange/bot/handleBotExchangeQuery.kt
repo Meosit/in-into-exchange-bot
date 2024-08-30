@@ -130,7 +130,7 @@ fun handleBotExchangeQuery(
                 val maybeUsdExchange = exchanged.firstOrNull { it.currency.code == "USD" }
                 if (maybeUsdExchange != null) {
                     val secondsSpent = ((maybeUsdExchange.value / hourlyRateUSD) * 3600.toFixedScaleBigDecimal()).toLong()
-                    val timeString = BotMessages.timeUnitNames.of(settings.language).encodeToStringDuration(secondsSpent)
+                    val timeString = BotMessages.timeUnitNames.of(settings.language).encodeToStringDuration(secondsSpent, useWorkDays = true)
                     BotOutputWithMessage(output, "⏳$timeString")
                 } else {
                     output
