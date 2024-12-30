@@ -10,7 +10,7 @@ import org.mksn.inintobot.exchange.telegram.Message
 /**
  * Pretty similar to [LanguageSettingHandler] but isolated only to choose the language
  */
-object StartCommandSettingHandler : SettingHandler(8) {
+object StartCommandSettingHandler : SettingHandler(99) {
 
     override fun controlButtons(buttonLabels: SettingsStrings.ButtonSettingsStrings): List<InlineKeyboardButton> = emptyList()
 
