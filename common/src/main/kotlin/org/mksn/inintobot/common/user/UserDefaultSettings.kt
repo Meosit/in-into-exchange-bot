@@ -10,4 +10,5 @@ object UserDefaultSettings {
     val OUTPUT_CURRENCIES = listOf("USD", "EUR", "BYN", "RUB", "UAH")
     val DASHBOARD_CURRENCIES: List<String> = listOf("USD", "EUR", "BYN", "RUB", "UAH")
     val HOURLY_RATE_USD: BigDecimal? = null
+    val THOUSAND_SEPARATOR: Char? = null
 }

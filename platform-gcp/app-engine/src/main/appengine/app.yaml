@@ -1,4 +1,4 @@
-runtime: java11
+runtime: java17
 entrypoint: 'java -jar -Djava.util.logging.config.file=/workspace/logging.properties server.jar'
 inbound_services:
   - warmup

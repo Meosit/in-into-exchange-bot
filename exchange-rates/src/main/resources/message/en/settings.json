@@ -6,7 +6,8 @@
     "defaultApi": "Select currency rate API to be used by default, see /apis for more info.\n\nCurrent API: *%s* (`%s`)\nUnavailable currencies: %s",
     "outputCurrencies": "Select default output currency list, if the currency already in the list, it would be removed on button click. Currency list depends on chosen API (%s), see /apis.\n\n*Current currencies:\n* %s",
     "dashboardCurrencies": "Select currency list to choose between in order to show all available rates in case of empty inline query, if the currency already in the list, it would be removed on button click. Currency list depends on chosen API (%s), see /apis.\n\n*Current currencies:*\n %s",
-    "decimalDigits": "Select a number of digits after decimal point to show in results. \n\nCurrent value: *%d* (`%s`)"
+    "decimalDigits": "Select a number of digits after decimal point to show in results. \n\nCurrent value: *%d* (`%s`)",
+    "thousandSeparator": "Select a symbol to separate thousands for large numbers. \n\nCurrently printed like this: `%s`"
   },
   "rootButtons": {
     "language": "Language",
@@ -14,7 +15,8 @@
     "defaultCurrency": "Default currency",
     "outputCurrencies": "Output currencies",
     "dashboardCurrencies": "Empty inline query currencies",
-    "decimalDigits": "Digits after decimal point"
+    "decimalDigits": "Digits after decimal point",
+    "thousandSeparator": "Thousands separator"
   },
   "buttons": {
     "checked": "✅ %s",

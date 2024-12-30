@@ -14,7 +14,7 @@ object RateApis : Iterable<RateApi> {
             url = "https://${System.getenv("NBRB_PROXY_HOST")}?Periodicity=0",
             displayLink = "https://myfin.by/bank/kursy_valjut_nbrb",
             unsupported = setOf("KRW", "HKD", "AMD", "UZS", "ILS", "AED", "GEL", "THB", "IDR", "INR", "VND", "HUF", "RON", "HRK", "MXN", "BRL", "BTC", "ETH",),
-            refreshHours = 1,
+            refreshHours = 4,
             staleTimeoutHours = 25,
             backFillInfo = RateApiBackFillInfo(
                 url = "https://${System.getenv("NBRB_PROXY_HOST")}?Periodicity=0&OnDate=<date>",
@@ -59,7 +59,7 @@ object RateApis : Iterable<RateApi> {
             url = "http://www.cbr.ru/scripts/XML_daily.asp",
             displayLink = "http://www.cbr.ru/",
             unsupported = setOf("ILS", "GEL", "ISK", "THB", "IDR", "VND", "HRK", "MXN", "AED", "BTC", "ETH"),
-            refreshHours = 1,
+            refreshHours = 8,
             staleTimeoutHours = 25,
             backFillInfo = RateApiBackFillInfo(
                 url = "http://www.cbr.ru/scripts/XML_daily.asp?date_req=<date>",
@@ -74,7 +74,7 @@ object RateApis : Iterable<RateApi> {
             url = "https://www.ecb.europa.eu/stats/eurofxref/eurofxref-daily.xml",
             displayLink = "https://www.ecb.europa.eu/home/html/index.en.html",
             unsupported = setOf("BYN", "UAH", "KZT", "GEL", "VND", "MDL", "AMD", "UZS", "KGS", "AED", "BTC", "ETH"),
-            refreshHours = 1,
+            refreshHours = 8,
             staleTimeoutHours = 25,
             backFillInfo = RateApiBackFillInfo(
                 // have to load list only last 90 days and iterate back
@@ -89,7 +89,7 @@ object RateApis : Iterable<RateApi> {
             url = "https://nbg.gov.ge/gw/api/ct/monetarypolicy/currencies/en/json/",
             displayLink = "https://nbg.gov.ge/en/monetary-policy/currency",
             unsupported = setOf("BTC", "ETH", "HRK", "IDR", "MXN", "THB", "VND"),
-            refreshHours = 1,
+            refreshHours = 8,
             staleTimeoutHours = 25,
             backFillInfo = RateApiBackFillInfo(
                 // have to load list only last 90 days and iterate back

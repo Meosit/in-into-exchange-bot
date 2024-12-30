@@ -2,6 +2,9 @@ package org.mksn.inintobot.common.misc
 
 import java.math.BigDecimal
 import java.math.RoundingMode
+import java.text.DecimalFormat
+import java.text.DecimalFormatSymbols
+import java.util.*
 
 
 /**
@@ -32,12 +35,31 @@ fun BigDecimal.toStr(): String = stripTrailingZeros().toPlainString()
 /**
  * Converts a value to string with rounding to [decimalDigits] after decimal point
  */
-fun BigDecimal.toStr(decimalDigits: Int, stripZeros: Boolean = true, precise: Boolean = true): String {
+fun BigDecimal.toStr(
+    decimalDigits: Int,
+    stripZeros: Boolean = true,
+    precise: Boolean = true,
+    thousandSeparator: Char? = null
+): String {
     val actualScale = if (precise) {
         val precision = stripTrailingZeros().precision()
         val scale = stripTrailingZeros().scale()
         kotlin.math.max(decimalDigits, kotlin.math.min(DEFAULT_DECIMAL_DIGITS, scale - precision + decimalDigits))
     } else decimalDigits
-    return setScale(actualScale, DEFAULT_ROUNDING_MODE)
-        .let { if (stripZeros) it.stripTrailingZeros() else it }.toPlainString()
+
+    val scaled = setScale(actualScale, DEFAULT_ROUNDING_MODE)
+        .let { if (stripZeros) it.stripTrailingZeros() else it }
+
+    return if (thousandSeparator == null) {
+        scaled.toPlainString()
+    } else {
+        val decimalFormatSymbols = DecimalFormatSymbols(Locale.getDefault()).apply {
+            groupingSeparator = thousandSeparator
+        }
+        val decimalFormat = DecimalFormat("#,##0.${"#".repeat(decimalDigits)}", decimalFormatSymbols).apply {
+            isGroupingUsed = true
+        }
+
+        decimalFormat.format(scaled)
+    }
 }

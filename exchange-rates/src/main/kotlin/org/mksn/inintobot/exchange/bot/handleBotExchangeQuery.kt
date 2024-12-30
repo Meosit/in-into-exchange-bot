@@ -122,6 +122,7 @@ fun handleBotExchangeQuery(
                 exchanged,
                 queryStrings,
                 decimalDigits,
+                settings.thousandSeparator,
                 nonDefaultApiName,
                 nonDefaultApiTime,
             )

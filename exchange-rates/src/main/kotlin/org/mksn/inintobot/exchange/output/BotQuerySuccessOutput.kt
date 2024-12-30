@@ -13,6 +13,7 @@ data class BotQuerySuccessOutput(
     val exchanges: List<Exchange>,
     val strings: QueryStrings,
     val decimalDigits: Int,
+    val thousandSeparator: Char?,
     val apiName: String? = null,
     val apiTime: String? = null,
 ) : BotOutput {
@@ -34,7 +35,7 @@ data class BotQuerySuccessOutput(
         val apiHeader = apiName?.let { strings.headers.api.format(it) } ?: ""
         val apiTime = apiTime?.let { (if (":" in it) strings.headers.apiTime else strings.headers.apiDate).format(it) } ?: ""
         val exchangeBody = exchanges
-            .joinToString("\n") { "${it.currency.emoji}`${it.currency.code}`  `${it.value.toStr(decimalDigits)}`" }
+            .joinToString("\n") { "${it.currency.emoji}`${it.currency.code}`  `${it.value.toStr(decimalDigits, thousandSeparator = thousandSeparator)}`" }
         (expressionHeader + apiHeader + apiTime + exchangeBody).trimToLength(
             BotMessages.maxOutputLength,
             "… ${strings.outputTooBigMessage}"

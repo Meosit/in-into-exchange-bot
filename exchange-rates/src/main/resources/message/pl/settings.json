@@ -6,7 +6,8 @@
     "defaultApi": "Proszę o wybór API domyślnej wymiany walut dla obliczeń, zobacz /apis jeżeli szukasz dodatkowych info.\n\nAktualne API: *%s* (`%s`)\nWaluty niedopuszczalne: %s",
     "outputCurrencies": "Proszę o wybór listy walut rozwijanych domyślnie, jeżeli waluta jest już na liście, po wciśnieniu zostanie skasowana. Lista walut zależy od wybranego API (%s), zobacz /apis\n\n*Aktualne waluty:\n* %s",
     "dashboardCurrencies": "Proszę o wskazanie listy walut wyświetlanej jako pełna lista kursów wymiany w razie pustego inline zapytania, jeżeli waluta jest już na liście, po wciśnieniu zostanie skasowana. Lista walut zależy od wybranego API (%s), zobacz /apis. \n\n*Aktualne waluty:*\n %s",
-    "decimalDigits": "Proszę o wskazanie liczby miejsc po przecinku do wyświetlenia.\n\nAktualna liczba: *%d* (`%s`)"
+    "decimalDigits": "Proszę o wskazanie liczby miejsc po przecinku do wyświetlenia.\n\nAktualna liczba: *%d* (`%s`)",
+    "thousandSeparator": "Proszę o wskazanie symbolu do oddzielenia tysięcy dla dużych liczb.\n\nAktualnie wyświetlane jako: `%s`"
   },
   "rootButtons": {
     "language": "Język wiadomości",
@@ -14,7 +15,8 @@
     "defaultCurrency": "Domyślna waluta",
     "outputCurrencies": "Wyświetlane waluty",
     "dashboardCurrencies": "Wyświetlane waluty w razie pustego inline zapytania",
-    "decimalDigits": "Liczba miejsc po przecinku"
+    "decimalDigits": "Liczba miejsc po przecinku",
+    "thousandSeparator": "Separator tysięcy"
   },
   "buttons": {
     "checked": "✅ %s",

@@ -15,6 +15,7 @@ enum class Setting(private val handler: SettingHandler) {
     OUTPUT_CURRENCIES(OutputCurrenciesSettingHandler),
     DASHBOARD_CURRENCIES(DashboardCurrenciesSettingHandler),
     DECIMAL_DIGITS(DigitsSettingHandler),
+    THOUSAND_SEPARATOR(ThousandSeparatorSettingHandler),
 
     START_COMMAND(StartCommandSettingHandler)
     ;

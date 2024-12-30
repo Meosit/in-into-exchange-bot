@@ -17,7 +17,8 @@ data class SettingsStrings(
         val defaultApi: String,
         val outputCurrencies: String,
         val dashboardCurrencies: String,
-        val decimalDigits: String
+        val decimalDigits: String,
+        val thousandSeparator: String,
     )
 
     @Serializable

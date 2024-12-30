@@ -36,6 +36,7 @@ object RootSettingHandler : SettingHandler(1) {
             "outputCurrencies" -> Setting.OUTPUT_CURRENCIES.handle(null, message, current, context)
             "dashboardCurrencies" -> Setting.DASHBOARD_CURRENCIES.handle(null, message, current, context)
             "decimalDigits" -> Setting.DECIMAL_DIGITS.handle(null, message, current, context)
+            "thousandSeparator" -> Setting.THOUSAND_SEPARATOR.handle(null, message, current, context)
             else -> {
                 val output = createOutputWithKeyboard(current, context.json)
                 if (data == null) {

@@ -36,6 +36,7 @@ class FirestoreUserSettingsStore(private val db: Firestore) : UserSettingsStore 
         "outputCurrencies" to outputCurrencies,
         "dashboardCurrencies" to dashboardCurrencies,
         "hourlyRateUSD" to hourlyRateUSD?.toStr(),
+        "thousandSeparator" to thousandSeparator?.toString(),
     )
 
     private fun Map<String, Any>.fromFirestoreMap() = UserSettings(
@@ -46,6 +47,7 @@ class FirestoreUserSettingsStore(private val db: Firestore) : UserSettingsStore 
         outputCurrencies = (this["outputCurrencies"] as? List<*>)?.map { it.toString() } ?: UserDefaultSettings.OUTPUT_CURRENCIES,
         dashboardCurrencies = (this["dashboardCurrencies"] as? List<*>)?.map { it.toString() } ?: UserDefaultSettings.DASHBOARD_CURRENCIES,
         hourlyRateUSD = this["hourlyRateUSD"]?.toString()?.toFixedScaleBigDecimal() ?: UserDefaultSettings.HOURLY_RATE_USD,
+        thousandSeparator = this["thousandSeparator"]?.toString()?.firstOrNull() ?: UserDefaultSettings.THOUSAND_SEPARATOR,
         persisted = true,
     )
 }
