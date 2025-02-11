@@ -21,6 +21,7 @@ object Currencies : Iterable<Currency> {
         "NOK" to Currency(code = "NOK", emoji = "🇳🇴",                       aliases = arrayOf("Norway", "Норвегия")),
         "TRY" to Currency(code = "TRY", emoji = "🇹🇷",                       aliases = arrayOf("₺", "lira", "лира", "Turkey", "Турция")),
         "AMD" to Currency(code = "AMD", emoji = "\uD83C\uDDE6\uD83C\uDDF2", aliases = arrayOf("dram", "драм", "Armenia", "Армения")),
+        "RSD" to Currency(code = "RSD", emoji = "\uD83C\uDDF7\uD83C\uDDF8", aliases = arrayOf("dinar", "динар", "Serbia", "Сербия")),
         "KZT" to Currency(code = "KZT", emoji = "🇰🇿",                       aliases = arrayOf("t", "т", "tenge", "тенге", "тнг", "Kazakhstan", "Казахстан")),
         "UZS" to Currency(code = "UZS", emoji = "\uD83C\uDDFA\uD83C\uDDFF", aliases = arrayOf("sum", "сум", "Uzbekistan", "Узбекистан")),
         "KGS" to Currency(code = "KGS", emoji = "\uD83C\uDDF0\uD83C\uDDEC", aliases = arrayOf("som", "сом", "Kyrgyzstan", "Кыргызстан")),
