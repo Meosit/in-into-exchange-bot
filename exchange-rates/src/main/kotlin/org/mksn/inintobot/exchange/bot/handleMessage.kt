@@ -1,23 +1,30 @@
 package org.mksn.inintobot.exchange.bot
 
+import com.github.h0tk3y.betterParse.parser.ErrorResult
+import com.github.h0tk3y.betterParse.parser.Parsed
 import io.ktor.client.plugins.*
 import io.ktor.http.*
 import org.mksn.inintobot.common.currency.Currencies
 import org.mksn.inintobot.common.currency.Currency
+import org.mksn.inintobot.common.expression.Add
+import org.mksn.inintobot.common.expression.Const
+import org.mksn.inintobot.common.expression.ConversionHistoryExpression
 import org.mksn.inintobot.common.expression.ExpressionType
+import org.mksn.inintobot.common.misc.toFixedScaleBigDecimal
+import org.mksn.inintobot.common.misc.toStr
+import org.mksn.inintobot.common.user.RateAlert
 import org.mksn.inintobot.common.rate.RateApis
 import org.mksn.inintobot.common.user.UserAggregateStats
 import org.mksn.inintobot.common.user.UserSettings
 import org.mksn.inintobot.exchange.BotContext
 import org.mksn.inintobot.exchange.bot.settings.Setting
-import org.mksn.inintobot.exchange.output.BotOutputWithMessage
-import org.mksn.inintobot.exchange.output.BotQuerySuccessOutput
-import org.mksn.inintobot.exchange.output.BotSimpleErrorOutput
-import org.mksn.inintobot.exchange.output.BotTextOutput
+import org.mksn.inintobot.exchange.grammar.BotInputGrammar
+import org.mksn.inintobot.exchange.output.*
 import org.mksn.inintobot.exchange.output.strings.BotMessages
 import org.mksn.inintobot.exchange.telegram.Message
 import java.time.ZoneOffset
 import java.time.ZonedDateTime
+import java.util.UUID
 import java.util.logging.Logger
 
 
@@ -129,35 +136,16 @@ suspend fun Message.handle(
                     context.statsStore.logBotCommandUsage("/stats")
                 }
                 text.startsWith("/myhourlyrate") && this.chat.id.toString() == context.creatorId -> {
-                    logger.info("Handling '$text' command")
-                    val query = text.removePrefix("/myhourlyrate").trim()
-                    val output = handleBotExchangeQuery(isInline = false, query, settings.copy(outputCurrencies = listOf("USD")), context).first()
-                    when {
-                        output is BotQuerySuccessOutput || (output is BotOutputWithMessage && output.botOutput is BotQuerySuccessOutput) -> {
-                            val unwrapped = (if (output is BotOutputWithMessage) output.botOutput else output) as BotQuerySuccessOutput
-                            val usdExchange = unwrapped.exchanges.firstOrNull { it.currency.code == "USD" }
-                            if (usdExchange != null) {
-                                val hourlyRateUSD = usdExchange.value
-                                context.settingsStore.save(chat.id.toString(), settings.copy(hourlyRateUSD = hourlyRateUSD))
-                                context.sender.sendChatMessage(chat.id.toString(), unwrapped.copy(exchanges = listOf(usdExchange)))
-                            } else {
-                                val errorMessages = BotMessages.errors.of(settings.language)
-                                context.sender.sendChatMessage(chat.id.toString(), BotSimpleErrorOutput(errorMessages.invalidMyHourlyRateUSD))
-                                context.statsStore.logExchangeErrorRequest("unableToSaveHourlyRate", inlineRequest = false)
-                            }
-                        }
-                        output is BotSimpleErrorOutput -> {
-                            val errorMessages = BotMessages.errors.of(settings.language)
-                            context.sender.sendChatMessage(chat.id.toString(), BotSimpleErrorOutput(errorMessages.invalidMyHourlyRateUSD))
-                            context.statsStore.logExchangeErrorRequest("unableToSaveHourlyRate", inlineRequest = false)
-                        }
-                        else -> {
-                            val errorMessages = BotMessages.errors.of(settings.language)
-                            context.sender.sendChatMessage(chat.id.toString(), BotSimpleErrorOutput(errorMessages.invalidMyHourlyRateUSD))
-                            context.statsStore.logExchangeErrorRequest("unableToSaveHourlyRate", inlineRequest = false)
-                        }
-                    }
-                    context.statsStore.logBotCommandUsage("/myhourlyrate")
+                    handleMyHourlyRateCommand(text, settings, context)
+                }
+                text.startsWith("/alert_delta") && this.chat.id.toString() == context.creatorId -> {
+                    handleAlertRateCommand(settings, text, context, command = "/alert_delta")
+                }
+                text.startsWith("/alert_rate") && this.chat.id.toString() == context.creatorId -> {
+                    handleAlertRateCommand(settings, text, context, command = "/alert_rate")
+                }
+                text.startsWith("/checkalerts") && this.chat.id.toString() == context.creatorId -> {
+                    handleRateAlertsPeriodicCheck(context)
                 }
                 else -> {
                     logger.info("Handling '$text' chat message")
@@ -174,6 +162,112 @@ suspend fun Message.handle(
             }
         }
     }
+}
+
+private suspend fun Message.handleAlertRateCommand(
+    settings: UserSettings,
+    text: String,
+    context: BotContext,
+    command: String
+) {
+    val defaultApi = RateApis[settings.apiName]
+
+    val query = text.removePrefix(command).trim()
+    val isRelative = "delta" in command
+
+    when (val result = BotInputGrammar.tryParseRateAlertInput(query)) {
+        is Parsed -> with(result.value) {
+            val api = rateApi ?: defaultApi
+            logger.info("Chosen api is ${api.name} (default: ${defaultApi.name})")
+            if (expression is Add && expression.e1 is Const && expression.e2 is ConversionHistoryExpression) {
+                val conversionHistoryExpression = expression.e2 as ConversionHistoryExpression
+                val sourceCurrency = conversionHistoryExpression.source
+                val targetCurrency = conversionHistoryExpression.target
+                val rateAlert = RateAlert(
+                    id = UUID.randomUUID().toString(),
+                    apiName = api.name,
+                    fromCurrency = sourceCurrency.code,
+                    toCurrency = targetCurrency.code,
+                    isRelative = isRelative,
+                    value = (expression.e1 as Const).number.abs()
+                )
+
+                val sourceValue = 1.toFixedScaleBigDecimal().toStr(settings.decimalDigits)
+                val targetValue = if (isRelative) "?.${"?".repeat(settings.decimalDigits)}" else rateAlert.value.toStr(settings.decimalDigits)
+                val deltaValue = if (!isRelative) "?.${"?".repeat(settings.decimalDigits)}" else rateAlert.value.toStr(settings.decimalDigits)
+
+                val newSettings = settings.copy(alerts = settings.alerts?.let { it + rateAlert } ?: listOf(rateAlert))
+                context.settingsStore.save(chat.id.toString(), newSettings)
+
+                val messages = BotMessages.alertCommand.of(settings.language)
+                    .replace("{api_name}", BotMessages.apiDisplayNames.of(settings.language).getValue(api.name))
+                    .replace("{source_emoji}", sourceCurrency.emoji)
+                    .replace("{source_currency}", sourceCurrency.code)
+                    .replace("{source_value}", sourceValue)
+
+                    .replace("{target_emoji}", targetCurrency.emoji)
+                    .replace("{target_currency}", targetCurrency.code)
+                    .replace("{target_value}", targetValue)
+
+                    .replace("{delta_value}", deltaValue)
+
+                val formattedMessage = BotTextOutput(messages)
+                context.sender.sendChatMessage(chat.id.toString(), formattedMessage)
+            } else {
+                val errorMessages = BotMessages.errors.of(settings.language)
+                context.sender.sendChatMessage(chat.id.toString(), BotSimpleErrorOutput(errorMessages.unexpectedError))
+                context.statsStore.logExchangeErrorRequest("rateAlertUnexpectedError", inlineRequest = false)
+                throw IllegalStateException("Unexpected expression type: ${expression::class.simpleName} for $query")
+            }
+        }
+
+        is ErrorResult -> {
+            val messages = BotMessages.errors.of(settings.language)
+            val errorOutput = result.toBotOutput(query, messages)
+            val formattedOutput = errorOutput.copy(errorMessage = errorOutput.errorMessage)
+            logger.info("Invalid rate alert query provided: ${formattedOutput.errorMessage} (at ${formattedOutput.errorPosition})")
+            context.statsStore.logExchangeErrorRequest("rateAlert${result::class.simpleName}", inlineRequest = false)
+            context.sender.sendChatMessage(chat.id.toString(), formattedOutput)
+        }
+    }
+}
+
+private suspend fun Message.handleMyHourlyRateCommand(
+    text: String,
+    settings: UserSettings,
+    context: BotContext
+) {
+    logger.info("Handling '$text' command")
+    val query = text.removePrefix("/myhourlyrate").trim()
+    val output = handleBotExchangeQuery(isInline = false, query, settings.copy(outputCurrencies = listOf("USD")), context).first()
+    when {
+        output is BotQuerySuccessOutput || (output is BotOutputWithMessage && output.botOutput is BotQuerySuccessOutput) -> {
+            val unwrapped = (if (output is BotOutputWithMessage) output.botOutput else output) as BotQuerySuccessOutput
+            val usdExchange = unwrapped.exchanges.firstOrNull { it.currency.code == "USD" }
+            if (usdExchange != null) {
+                val hourlyRateUSD = usdExchange.value
+                context.settingsStore.save(chat.id.toString(), settings.copy(hourlyRateUSD = hourlyRateUSD))
+                context.sender.sendChatMessage(chat.id.toString(), unwrapped.copy(exchanges = listOf(usdExchange)))
+            } else {
+                val errorMessages = BotMessages.errors.of(settings.language)
+                context.sender.sendChatMessage(chat.id.toString(), BotSimpleErrorOutput(errorMessages.invalidMyHourlyRateUSD))
+                context.statsStore.logExchangeErrorRequest("unableToSaveHourlyRate", inlineRequest = false)
+            }
+        }
+
+        output is BotSimpleErrorOutput -> {
+            val errorMessages = BotMessages.errors.of(settings.language)
+            context.sender.sendChatMessage(chat.id.toString(), BotSimpleErrorOutput(errorMessages.invalidMyHourlyRateUSD))
+            context.statsStore.logExchangeErrorRequest("unableToSaveHourlyRate", inlineRequest = false)
+        }
+
+        else -> {
+            val errorMessages = BotMessages.errors.of(settings.language)
+            context.sender.sendChatMessage(chat.id.toString(), BotSimpleErrorOutput(errorMessages.invalidMyHourlyRateUSD))
+            context.statsStore.logExchangeErrorRequest("unableToSaveHourlyRate", inlineRequest = false)
+        }
+    }
+    context.statsStore.logBotCommandUsage("/myhourlyrate")
 }
 
 private fun makeStatsMessageMarkdown(stats: UserAggregateStats) = """

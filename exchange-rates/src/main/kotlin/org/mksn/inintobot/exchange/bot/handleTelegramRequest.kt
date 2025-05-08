@@ -41,11 +41,10 @@ suspend fun handleTelegramRequest(
         logger.info("Error for query '$queryString': $cause")
         if ("query is too old" !in cause) {
             val message = BotTextOutput("Error received.\n```\nQuery: $queryString\nTime: ${LocalDateTime.now()}\nUser: $user\n\nCause: $cause```")
-            context.sender.sendChatMessage(context.creatorId, message)
+            context.sender.sendChatMessage(context.creatorId, message, disableNotification = true)
         }
         logger.severe(e.stackTraceToString())
     }
-    return
 }
 
 private fun UserSettingsStore.loadSettings(update: Update) = with(update) {

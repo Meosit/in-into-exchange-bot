@@ -1,6 +1,7 @@
 package org.mksn.inintobot.exchange.grammar
 
 import com.github.h0tk3y.betterParse.grammar.parseToEnd
+import com.github.h0tk3y.betterParse.parser.Parsed
 import org.mksn.inintobot.common.currency.Currencies
 import org.mksn.inintobot.common.currency.Currency
 import org.mksn.inintobot.common.expression.*
@@ -9,6 +10,7 @@ import org.mksn.inintobot.common.rate.RateApis
 import java.time.LocalDate
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertIs
 import kotlin.test.assertTrue
 
 class BotInputGrammarPositiveTest {
@@ -781,6 +783,20 @@ class BotInputGrammarPositiveTest {
         assertTrue(additionalCurrencies.isEmpty())
         assertEquals(expectedExpr, actualExpr)
         assertEquals(12, digits)
+        assertEquals(RateApis["NBP"], api)
+    }
+
+    @Test
+    fun rate_alert_query() {
+        val input = "3.75 USD to PLN NBP"
+        val expectedExpr = Add(3.75.asConst, ConversionHistoryExpression("USD".toCurrency(), "PLN".toCurrency()))
+
+        val result = grammar.tryParseRateAlertInput(input)
+        assertIs<Parsed<BotInput>>(result)
+        val (actualExpr, additionalCurrencies, api, _, _) = result.value
+
+        assertTrue(additionalCurrencies.isEmpty())
+        assertEquals(expectedExpr, actualExpr)
         assertEquals(RateApis["NBP"], api)
     }
 }

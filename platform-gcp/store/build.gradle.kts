@@ -4,5 +4,5 @@ plugins {
 
 dependencies {
     implementation(project(":common"))
-    implementation("com.google.cloud:google-cloud-firestore:3.4.2")
+    implementation("com.google.cloud:google-cloud-firestore:3.31.2")
 }

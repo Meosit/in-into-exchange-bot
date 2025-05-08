@@ -2,6 +2,7 @@
   "headers": {
     "rate": "\uD83D\uDCB9 Курс `%s`\n",
     "history": "\uD83D\uDCB9 Історія `%s` до `%s`\n",
+    "alert": "\uD83D\uDEA8 `%s` до `%s`\n\uD83C\uDFAF `%s` `%s`\n",
     "api": "\uD83C\uDF10 _%s_\n",
     "apiTime":"\uD83D\uDD59 _На %s (UTC)_\n",
     "apiDate":"\uD83D\uDD59 _На %s_\n",

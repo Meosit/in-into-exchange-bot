@@ -2,6 +2,8 @@ package org.mksn.inintobot.server
 
 import io.ktor.client.*
 import io.ktor.client.engine.java.*
+import io.ktor.client.plugins.*
+import io.ktor.client.statement.*
 import io.ktor.http.*
 import io.ktor.serialization.kotlinx.json.*
 import io.ktor.server.application.*
@@ -60,7 +62,17 @@ fun Application.module() {
                     .recoverCatching {
                         logger.severe(it.message)
                         exchangeRateFunction.botSender.sendChatMessage(
-                            exchangeRateFunction.creatorId, BotTextOutput("```\n${it.message?.trimToLength(3000)}\n```")
+                            exchangeRateFunction.creatorId, BotTextOutput("```\n${it.message?.trimToLength(3000)}\n```"),
+                            disableNotification = true
+                        )
+                    }
+                runCatching { exchangeRateFunction.checkRateAlerts() }
+                    .recoverCatching { e ->
+                        val cause = (e as? ResponseException)?.response?.bodyAsText() ?: "${e::class.simpleName} ${e.message}"
+                        logger.severe("$cause\n\n${e.stackTraceToString()}")
+                        exchangeRateFunction.botSender.sendChatMessage(
+                            exchangeRateFunction.creatorId, BotTextOutput("```\n$cause\n\n${e.message?.trimToLength(2000)}\n```"),
+                            disableNotification = true
                         )
                     }
             }

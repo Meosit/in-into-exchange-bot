@@ -7,6 +7,7 @@ import com.github.h0tk3y.betterParse.lexer.DefaultTokenizer
 import com.github.h0tk3y.betterParse.lexer.TokenMatchesSequence
 import com.github.h0tk3y.betterParse.lexer.Tokenizer
 import com.github.h0tk3y.betterParse.parser.*
+import org.mksn.inintobot.common.expression.Add
 import org.mksn.inintobot.common.expression.Const
 import org.mksn.inintobot.common.expression.ConversionHistoryExpression
 import org.mksn.inintobot.common.expression.CurrenciedExpression
@@ -74,24 +75,33 @@ object BotInputGrammar : Grammar<BotInput>() {
     private val botCurrencyDivisionInputParser by currParsers.currenciedDivisionSubSumChain and apiConfig and dateConfig and decimalDigitsConfig map
             { (expr, api, onDate, decimalDigits) -> BotInput(expr, setOf(), api, onDate, decimalDigits) }
 
+    private val botRateAlertInputParser by mathParsers.plainNumber and conversionHistoryExpressionParser and apiConfig map
+            { (valueExpr, historyExpr, api) -> BotInput(Add(valueExpr, historyExpr), setOf(), api, null, null) }
+
     override val tokens = tokenDict.allTokens
 
     override val tokenizer: Tokenizer by lazy { SingleLineTokenizer(DefaultTokenizer(tokens)) }
 
+    private fun unwrapAlternativeFailure(result: ParseResult<BotInput>) = when (result) {
+        // unwrap and keep the last added error as most adequate
+        is AlternativesFailure -> {
+            fun find(errors: List<ErrorResult>): ErrorResult {
+                val error = errors.last()
+                return if (error !is AlternativesFailure) error else find(error.errors)
+            }
+            find(result.errors)
+        }
+
+        is ErrorResult -> result
+        else -> result
+    }
+
     override val rootParser = object : Parser<BotInput> {
         override fun tryParse(tokens: TokenMatchesSequence, fromPosition: Int) =
-            when (val result = botInputParser.tryParse(tokens, fromPosition)) {
-                // unwrap and keep the last added error as most adequate
-                is AlternativesFailure -> {
-                    fun find(errors: List<ErrorResult>): ErrorResult {
-                        val error = errors.last()
-                        return if (error !is AlternativesFailure) error else find(error.errors)
-                    }
-                    find(result.errors)
-                }
-
+            when (val result = unwrapAlternativeFailure(botInputParser.tryParse(tokens, fromPosition))) {
                 is ErrorResult -> result
                 is Parsed -> tokens.getNotIgnored(result.nextPosition)?.let {
+                    // checking if it's an UnparsedRemainder case
                     // applying the currencied division parser only when the others failed
                     botCurrencyDivisionInputParser.tryParseToEnd(tokens, fromPosition) as? Parsed<BotInput>
                 } ?: result
@@ -99,5 +109,9 @@ object BotInputGrammar : Grammar<BotInput>() {
                 else -> result
             }
     }
+
+    fun tryParseRateAlertInput(input: String) = unwrapAlternativeFailure(
+        botRateAlertInputParser.tryParseToEnd(tokenizer.tokenize(input), 0)
+    )
 
 }

@@ -12,6 +12,7 @@ import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.decodeFromStream
 import org.mksn.inintobot.common.HttpBotFunction
 import org.mksn.inintobot.common.store.StoreProvider
+import org.mksn.inintobot.exchange.bot.handleRateAlertsPeriodicCheck
 import org.mksn.inintobot.exchange.bot.handleTelegramRequest
 import org.mksn.inintobot.exchange.telegram.Update
 import java.io.InputStream
@@ -57,5 +58,16 @@ class BotFunction(
             logger.severe("Uncaught exception: $sw")
         }
         return HttpStatusCode.OK.value
+    }
+
+    suspend fun checkRateAlerts() {
+        try {
+            handleRateAlertsPeriodicCheck(context)
+        } catch (e: Exception) {
+            val sw = StringWriter()
+            e.printStackTrace(PrintWriter(sw))
+            (e as? ClientRequestException)?.response?.bodyAsText()?.let { logger.severe(it) }
+            logger.severe("Uncaught exception: $sw")
+        }
     }
 }

@@ -225,8 +225,8 @@ fun BotInput.handleBotQueryHistoryRequest(
         historyRequest = onDate != null, customApi = api.name != settings.apiName)
     return arrayOf(
         BotQueryHistoryOutput(
-            evaluated, settings.language, conversions, min(decimalDigits, 4),
-            BotMessages.apiDisplayNames.of(settings.language).getValue(api.name), ratesHistory.first().date,
+            evaluated.involvedCurrencies, settings.language, conversions, min(decimalDigits, 4),
+            BotMessages.apiDisplayNames.of(settings.language).getValue(api.name), ratesHistory.first().date.toString(),
         ).let { if (date != ratesHistory.first().date) {
             val message = BotMessages.errors.of(settings.language).ratesOnDateNotExact
                 .format(date, ratesHistory.first().date)

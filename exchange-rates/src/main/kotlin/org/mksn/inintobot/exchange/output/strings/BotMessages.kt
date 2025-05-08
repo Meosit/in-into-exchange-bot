@@ -30,6 +30,7 @@ object BotMessages {
     val apiStatusCommand = LocalizedTextResource("api-status.md")
     val patternsCommand = LocalizedTextResource("patterns.md")
     val donateCommand = LocalizedTextResource("donate.md")
+    val alertCommand = LocalizedTextResource("alert.md")
     val apiDisplayNames = LocalizedJsonResource("api-names.json", MapSerializer(String.serializer(), String.serializer()))
     val query = LocalizedJsonResource("query.json", QueryStrings.serializer())
     val timeUnitNames = LocalizedJsonResource("time-unit-names.json", TimeUnitNames.serializer())

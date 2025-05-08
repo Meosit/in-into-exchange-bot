@@ -2,6 +2,7 @@ package org.mksn.inintobot.exchange.grammar.parsers
 
 import com.github.h0tk3y.betterParse.combinators.*
 import com.github.h0tk3y.betterParse.grammar.parser
+import com.github.h0tk3y.betterParse.lexer.Token
 import com.github.h0tk3y.betterParse.parser.Parser
 import org.mksn.inintobot.common.expression.*
 import org.mksn.inintobot.common.misc.toFixedScaleBigDecimal
@@ -28,16 +29,15 @@ class SimpleMathParsers(tokenDict: TokenDictionary) {
         }
     }
 
+    private fun suffixedNumber(numberToken: Token, suffixToken: Token, suffixType: SuffixType) = numberToken and oneOrMore(suffixToken) map
+            { (num, suffixes) -> ConstWithSuffixes(num.text.toParsableNumber().toFixedScaleBigDecimal(), suffixes.size, suffixType) }
+
+    val plainNumber = tokenDict.number map { Const(it.text.toParsableNumber().toFixedScaleBigDecimal()) }
+
     val number: Parser<Expression> =
-        (tokenDict.number and oneOrMore(tokenDict.kilo) map { (num, suffixes) ->
-            ConstWithSuffixes(num.text.toParsableNumber().toFixedScaleBigDecimal(), suffixes.size, SuffixType.KILO)
-        }) or
-                (tokenDict.number and oneOrMore(tokenDict.mega) map { (num, suffixes) ->
-                    ConstWithSuffixes(
-                        num.text.toParsableNumber().toFixedScaleBigDecimal(), suffixes.size, SuffixType.MEGA
-                    )
-                }) or
-                (tokenDict.number map { Const(it.text.toParsableNumber().toFixedScaleBigDecimal()) })
+        suffixedNumber(tokenDict.number, tokenDict.kilo, SuffixType.KILO) or
+                suffixedNumber(tokenDict.number, tokenDict.mega, SuffixType.MEGA) or
+                plainNumber
 
     val term: Parser<Expression> = number or
             (skip(tokenDict.minus) and parser(this::term) map { Negate(it) }) or
@@ -45,7 +45,7 @@ class SimpleMathParsers(tokenDict: TokenDictionary) {
 
     val divMulChain: Parser<Expression> = leftAssociative(term, tokenDict.divide or tokenDict.multiply) { a, op, b ->
         if (op.type == tokenDict.multiply) Multiply(a, b) else Divide(a, b)
-    } and optional(tokenDict.percent) map { (expr, p) -> if(p != null) Percent(expr, p.column) else expr }
+    } and optional(tokenDict.percent) map { (expr, p) -> if (p != null) Percent(expr, p.column) else expr }
 
     val subSumChain: Parser<Expression> = leftAssociative(divMulChain, tokenDict.plus or tokenDict.minus use { type }) { a, op, b ->
         if (op == tokenDict.plus) Add(a, b) else Subtract(a, b)

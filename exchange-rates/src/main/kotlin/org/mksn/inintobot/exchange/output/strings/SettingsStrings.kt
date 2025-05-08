@@ -19,6 +19,7 @@ data class SettingsStrings(
         val dashboardCurrencies: String,
         val decimalDigits: String,
         val thousandSeparator: String,
+        val alerts: String,
     )
 
     @Serializable

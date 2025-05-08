@@ -16,6 +16,7 @@ data class QueryStrings(
     data class MessageHeaders(
         val rate: String,
         val history: String,
+        val alert: String,
         val api: String,
         val apiTime: String,
         val apiDate: String,

@@ -7,7 +7,8 @@
     "outputCurrencies": "Select default output currency list, if the currency already in the list, it would be removed on button click. Currency list depends on chosen API (%s), see /apis.\n\n*Current currencies:\n* %s",
     "dashboardCurrencies": "Select currency list to choose between in order to show all available rates in case of empty inline query, if the currency already in the list, it would be removed on button click. Currency list depends on chosen API (%s), see /apis.\n\n*Current currencies:*\n %s",
     "decimalDigits": "Select a number of digits after decimal point to show in results. \n\nCurrent value: *%d* (`%s`)",
-    "thousandSeparator": "Select a symbol to separate thousands for large numbers. \n\nCurrently printed like this: `%s`"
+    "thousandSeparator": "Select a symbol to separate thousands for large numbers. \n\nCurrently printed like this: `%s`",
+    "alerts": "You currently have *%d* alerts set up.\n\nTo set up a new alert. New alerts can be added via /alert\\_delta or /alert\\_rate commands (see /help). \n\n⚠\uFE0F By clicking on the alert button it will be permanently deleted."
   },
   "rootButtons": {
     "language": "Language",
@@ -16,7 +17,8 @@
     "outputCurrencies": "Output currencies",
     "dashboardCurrencies": "Empty inline query currencies",
     "decimalDigits": "Digits after decimal point",
-    "thousandSeparator": "Thousands separator"
+    "thousandSeparator": "Thousands separator",
+    "alerts": "\uD83D\uDEA8 Alerts"
   },
   "buttons": {
     "checked": "✅ %s",

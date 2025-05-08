@@ -16,7 +16,8 @@ object RootSettingHandler : SettingHandler(1) {
     override val buttonsPerRow: Int = 1
     override fun keyboardButtons(settings: UserSettings, checkedButtonLabel: String) =
         BotMessages.settings.of(settings.language).rootButtons
-            .map { (key, label) -> InlineKeyboardButton(label, callbackData(key)) }
+            .mapNotNull { (key, label) -> InlineKeyboardButton(label, callbackData(key))
+                .takeIf { key != "alerts" || settings.alerts != null } }
 
     override fun messageMarkdown(settings: UserSettings, messages: SettingsStrings.MessagesSettingsStrings) = messages.root
 
@@ -37,6 +38,7 @@ object RootSettingHandler : SettingHandler(1) {
             "dashboardCurrencies" -> Setting.DASHBOARD_CURRENCIES.handle(null, message, current, context)
             "decimalDigits" -> Setting.DECIMAL_DIGITS.handle(null, message, current, context)
             "thousandSeparator" -> Setting.THOUSAND_SEPARATOR.handle(null, message, current, context)
+            "alerts" -> Setting.ALERTS.handle(null, message, current, context)
             else -> {
                 val output = createOutputWithKeyboard(current, context.json)
                 if (data == null) {
