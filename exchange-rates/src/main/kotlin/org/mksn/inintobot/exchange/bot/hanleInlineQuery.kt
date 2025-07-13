@@ -21,44 +21,6 @@ private val logger = Logger.getLogger("handleInlineQuery")
 
 suspend fun InlineQuery.handle(settings: UserSettings, context: BotContext) {
     val outputs = when {
-        /*query.isBlank() && this.from.id.toString() == context.creatorId -> {
-            mutableListOf<BotInput>()
-            logger.info("Handling owner dashboard inline query")
-            listOf(
-                BotInput(
-                    expression = ConversionHistoryExpression(Currencies["USD"], Currencies["PLN"]),
-                    additionalCurrencies = setOf(),
-                    rateApi = RateApis["NBP"],
-                    onDate = null,
-                    decimalDigits = settings.decimalDigits,
-                ),
-                BotInput(
-                    expression = ConversionHistoryExpression(Currencies["USD"], Currencies["BYN"]),
-                    additionalCurrencies = setOf(),
-                    rateApi = RateApis["NBRB"],
-                    onDate = null,
-                    decimalDigits = settings.decimalDigits,
-                ),
-                BotInput(
-                    expression = ConversionHistoryExpression(Currencies["EUR"], Currencies["USD"]),
-                    additionalCurrencies = setOf(),
-                    rateApi = null,
-                    onDate = null,
-                    decimalDigits = settings.decimalDigits,
-                )
-            ).mapNotNull { input ->
-                (input.expression as? ConversionHistoryExpression)?.let {
-                    input.handleBotQueryHistoryRequest(
-                        expression = it,
-                        api = input.rateApi ?: RateApis[settings.apiName],
-                        context = context,
-                        settings = settings,
-                        isInline = true,
-                        decimalDigits = settings.decimalDigits
-                    )
-                }
-            }.flatMap { it.asIterable() }.toTypedArray()
-        }*/
         query.isBlank() -> {
             logger.info("Handling dashboard inline query")
             val api = RateApis[settings.apiName]

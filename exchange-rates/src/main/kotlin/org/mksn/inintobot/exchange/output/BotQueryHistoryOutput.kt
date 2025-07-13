@@ -23,7 +23,7 @@ data class BotQueryHistoryOutput(
     val conversions: List<HistoryConversion>,
     val decimalDigits: Int,
     val apiName: String,
-    val apiTime: String,
+    val apiTime: String? = null,
     val rateAlert: RateAlert? = null,
 ) : BotOutput {
     private val noRate = "-.${"-".repeat(decimalDigits)}"
@@ -33,7 +33,6 @@ data class BotQueryHistoryOutput(
     private val expressionHeader = if (rateAlert != null) {
         strings.headers.alert.format(*historyCurrencies.map { "${it.emoji}${it.code}" }.toTypedArray(),
             (if (rateAlert.isRelative) "±" else "⇵") + rateAlert.value.toStr(decimalDigits),
-            historyCurrencies[1].let { "${it.emoji}${it.code}" },
         )
     } else
         strings.headers.history.format(*historyCurrencies.map { "${it.emoji}${it.code}" }.toTypedArray())
@@ -47,7 +46,7 @@ data class BotQueryHistoryOutput(
 
     private val markdown = let {
         val apiHeader = apiName.let { strings.headers.api.format(it) }
-        val apiTime = apiTime.let { (if (":" in it) strings.headers.apiTime else strings.headers.apiDate).format(it) }
+        val apiTime = apiTime?.let { (if (":" in it) strings.headers.apiTime else strings.headers.apiDate).format(it) } ?: ""
         val longestDayName = conversions.maxOf { it.date.dayName().length }
         val longestRate = conversions.maxOf {
             it.current?.toStr(decimalDigits, stripZeros = false, precise = false)?.length ?: 0
@@ -59,7 +58,7 @@ data class BotQueryHistoryOutput(
             val rate = (it.current?.toStr(decimalDigits, stripZeros = false, precise = false) ?: noRate).padStart(longestRate)
             val diff = (it.previous.toSignedDiff(it.current) ?: noRate).padStart(longestDiff)
             val emoji = when {
-                diff.trim() == noRate -> "⏸"
+                diff.trim() == noRate -> ""
                 '+' in diff -> "\uD83D\uDCC8"
                 '-' in diff -> "\uD83D\uDCC9"
                 else -> "⏸"

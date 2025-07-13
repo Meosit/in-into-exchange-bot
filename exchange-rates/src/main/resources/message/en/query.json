@@ -2,7 +2,7 @@
   "headers": {
     "rate": "\uD83D\uDCB9 Rates for `%s`\n",
     "history": "\uD83D\uDCB9 History `%s` to `%s`\n",
-    "alert": "\uD83D\uDEA8 `%s` to `%s`\n\uD83C\uDFAF `%s` `%s`\n",
+    "alert": "\uD83D\uDEA8 `%s` to `%s`\n\uD83C\uDFAF `%s`\n",
     "api": "\uD83C\uDF10 _%s_\n",
     "apiTime":"\uD83D\uDD59 _On %s (UTC)_\n",
     "apiDate":"\uD83D\uDD59 _On %s_\n",

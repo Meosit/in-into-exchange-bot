@@ -130,7 +130,7 @@ object RateApis : Iterable<RateApi> {
             url = "https://marketdata.tradermade.com/api/v1/live?api_key=${System.getenv("TRADERMADE_ACCESS_KEY")}&currency=USDEUR,USDRUB,USDPLN,USDCZK,USDGBP,USDJPY,USDCNY,USDCHF,USDTRY,USDCAD,USDISK,USDDKK,USDSEK,USDNOK,USDILS,USDBTC,USDETH,USDHUF,USDTHB,USDIDR,USDINR,USDRON,USDHKD,USDKRW,USDVND,USDHRK,USDMXN,USDAUD,USDAED,USDBRL",
             displayLink = "https://tradermade.com/",
             unsupported = setOf("BYN", "BGN", "GEL", "AMD", "RSD", "MDL", "KZT", "UZS", "KGS", "UAH"),
-            refreshHours = 2,
+            refreshHours = 25,
             backFillInfo = RateApiBackFillInfo(
                 url = "https://marketdata.tradermade.com/api/v1/historical?date=<date>&api_key=${System.getenv("TRADERMADE_ACCESS_KEY")}&currency=USDEUR,USDRUB,USDPLN,USDCZK,USDGBP,USDJPY,USDCNY,USDCHF,USDTRY,USDCAD,USDISK,USDDKK,USDSEK,USDNOK,USDILS,USDBTC,USDETH,USDHUF,USDTHB,USDIDR,USDINR,USDRON,USDHKD,USDKRW,USDVND,USDHRK,USDMXN,USDAUD,USDAED,USDBRL",
                 backFillLimit = LocalDate.of(2022, 7, 1),

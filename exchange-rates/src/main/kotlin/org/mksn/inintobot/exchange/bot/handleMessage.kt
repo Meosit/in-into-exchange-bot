@@ -10,6 +10,7 @@ import org.mksn.inintobot.common.expression.Add
 import org.mksn.inintobot.common.expression.Const
 import org.mksn.inintobot.common.expression.ConversionHistoryExpression
 import org.mksn.inintobot.common.expression.ExpressionType
+import org.mksn.inintobot.common.misc.escapeMarkdown
 import org.mksn.inintobot.common.misc.toFixedScaleBigDecimal
 import org.mksn.inintobot.common.misc.toStr
 import org.mksn.inintobot.common.user.RateAlert
@@ -84,7 +85,7 @@ suspend fun Message.handle(
                         val displayName = displayNames.getValue(rateApi.name)
                         BotMessages.apiCommand.of(settings.language)
                             .replace("{name}", displayName)
-                            .replace("{link}", rateApi.displayLink)
+                            .replace("{link}", rateApi.displayLink.escapeMarkdown())
                             .replace("{base}", "`${rateApi.base.code}`")
                             .replace("{aliases}", (listOf(rateApi.name) + rateApi.aliases).joinToString { "`$it`" })
                             .replace("{unsupported}", rateApi.unsupported.ifEmpty { setOf("-/-") }.joinToString { "`$it`" })

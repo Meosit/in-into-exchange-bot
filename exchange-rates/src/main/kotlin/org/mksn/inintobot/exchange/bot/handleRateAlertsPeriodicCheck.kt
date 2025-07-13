@@ -41,7 +41,7 @@ suspend fun handleRateAlertsPeriodicCheck(context: BotContext) {
                 .map {
                     BotQueryHistoryOutput(
                         it.currencies, settings.language, it.conversions, min(settings.decimalDigits, 4),
-                        apiDisplayNames.getValue(it.alert.apiName), it.apiTime,
+                        apiDisplayNames.getValue(it.alert.apiName),
                         rateAlert = it.alert
                     ).markdown()
                 }
