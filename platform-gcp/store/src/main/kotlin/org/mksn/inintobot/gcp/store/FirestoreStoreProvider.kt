@@ -12,8 +12,8 @@ class FirestoreStoreProvider: StoreProvider {
         .setCredentials(GoogleCredentials.getApplicationDefault())
         .build().service
 
-    private val exchangeRateStore = FirestoreApiExchangeRateStore(db)
-    private val userSettingsStore = FirestoreUserSettingsStore(db)
+    private val exchangeRateStore = CachedFirestoreApiExchangeRateStore(FirestoreApiExchangeRateStore(db))
+    private val userSettingsStore = CachedFirestoreUserSettingsStore(FirestoreUserSettingsStore(db))
     private val userAggregateStatsStore = FirestoreUserAggregateStatsStore(db)
 
     override fun exchangeRateStore() = exchangeRateStore
