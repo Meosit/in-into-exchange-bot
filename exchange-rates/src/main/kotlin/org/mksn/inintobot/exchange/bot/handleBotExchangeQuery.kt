@@ -262,7 +262,7 @@ private fun makeMissingCurrenciesMessage(
     logger.info("Unsupported currencies ${currencyCodes.joinToString()} for ${api.name} api used")
     val displayNames = BotMessages.apiDisplayNames.of(settings.language)
     val alternativeApiName = RateApis
-        .filter { a -> a.name != api.name }
+        .filterNot { a -> a.name == api.name || a.refreshHours > 24 }
         .findLast { a -> currencies.all { c -> c.code !in a.unsupported } }
         ?.let { displayNames.getValue(it.name) }
     val messages = BotMessages.errors.of(settings.language)

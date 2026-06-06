@@ -12,8 +12,6 @@ env_variables:
   # BOT_TOKEN: <bot_token>
   # BOT_USERNAME: <username of bot>
   # CREATOR_ID: <id of owner>
-  # FIXER_ACCESS_KEY: <token for api>
   # OPENEXCHANGERATES_ACCESS_KEY: <token for api>
-  # TRADERMADE_ACCESS_KEY: <token for api>
   # FOREX_ACCESS_KEY: <token for api>
   # NBRB_PROXY_HOST: <host of NBRB api, put 'www.nbrb.by/API/ExRates/Rates' if you have it available>

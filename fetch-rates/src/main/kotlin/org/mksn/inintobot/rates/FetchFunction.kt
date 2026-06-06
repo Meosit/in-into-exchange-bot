@@ -39,8 +39,6 @@ class FetchFunction(
 
     init {
         System.getenv("FOREX_ACCESS_KEY").ifEmpty { throw Exception("FOREX_ACCESS_KEY env must be provided") }
-        System.getenv("FIXER_ACCESS_KEY").ifEmpty { throw Exception("FIXER_ACCESS_KEY env must be provided") }
-        System.getenv("TRADERMADE_ACCESS_KEY").ifEmpty { throw Exception("TRADERMADE_ACCESS_KEY env must be provided") }
         System.getenv("OPENEXCHANGERATES_ACCESS_KEY").ifEmpty { throw Exception("OPENEXCHANGERATES_ACCESS_KEY env must be provided") }
         System.getenv("NBRB_PROXY_HOST").ifEmpty { throw Exception("NBRB_PROXY_HOST env must be provided") }
     }
@@ -52,7 +50,7 @@ class FetchFunction(
         } else FetchRequest()
         logger.info(request.toString())
         val jobs = RateApis
-            .filterNot { it.name in request.skipApis }
+            .filterNot { it.refreshHours > 24 || it.name in request.skipApis }
             .map {
                 it to CoroutineScope(Dispatchers.Default).async {
                     reloadOne(request.backfill, request.date, it, storeProvider.exchangeRateStore(), httpClient, json)

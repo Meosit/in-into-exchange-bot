@@ -97,19 +97,6 @@ object RateApis : Iterable<RateApi> {
                 backFillLimit = LocalDate.of(2023, 1, 1),
             ),
         ),
-        "Fixer" to RateApi(
-            name = "Fixer",
-            base = Currencies["EUR"],
-            aliases = arrayOf("Fixer", "fix", "фиксер", "фикс"),
-            url = "http://data.fixer.io/api/latest?access_key=${System.getenv("FIXER_ACCESS_KEY")}&symbols=BYN,USD,EUR,RUB,UAH,PLN,CZK,GBP,JPY,CNY,KZT,CHF,BGN,TRY,CAD,ISK,DKK,SEK,NOK,BTC,ILS,GEL,HUF,MXN,HRK,VND,KRW,MDL,HKD,RON,IDR,INR,THB,AMD,UZS,KGS,AUD,AED,BRL,RSD",
-            displayLink = "https://fixer.io/",
-            unsupported = setOf("ETH"),
-            refreshHours = 8,
-            backFillInfo = RateApiBackFillInfo(
-                url = "http://data.fixer.io/api/<date>?access_key=${System.getenv("FIXER_ACCESS_KEY")}&symbols=BYN,USD,EUR,RUB,UAH,PLN,CZK,GBP,JPY,CNY,KZT,CHF,BGN,TRY,CAD,ISK,DKK,SEK,NOK,BTC,ILS,GEL,HUF,MXN,HRK,VND,KRW,MDL,HKD,RON,IDR,INR,THB,AMD,UZS,KGS,AUD,AED,BRL,RSD",
-                backFillLimit = LocalDate.of(2020, 1, 1),
-            )
-        ),
         "OpenExchangeRates" to RateApi(
             name = "OpenExchangeRates",
             base = Currencies["USD"],
@@ -123,19 +110,6 @@ object RateApis : Iterable<RateApi> {
                 backFillLimit = LocalDate.of(2020, 1, 1),
             ),
         ),
-        "TraderMade" to RateApi(
-            name = "TraderMade",
-            base = Currencies["USD"],
-            aliases = arrayOf("TM", "ТрейдерМейд"),
-            url = "https://marketdata.tradermade.com/api/v1/live?api_key=${System.getenv("TRADERMADE_ACCESS_KEY")}&currency=USDEUR,USDRUB,USDPLN,USDCZK,USDGBP,USDJPY,USDCNY,USDCHF,USDTRY,USDCAD,USDISK,USDDKK,USDSEK,USDNOK,USDILS,USDBTC,USDETH,USDHUF,USDTHB,USDIDR,USDINR,USDRON,USDHKD,USDKRW,USDVND,USDHRK,USDMXN,USDAUD,USDAED,USDBRL",
-            displayLink = "https://tradermade.com/",
-            unsupported = setOf("BYN", "BGN", "GEL", "AMD", "RSD", "MDL", "KZT", "UZS", "KGS", "UAH"),
-            refreshHours = 25,
-            backFillInfo = RateApiBackFillInfo(
-                url = "https://marketdata.tradermade.com/api/v1/historical?date=<date>&api_key=${System.getenv("TRADERMADE_ACCESS_KEY")}&currency=USDEUR,USDRUB,USDPLN,USDCZK,USDGBP,USDJPY,USDCNY,USDCHF,USDTRY,USDCAD,USDISK,USDDKK,USDSEK,USDNOK,USDILS,USDBTC,USDETH,USDHUF,USDTHB,USDIDR,USDINR,USDRON,USDHKD,USDKRW,USDVND,USDHRK,USDMXN,USDAUD,USDAED,USDBRL",
-                backFillLimit = LocalDate.of(2022, 7, 1),
-            ),
-        ),
         "Forex" to RateApi(
             name = "Forex",
             base = Currencies["USD"],
@@ -147,6 +121,32 @@ object RateApis : Iterable<RateApi> {
             // backfill unsupported for Forex API
             backFillInfo = null
 
+        ),
+        "Fixer" to RateApi(
+            name = "Fixer",
+            base = Currencies["EUR"],
+            aliases = arrayOf("Fixer", "фиксер"),
+            url = "http://data.fixer.io/api/latest?access_key=${System.getenv("FIXER_ACCESS_KEY")}&symbols=BYN,USD,EUR,RUB,UAH,PLN,CZK,GBP,JPY,CNY,KZT,CHF,BGN,TRY,CAD,ISK,DKK,SEK,NOK,BTC,ILS,GEL,HUF,MXN,HRK,VND,KRW,MDL,HKD,RON,IDR,INR,THB,AMD,UZS,KGS,AUD,AED,BRL,RSD",
+            displayLink = "https://fixer.io/",
+            unsupported = setOf("ETH"),
+            refreshHours = 25, // effectively deprecated
+            backFillInfo = RateApiBackFillInfo(
+                url = "http://data.fixer.io/api/<date>?access_key=${System.getenv("FIXER_ACCESS_KEY")}&symbols=BYN,USD,EUR,RUB,UAH,PLN,CZK,GBP,JPY,CNY,KZT,CHF,BGN,TRY,CAD,ISK,DKK,SEK,NOK,BTC,ILS,GEL,HUF,MXN,HRK,VND,KRW,MDL,HKD,RON,IDR,INR,THB,AMD,UZS,KGS,AUD,AED,BRL,RSD",
+                backFillLimit = LocalDate.of(2020, 1, 1),
+            )
+        ),
+        "TraderMade" to RateApi(
+            name = "TraderMade",
+            base = Currencies["USD"],
+            aliases = arrayOf("ТрейдерМейд"),
+            url = "https://marketdata.tradermade.com/api/v1/live?api_key=${System.getenv("TRADERMADE_ACCESS_KEY")}&currency=USDEUR,USDRUB,USDPLN,USDCZK,USDGBP,USDJPY,USDCNY,USDCHF,USDTRY,USDCAD,USDISK,USDDKK,USDSEK,USDNOK,USDILS,USDBTC,USDETH,USDHUF,USDTHB,USDIDR,USDINR,USDRON,USDHKD,USDKRW,USDVND,USDHRK,USDMXN,USDAUD,USDAED,USDBRL",
+            displayLink = "https://tradermade.com/",
+            unsupported = setOf("BYN", "BGN", "GEL", "AMD", "RSD", "MDL", "KZT", "UZS", "KGS", "UAH"),
+            refreshHours = 25, // effectively deprecated
+            backFillInfo = RateApiBackFillInfo(
+                url = "https://marketdata.tradermade.com/api/v1/historical?date=<date>&api_key=${System.getenv("TRADERMADE_ACCESS_KEY")}&currency=USDEUR,USDRUB,USDPLN,USDCZK,USDGBP,USDJPY,USDCNY,USDCHF,USDTRY,USDCAD,USDISK,USDDKK,USDSEK,USDNOK,USDILS,USDBTC,USDETH,USDHUF,USDTHB,USDIDR,USDINR,USDRON,USDHKD,USDKRW,USDVND,USDHRK,USDMXN,USDAUD,USDAED,USDBRL",
+                backFillLimit = LocalDate.of(2022, 7, 1),
+            ),
         ),
     )
 

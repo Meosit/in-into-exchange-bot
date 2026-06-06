@@ -5,8 +5,8 @@
   "NBG": "НБ Грузии",
   "CBR": "ЦБ России",
   "ECB": "ЦБ Европы",
-  "Fixer": "Fixer.io",
   "OpenExchangeRates": "OpenExchangeRates.org",
-  "TraderMade": "TraderMade.com",
-  "Forex": "Forex (fcsapi.com)"
+  "Forex": "Forex (fcsapi.com)",
+  "Fixer": "Fixer.io (⚠️ Устаревший)",
+  "TraderMade": "TraderMade.com (⚠️ Устаревший)"
 }

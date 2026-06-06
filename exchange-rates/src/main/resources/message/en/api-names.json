@@ -5,8 +5,8 @@
   "NBG": "Bank of Georgia",
   "CBR": "Bank of Russia",
   "ECB": "Bank of Europe",
-  "Fixer": "Fixer.io",
   "OpenExchangeRates": "OpenExchangeRates.org",
-  "TraderMade": "TraderMade.com",
-  "Forex": "Forex (fcsapi.com)"
+  "Forex": "Forex (fcsapi.com)",
+  "Fixer": "Fixer.io (⚠️ Deprecated)",
+  "TraderMade": "TraderMade.com (⚠️ Deprecated)"
 }
