@@ -1,15 +1,13 @@
 package org.mksn.inintobot.rates
 
 import io.ktor.client.*
-import io.ktor.client.engine.java.*
-import io.ktor.client.plugins.contentnegotiation.*
 import io.ktor.http.*
-import io.ktor.serialization.kotlinx.json.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.serialization.json.Json
 import org.mksn.inintobot.common.HttpBotFunction
+import org.mksn.inintobot.common.defaultHttpClient
 import org.mksn.inintobot.common.currency.Currencies
 import org.mksn.inintobot.common.rate.ApiExchangeRates
 import org.mksn.inintobot.common.rate.RateApi
@@ -30,11 +28,7 @@ private val logger: Logger = Logger.getLogger(FetchFunction::class.simpleName)
 class FetchFunction(
     private val storeProvider: StoreProvider = StoreProvider.load(),
     private val json: Json = Json { ignoreUnknownKeys = true; isLenient = true },
-    private val httpClient: HttpClient = HttpClient(Java) {
-        install(ContentNegotiation) {
-            json(json)
-        }
-    }
+    private val httpClient: HttpClient = defaultHttpClient(json)
 ) : HttpBotFunction {
 
     init {
@@ -100,7 +94,6 @@ class FetchFunction(
         for (i in 1..numRetries) {
             logger.info("${api.name}: Reloading exchange rates ${onDate ?: ""} (try $i)...")
             try {
-                logger.info("${api.name}: Loaded rates  ${onDate ?: ""}")
                 val oldRates = if (onDate == null) {
                     store.runCatching { getLatest(api.name) }.onFailure {
                         logger.severe("${api.name}: Failed fetch latest rates for api: $it")
@@ -123,6 +116,7 @@ class FetchFunction(
                         )
                         fetcher.fetch(Currencies, oldRates.date.plusDays(1))
                     } else fetcher.fetch(Currencies, onDate)
+                logger.info("${api.name}: Loaded rates ${onDate ?: ""}")
                 val refreshed = onDate
                     ?.let { ZonedDateTime.of(LocalDateTime.of(it, LocalTime.of(23, 59, 59)), ZoneOffset.UTC) }
                     ?: ZonedDateTime.now(ZoneOffset.UTC).withNano(0)

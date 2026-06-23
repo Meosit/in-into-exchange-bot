@@ -1,11 +1,8 @@
 package org.mksn.inintobot.server
 
-import io.ktor.client.*
-import io.ktor.client.engine.java.*
 import io.ktor.client.plugins.*
 import io.ktor.client.statement.*
 import io.ktor.http.*
-import io.ktor.serialization.kotlinx.json.*
 import io.ktor.server.application.*
 import io.ktor.server.request.*
 import io.ktor.server.response.*
@@ -14,6 +11,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.serialization.json.Json
 import org.mksn.inintobot.common.misc.trimToLength
+import org.mksn.inintobot.common.defaultHttpClient
 import org.mksn.inintobot.common.store.StoreProvider
 import org.mksn.inintobot.exchange.BotFunction
 import org.mksn.inintobot.exchange.output.BotTextOutput
@@ -30,11 +28,7 @@ fun main(args: Array<String>): Unit = io.ktor.server.jetty.EngineMain.main(args)
 fun Application.module() {
     val storeProvider: StoreProvider = StoreProvider.load()
     val json = Json { ignoreUnknownKeys = true; isLenient = true }
-    val httpClient = HttpClient(Java) {
-        install(io.ktor.client.plugins.contentnegotiation.ContentNegotiation) {
-            json(json)
-        }
-    }
+    val httpClient = defaultHttpClient(json)
     val exchangeRateFunction = BotFunction(storeProvider, json, httpClient)
     val fetchRatesFunction = FetchFunction(storeProvider, json, httpClient)
 

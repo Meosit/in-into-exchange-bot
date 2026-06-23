@@ -1,16 +1,14 @@
 package org.mksn.inintobot.exchange
 
 import io.ktor.client.*
-import io.ktor.client.engine.java.*
 import io.ktor.client.plugins.*
-import io.ktor.client.plugins.contentnegotiation.*
 import io.ktor.client.statement.*
 import io.ktor.http.*
-import io.ktor.serialization.kotlinx.json.*
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.decodeFromStream
 import org.mksn.inintobot.common.HttpBotFunction
+import org.mksn.inintobot.common.defaultHttpClient
 import org.mksn.inintobot.common.store.StoreProvider
 import org.mksn.inintobot.exchange.bot.handleRateAlertsPeriodicCheck
 import org.mksn.inintobot.exchange.bot.handleTelegramRequest
@@ -26,11 +24,7 @@ private val logger: Logger = Logger.getLogger(BotFunction::class.simpleName)
 class BotFunction(
     storeProvider: StoreProvider = StoreProvider.load(),
     private val json: Json = Json { ignoreUnknownKeys = true; isLenient = true },
-    httpClient: HttpClient = HttpClient(Java) {
-        install(ContentNegotiation) {
-            json(json)
-        }
-    }
+    httpClient: HttpClient = defaultHttpClient(json)
 ) : HttpBotFunction {
 
     private val context = BotContext(

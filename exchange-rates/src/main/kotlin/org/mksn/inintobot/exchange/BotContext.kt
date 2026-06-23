@@ -1,10 +1,8 @@
 package org.mksn.inintobot.exchange
 
 import io.ktor.client.*
-import io.ktor.client.engine.java.*
-import io.ktor.client.plugins.contentnegotiation.*
-import io.ktor.serialization.kotlinx.json.*
 import kotlinx.serialization.json.Json
+import org.mksn.inintobot.common.defaultHttpClient
 import org.mksn.inintobot.common.store.ApiExchangeRateStore
 import org.mksn.inintobot.common.store.StoreProvider
 import org.mksn.inintobot.common.store.UserAggregateStatsStore
@@ -20,10 +18,6 @@ data class BotContext(
     val settingsStore: UserSettingsStore = storeProvider.userSettingsStore(),
     val statsStore: UserAggregateStatsStore = storeProvider.userAggregateStatsStore(),
     val json: Json = Json { ignoreUnknownKeys = true; isLenient = true },
-    val httpClient: HttpClient = HttpClient(Java) {
-        install(ContentNegotiation) {
-            json(json)
-        }
-    },
+    val httpClient: HttpClient = defaultHttpClient(json),
     val sender: BotOutputSender =  BotOutputSender(httpClient, botToken),
 )
