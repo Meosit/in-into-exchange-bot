@@ -43,6 +43,7 @@ class FirestoreUserSettingsStore(private val db: Firestore) : UserSettingsStore 
         "dashboardCurrencies" to dashboardCurrencies,
         "hourlyRateUSD" to hourlyRateUSD?.toStr(),
         "thousandSeparator" to thousandSeparator?.toString(),
+        "decimalSeparator" to decimalSeparator.toString(),
         "alerts" to (alerts?.map {
             mapOf(
                 "id" to it.id,
@@ -64,6 +65,7 @@ class FirestoreUserSettingsStore(private val db: Firestore) : UserSettingsStore 
         dashboardCurrencies = (this["dashboardCurrencies"] as? List<*>)?.map { it.toString() } ?: UserDefaultSettings.DASHBOARD_CURRENCIES,
         hourlyRateUSD = this["hourlyRateUSD"]?.toString()?.toFixedScaleBigDecimal() ?: UserDefaultSettings.HOURLY_RATE_USD,
         thousandSeparator = this["thousandSeparator"]?.toString()?.firstOrNull() ?: UserDefaultSettings.THOUSAND_SEPARATOR,
+        decimalSeparator = this["decimalSeparator"]?.toString()?.firstOrNull() ?: UserDefaultSettings.DECIMAL_SEPARATOR,
         alerts = (this["alerts"] as? List<*>)?.mapNotNull { it as? Map<*, *> }?.map {
             RateAlert(
                 id = it["id"].toString(),

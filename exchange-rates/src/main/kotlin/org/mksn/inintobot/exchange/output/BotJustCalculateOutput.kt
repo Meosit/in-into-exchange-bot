@@ -7,14 +7,15 @@ import org.mksn.inintobot.exchange.output.strings.QueryStrings
 data class BotJustCalculateOutput(
     val expression: EvaluatedExpression,
     val strings: QueryStrings,
-    val decimalDigits: Int
+    val decimalDigits: Int,
+    val decimalSeparator: Char
 ) : BotOutput {
 
     override fun inlineTitle() = strings.inlineTitles.calculate
     override fun inlineThumbUrl() = strings.inlineThumbs.calculate
 
-    override fun inlineDescription() = "${expression.stringRepr} = ${expression.result.toStr(decimalDigits)}"
+    override fun inlineDescription() = "${expression.stringRepr} = ${expression.result.toStr(decimalDigits, decimalSeparator = decimalSeparator)}"
 
-    override fun markdown() = "`${expression.stringRepr}` = `${expression.result.toStr(decimalDigits)}`"
+    override fun markdown() = "`${expression.stringRepr}` = `${expression.result.toStr(decimalDigits, decimalSeparator = decimalSeparator)}`"
 
 }

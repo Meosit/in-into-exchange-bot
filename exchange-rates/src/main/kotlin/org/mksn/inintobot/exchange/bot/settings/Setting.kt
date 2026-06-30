@@ -16,25 +16,25 @@ enum class Setting(private val handler: SettingHandler) {
     DASHBOARD_CURRENCIES(DashboardCurrenciesSettingHandler),
     DECIMAL_DIGITS(DigitsSettingHandler),
     THOUSAND_SEPARATOR(ThousandSeparatorSettingHandler),
+    DECIMAL_SEPARATOR(DecimalSeparatorSettingHandler),
     ALERTS(AlertsSettingHandler),
 
     START_COMMAND(StartCommandSettingHandler)
     ;
 
-    suspend fun handle(data: String?, message: Message, current: UserSettings, context: BotContext) {
+    suspend fun handle(data: String?, message: Message, current: UserSettings, context: BotContext): String? =
         handler.handle(data, message, current, context)
-    }
 
     companion object {
 
         private fun ofCallbackQuery(data: String) = values().firstOrNull { it.handler.canHandle(data) }
             ?: throw IllegalStateException("Invalid payload '$data' supplied")
 
-        suspend fun handle(callbackQuery: CallbackQuery, currentSettings: UserSettings, context: BotContext) {
+        suspend fun handle(callbackQuery: CallbackQuery, currentSettings: UserSettings, context: BotContext): String? {
             if (callbackQuery.message == null) {
                 throw IllegalStateException("This callback was originated from inline query")
             }
-            ofCallbackQuery(callbackQuery.data).handle(callbackQuery.data, callbackQuery.message, currentSettings, context)
+            return ofCallbackQuery(callbackQuery.data).handle(callbackQuery.data, callbackQuery.message, currentSettings, context)
         }
     }
 }

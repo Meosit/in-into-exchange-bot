@@ -193,9 +193,10 @@ private suspend fun Message.handleAlertRateCommand(
                     value = (expression.e1 as Const).number.abs()
                 )
 
-                val sourceValue = 1.toFixedScaleBigDecimal().toStr(settings.decimalDigits)
-                val targetValue = if (isRelative) "?.${"?".repeat(settings.decimalDigits)}" else rateAlert.value.toStr(settings.decimalDigits)
-                val deltaValue = if (!isRelative) "?.${"?".repeat(settings.decimalDigits)}" else rateAlert.value.toStr(settings.decimalDigits)
+                val unknownValue = if (settings.decimalDigits == 0) "?" else "?${settings.decimalSeparator}${"?".repeat(settings.decimalDigits)}"
+                val sourceValue = 1.toFixedScaleBigDecimal().toStr(settings.decimalDigits, decimalSeparator = settings.decimalSeparator)
+                val targetValue = if (isRelative) unknownValue else rateAlert.value.toStr(settings.decimalDigits, decimalSeparator = settings.decimalSeparator)
+                val deltaValue = if (!isRelative) unknownValue else rateAlert.value.toStr(settings.decimalDigits, decimalSeparator = settings.decimalSeparator)
 
                 val newSettings = settings.copy(alerts = settings.alerts?.let { it + rateAlert } ?: listOf(rateAlert))
                 context.settingsStore.save(chat.id.toString(), newSettings)

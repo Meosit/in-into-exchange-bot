@@ -29,8 +29,8 @@ suspend fun handleTelegramRequest(
                 message != null -> message.handle(settings, context)
                 editedMessage != null -> editedMessage.handle(settings, context)
                 callbackQuery != null -> {
-                    Setting.handle(callbackQuery, settings, context)
-                    context.sender.pingCallbackQuery(callbackQuery.id)
+                    val notification = Setting.handle(callbackQuery, settings, context)
+                    context.sender.pingCallbackQuery(callbackQuery.id, notification)
                 }
             }
         }

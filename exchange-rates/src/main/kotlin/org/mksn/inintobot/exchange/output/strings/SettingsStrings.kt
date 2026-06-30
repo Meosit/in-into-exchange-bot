@@ -19,6 +19,8 @@ data class SettingsStrings(
         val dashboardCurrencies: String,
         val decimalDigits: String,
         val thousandSeparator: String,
+        val decimalSeparator: String,
+        val ambiguousSeparators: String,
         val alerts: String,
     )
 

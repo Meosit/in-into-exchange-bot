@@ -8,6 +8,8 @@
     "dashboardCurrencies": "Proszę o wskazanie listy walut wyświetlanej jako pełna lista kursów wymiany w razie pustego inline zapytania, jeżeli waluta jest już na liście, po wciśnieniu zostanie skasowana. Lista walut zależy od wybranego API (%s), zobacz /apis. \n\n*Aktualne waluty:*\n %s",
     "decimalDigits": "Proszę o wskazanie liczby miejsc po przecinku do wyświetlenia.\n\nAktualna liczba: *%d* (`%s`)",
     "thousandSeparator": "Proszę o wskazanie symbolu do oddzielenia tysięcy dla dużych liczb.\n\nAktualnie wyświetlane jako: `%s`",
+    "decimalSeparator": "Proszę o wskazanie separatora dziesiętnego dla wyświetlanych liczb.\n\nAktualnie wyświetlane jako: `%s`",
+    "ambiguousSeparators": "Separator tysięcy i separator dziesiętny muszą być różne.",
     "alerts": "Masz obecnie ustawione *%d* alertów.\n\nAby ustawić nowy alert. Nowe alerty można dodać za pomocą poleceń /alert\\_delta lub /alert\\_rate (zobacz /help). \n\n⚠\uFE0F Kliknięcie przycisku alertu spowoduje jego"
   },
   "rootButtons": {
@@ -17,7 +19,8 @@
     "outputCurrencies": "Wyświetlane waluty",
     "dashboardCurrencies": "Wyświetlane waluty w razie pustego inline zapytania",
     "decimalDigits": "Liczba miejsc po przecinku",
-    "thousandSeparator": "Separator tysięcy"
+    "thousandSeparator": "Separator tysięcy",
+    "decimalSeparator": "Separator dziesiętny"
   },
   "buttons": {
     "checked": "✅ %s",

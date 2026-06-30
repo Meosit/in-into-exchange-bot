@@ -29,16 +29,17 @@ object RootSettingHandler : SettingHandler(1) {
         throw IllegalStateException("Not applicable for root button press")
     }
 
-    override suspend fun handle(data: String?, message: Message, current: UserSettings, context: BotContext) {
+    override suspend fun handle(data: String?, message: Message, current: UserSettings, context: BotContext): String? {
         when (data?.trimType()) {
-            "language" -> Setting.LANGUAGE.handle(null, message, current, context)
-            "defaultCurrency" -> Setting.DEFAULT_CURRENCY.handle(null, message, current, context)
-            "defaultApi" -> Setting.DEFAULT_API.handle(null, message, current, context)
-            "outputCurrencies" -> Setting.OUTPUT_CURRENCIES.handle(null, message, current, context)
-            "dashboardCurrencies" -> Setting.DASHBOARD_CURRENCIES.handle(null, message, current, context)
-            "decimalDigits" -> Setting.DECIMAL_DIGITS.handle(null, message, current, context)
-            "thousandSeparator" -> Setting.THOUSAND_SEPARATOR.handle(null, message, current, context)
-            "alerts" -> Setting.ALERTS.handle(null, message, current, context)
+            "language" -> return Setting.LANGUAGE.handle(null, message, current, context)
+            "defaultCurrency" -> return Setting.DEFAULT_CURRENCY.handle(null, message, current, context)
+            "defaultApi" -> return Setting.DEFAULT_API.handle(null, message, current, context)
+            "outputCurrencies" -> return Setting.OUTPUT_CURRENCIES.handle(null, message, current, context)
+            "dashboardCurrencies" -> return Setting.DASHBOARD_CURRENCIES.handle(null, message, current, context)
+            "decimalDigits" -> return Setting.DECIMAL_DIGITS.handle(null, message, current, context)
+            "thousandSeparator" -> return Setting.THOUSAND_SEPARATOR.handle(null, message, current, context)
+            "decimalSeparator" -> return Setting.DECIMAL_SEPARATOR.handle(null, message, current, context)
+            "alerts" -> return Setting.ALERTS.handle(null, message, current, context)
             else -> {
                 val output = createOutputWithKeyboard(current, context.json)
                 if (data == null) {
@@ -50,5 +51,6 @@ object RootSettingHandler : SettingHandler(1) {
                 }
             }
         }
+        return null
     }
 }

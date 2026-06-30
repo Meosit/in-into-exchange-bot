@@ -26,11 +26,12 @@ object ControlButtonHandler : SettingHandler(0) {
     override fun messageMarkdown(settings: UserSettings, messages: SettingsStrings.MessagesSettingsStrings): String =
         throw IllegalStateException("Not applicable for control button press")
 
-    override suspend fun handle(data: String?, message: Message, current: UserSettings, context: BotContext) {
+    override suspend fun handle(data: String?, message: Message, current: UserSettings, context: BotContext): String? {
         when (data) {
-            BACK_BUTTON_PAYLOAD -> RootSettingHandler.handle(data, message, current, context)
+            BACK_BUTTON_PAYLOAD -> return RootSettingHandler.handle(data, message, current, context)
             CLOSE_BUTTON_PAYLOAD -> context.sender.deleteChatMessage(message.chat.id.toString(), message.messageId)
             else -> throwInvalid(data)
         }
+        return null
     }
 }

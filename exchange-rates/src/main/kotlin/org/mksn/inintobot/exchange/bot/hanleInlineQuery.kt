@@ -38,7 +38,7 @@ suspend fun InlineQuery.handle(settings: UserSettings, context: BotContext) {
                     .map { EvaluatedExpression(1.toFixedScaleBigDecimal(), ExpressionType.ONE_UNIT, "1", it, listOf(it)) }
                     .map { it to exchangeAllGracefully(rates, it, currencies) }
                     .map { (expression, exchanged) ->
-                        BotQuerySuccessOutput(expression, exchanged, queryStrings, settings.decimalDigits, settings.thousandSeparator, apiDisplayNames[settings.apiName], apiTime)
+                        BotQuerySuccessOutput(expression, exchanged, queryStrings, settings.decimalDigits, settings.thousandSeparator, settings.decimalSeparator, apiDisplayNames[settings.apiName], apiTime)
                     }
                     .map { if (rates.staleData()) BotStaleRatesOutput(it, api.name, apiTime, settings.language) else it }
                     .toList().toTypedArray()

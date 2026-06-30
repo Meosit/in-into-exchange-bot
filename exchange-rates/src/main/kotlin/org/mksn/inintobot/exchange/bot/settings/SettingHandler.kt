@@ -56,12 +56,18 @@ abstract class SettingHandler(id: Int) {
 
     protected abstract fun isValidPayload(payload: String): Boolean
 
+    protected open fun rejectedPayloadNotification(
+        currentSettings: UserSettings,
+        validPayload: String,
+        messages: SettingsStrings.MessagesSettingsStrings
+    ): String? = null
+
     protected abstract fun createNewSettings(currentSettings: UserSettings, validPayload: String): UserSettings
 
     protected fun throwInvalid(data: String?): Nothing =
         throw IllegalStateException("Invalid payload '$data' supplied")
 
-    open suspend fun handle(data: String?, message: Message, current: UserSettings, context: BotContext) {
+    open suspend fun handle(data: String?, message: Message, current: UserSettings, context: BotContext): String? {
         logger.info("Handling settings payload: $data")
         val payload = data?.trimType()
         if (payload == null) {
@@ -71,12 +77,17 @@ abstract class SettingHandler(id: Int) {
             }
         } else {
             if (isValidPayload(payload)) {
+                val settingsStrings = BotMessages.settings.of(current.language)
+                val rejectedPayloadNotification = rejectedPayloadNotification(current, payload, settingsStrings.messages)
+                if (rejectedPayloadNotification != null) {
+                    return rejectedPayloadNotification
+                }
                 val newSettings = createNewSettings(current, payload).copy(persisted = true)
                 try {
                     context.settingsStore.save(message.chat.id.toString(), newSettings)
                     logger.info("Settings successfully updated: $newSettings")
                     val output = createOutputWithKeyboard(newSettings, context.json)
-                    if (output.markdown() lettersDiffer message.text) {
+                    if (newSettings != current.copy(persisted = true) || output.markdown() lettersDiffer message.text) {
                         context.sender.editChatMessage(message.chat.id.toString(), message.messageId, output)
                     }
                     context.statsStore.logSettingsChange(current, newSettings)
@@ -89,6 +100,7 @@ abstract class SettingHandler(id: Int) {
                 throwInvalid(data)
             }
         }
+        return null
     }
 
 }

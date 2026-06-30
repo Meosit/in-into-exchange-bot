@@ -22,24 +22,25 @@ data class BotQueryHistoryOutput(
     val language: String,
     val conversions: List<HistoryConversion>,
     val decimalDigits: Int,
+    val decimalSeparator: Char,
     val apiName: String,
     val apiTime: String? = null,
     val rateAlert: RateAlert? = null,
 ) : BotOutput {
-    private val noRate = "-.${"-".repeat(decimalDigits)}"
+    private val noRate = if (decimalDigits == 0) "-" else "-$decimalSeparator${"-".repeat(decimalDigits)}"
     private val strings = BotMessages.query.of(language)
     private val dayFormatter = DateTimeFormatter.ofPattern("EEE", Locale.forLanguageTag(language))
 
     private val expressionHeader = if (rateAlert != null) {
         strings.headers.alert.format(*historyCurrencies.map { "${it.emoji}${it.code}" }.toTypedArray(),
-            (if (rateAlert.isRelative) "±" else "⇵") + rateAlert.value.toStr(decimalDigits),
+            (if (rateAlert.isRelative) "±" else "⇵") + rateAlert.value.toStr(decimalDigits, decimalSeparator = decimalSeparator),
         )
     } else
         strings.headers.history.format(*historyCurrencies.map { "${it.emoji}${it.code}" }.toTypedArray())
 
     private fun BigDecimal?.toSignedDiff(current: BigDecimal?) = this?.scaled(decimalDigits)
         ?.let { current?.scaled(decimalDigits)?.minus(it) }
-        ?.let { (if (it > BigDecimal.ZERO) "+" else "") + it.toStr(decimalDigits, stripZeros = false, precise = false) }
+        ?.let { (if (it > BigDecimal.ZERO) "+" else "") + it.toStr(decimalDigits, stripZeros = false, precise = false, decimalSeparator = decimalSeparator) }
 
 
     private fun LocalDate.dayName() = format(dayFormatter).replace(".", "").replaceFirstChar(Char::uppercaseChar)
@@ -49,13 +50,13 @@ data class BotQueryHistoryOutput(
         val apiTime = apiTime?.let { (if (":" in it) strings.headers.apiTime else strings.headers.apiDate).format(it) } ?: ""
         val longestDayName = conversions.maxOf { it.date.dayName().length }
         val longestRate = conversions.maxOf {
-            it.current?.toStr(decimalDigits, stripZeros = false, precise = false)?.length ?: 0
+            it.current?.toStr(decimalDigits, stripZeros = false, precise = false, decimalSeparator = decimalSeparator)?.length ?: 0
         }
         val longestDiff = conversions.maxOf { it.previous.toSignedDiff(it.current)?.length ?: 0 }
         val exchangeBody = conversions.joinToString("\n") {
             val dayNumber = it.date.dayOfMonth.toString().padStart(2)
             val dayName = it.date.dayName().padEnd(longestDayName)
-            val rate = (it.current?.toStr(decimalDigits, stripZeros = false, precise = false) ?: noRate).padStart(longestRate)
+            val rate = (it.current?.toStr(decimalDigits, stripZeros = false, precise = false, decimalSeparator = decimalSeparator) ?: noRate).padStart(longestRate)
             val diff = (it.previous.toSignedDiff(it.current) ?: noRate).padStart(longestDiff)
             val emoji = when {
                 diff.trim() == noRate -> ""

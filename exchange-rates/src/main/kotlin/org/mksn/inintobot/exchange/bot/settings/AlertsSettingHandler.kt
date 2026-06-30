@@ -13,7 +13,7 @@ object AlertsSettingHandler : SettingHandler(9) {
         return settings.alerts?.map {
             val fromCurrency = Currencies[it.fromCurrency]
             val toCurrency = Currencies[it.toCurrency]
-            val value = (if (it.isRelative) "±" else "⇵") + it.value.toStr(settings.decimalDigits)
+            val value = (if (it.isRelative) "±" else "⇵") + it.value.toStr(settings.decimalDigits, decimalSeparator = settings.decimalSeparator)
             val label = "\uD83D\uDDD1 $value (${fromCurrency.code} → ${toCurrency.code} | ${BotMessages.apiDisplayNames.of(settings.language).getValue(it.apiName)})"
             InlineKeyboardButton(label, callbackData(it.id))
         } ?: emptyList()

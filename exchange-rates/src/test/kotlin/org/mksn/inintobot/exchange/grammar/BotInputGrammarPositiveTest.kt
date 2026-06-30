@@ -508,7 +508,7 @@ class BotInputGrammarPositiveTest {
 
     @Test
     fun explicit_currency_api_with_name_collision() {
-        val input = "10 euro into usd tm"
+        val input = "10 euro into usd trader"
         val expectedExpr = CurrenciedExpression(10.asConst, "EUR".toCurrency())
 
         val expectedAdditionalCurrencies = setOf("USD".toCurrency())

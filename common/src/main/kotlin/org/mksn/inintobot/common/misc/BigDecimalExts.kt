@@ -4,7 +4,6 @@ import java.math.BigDecimal
 import java.math.RoundingMode
 import java.text.DecimalFormat
 import java.text.DecimalFormatSymbols
-import java.util.*
 
 
 /**
@@ -39,7 +38,8 @@ fun BigDecimal.toStr(
     decimalDigits: Int,
     stripZeros: Boolean = true,
     precise: Boolean = true,
-    thousandSeparator: Char? = null
+    thousandSeparator: Char? = null,
+    decimalSeparator: Char = '.'
 ): String {
     val actualScale = if (precise) {
         val precision = stripTrailingZeros().precision()
@@ -51,12 +51,15 @@ fun BigDecimal.toStr(
         .let { if (stripZeros) it.stripTrailingZeros() else it }
 
     return if (thousandSeparator == null) {
-        scaled.toPlainString()
+        scaled.toPlainString().replace('.', decimalSeparator)
     } else {
-        val decimalFormatSymbols = DecimalFormatSymbols(Locale.getDefault()).apply {
+        val decimalFormatSymbols = DecimalFormatSymbols().apply {
+            this.decimalSeparator = decimalSeparator
             groupingSeparator = thousandSeparator
         }
-        val decimalFormat = DecimalFormat("#,##0.${"#".repeat(decimalDigits)}", decimalFormatSymbols).apply {
+        val decimalPattern = if (stripZeros) "#".repeat(decimalDigits) else "0".repeat(decimalDigits)
+        val decimalPart = if (decimalDigits > 0) ".$decimalPattern" else ""
+        val decimalFormat = DecimalFormat("#,##0$decimalPart", decimalFormatSymbols).apply {
             isGroupingUsed = true
         }
 

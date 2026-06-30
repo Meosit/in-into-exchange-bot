@@ -15,11 +15,15 @@ object BotMessages {
         "pl" to "Polski",
     )
 
-    val supportedthousandSeparators: Map<Char?, String> = mapOf(
+    val supportedThousandSeparators: Map<Char?, String> = mapOf(
         null to "1234567.12",
         ' ' to "1 234 567.23",
         ',' to "1,234,567.34",
         '\'' to "1'234'567.56",
+    )
+    val supportedDecimalSeparators: Map<Char, String> = mapOf(
+        '.' to "1234567.12",
+        ',' to "1234567,12",
     )
 
     val startCommand = LocalizedTextResource("start.md")

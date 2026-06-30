@@ -123,6 +123,7 @@ fun handleBotExchangeQuery(
                 queryStrings,
                 decimalDigits,
                 settings.thousandSeparator,
+                settings.decimalSeparator,
                 nonDefaultApiName,
                 nonDefaultApiTime,
             )
@@ -159,7 +160,7 @@ fun handleBotExchangeQuery(
                 customApi = api != defaultApi
             )
             return if (evaluated.type == ExpressionType.SINGLE_CURRENCY_EXPR) {
-                arrayOf(outputWithStaleMessage, BotJustCalculateOutput(evaluated, queryStrings, decimalDigits))
+                arrayOf(outputWithStaleMessage, BotJustCalculateOutput(evaluated, queryStrings, decimalDigits, settings.decimalSeparator))
             } else {
                 arrayOf(outputWithStaleMessage)
             }
@@ -226,6 +227,7 @@ fun BotInput.handleBotQueryHistoryRequest(
     return arrayOf(
         BotQueryHistoryOutput(
             evaluated.involvedCurrencies, settings.language, conversions, min(decimalDigits, 4),
+            settings.decimalSeparator,
             BotMessages.apiDisplayNames.of(settings.language).getValue(api.name), ratesHistory.first().date.toString(),
         ).let { if (date != ratesHistory.first().date) {
             val message = BotMessages.errors.of(settings.language).ratesOnDateNotExact

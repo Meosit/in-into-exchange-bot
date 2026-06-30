@@ -14,6 +14,7 @@ data class BotQuerySuccessOutput(
     val strings: QueryStrings,
     val decimalDigits: Int,
     val thousandSeparator: Char?,
+    val decimalSeparator: Char,
     val apiName: String? = null,
     val apiTime: String? = null,
 ) : BotOutput {
@@ -35,13 +36,13 @@ data class BotQuerySuccessOutput(
         val apiHeader = apiName?.let { strings.headers.api.format(it) } ?: ""
         val apiTime = apiTime?.let { (if (":" in it) strings.headers.apiTime else strings.headers.apiDate).format(it) } ?: ""
         val exchangeBody = exchanges
-            .joinToString("\n") { "${it.currency.emoji}`${it.currency.code}`  `${it.value.toStr(decimalDigits, thousandSeparator = thousandSeparator)}`" }
+            .joinToString("\n") { "${it.currency.emoji}`${it.currency.code}`  `${it.value.toStr(decimalDigits, thousandSeparator = thousandSeparator, decimalSeparator = decimalSeparator)}`" }
         (expressionHeader + apiHeader + apiTime + exchangeBody).trimToLength(
             BotMessages.maxOutputLength,
             "… ${strings.outputTooBigMessage}"
         )
     } else {
-        "`${expression.stringRepr}` = `${expression.result.toStr()}`"
+        "`${expression.stringRepr}` = `${expression.result.toStr().replace('.', decimalSeparator)}`"
     }
 
     override fun inlineTitle() = when (expression.type) {
@@ -61,7 +62,7 @@ data class BotQuerySuccessOutput(
             )
 
         else ->
-            strings.inlineTitles.exchange.format(expression.result.toStr(),
+            strings.inlineTitles.exchange.format(expression.result.toStr().replace('.', decimalSeparator),
                 expression.involvedCurrencies.joinToString(",") { it.code },
                 exchanges.asSequence()
                     .filterNot { it.currency in expression.involvedCurrencies }

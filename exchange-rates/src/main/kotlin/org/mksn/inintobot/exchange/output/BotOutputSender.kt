@@ -75,10 +75,12 @@ class BotOutputSender(private val httpClient: HttpClient, apiToken: String) {
         }
     }
 
-    suspend fun pingCallbackQuery(queryId: String) {
+    suspend fun pingCallbackQuery(queryId: String, text: String? = null, showAlert: Boolean = false) {
         postWithBackpressure<BooleanApiResponse> {
             url("$apiUrl/answerCallbackQuery")
             parameter("callback_query_id", queryId)
+            text?.let { parameter("text", it) }
+            parameter("show_alert", showAlert)
         }
     }
 

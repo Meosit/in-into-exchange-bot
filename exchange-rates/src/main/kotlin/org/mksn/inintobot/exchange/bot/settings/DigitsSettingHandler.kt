@@ -1,6 +1,8 @@
 package org.mksn.inintobot.exchange.bot.settings
 
 import org.mksn.inintobot.common.misc.DEFAULT_DECIMAL_DIGITS
+import org.mksn.inintobot.common.misc.toFixedScaleBigDecimal
+import org.mksn.inintobot.common.misc.toStr
 import org.mksn.inintobot.common.user.UserSettings
 import org.mksn.inintobot.exchange.output.strings.SettingsStrings
 import org.mksn.inintobot.exchange.telegram.InlineKeyboardButton
@@ -15,7 +17,11 @@ object DigitsSettingHandler : SettingHandler(7) {
         }
 
     override fun messageMarkdown(settings: UserSettings, messages: SettingsStrings.MessagesSettingsStrings): String =
-        messages.decimalDigits.format(settings.decimalDigits, "1.12345678901234567".take(settings.decimalDigits + 2))
+        messages.decimalDigits.format(
+            settings.decimalDigits,
+            "1.12345678901234567".toFixedScaleBigDecimal()
+                .toStr(settings.decimalDigits, stripZeros = false, precise = false, decimalSeparator = settings.decimalSeparator)
+        )
 
     override fun isValidPayload(payload: String): Boolean = payload.toIntOrNull() in 0..DEFAULT_DECIMAL_DIGITS
 

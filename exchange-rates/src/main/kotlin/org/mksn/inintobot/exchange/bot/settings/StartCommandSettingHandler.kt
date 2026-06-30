@@ -29,12 +29,13 @@ object StartCommandSettingHandler : SettingHandler(99) {
     override fun createNewSettings(currentSettings: UserSettings, validPayload: String) =
         currentSettings.copy(language = validPayload)
 
-    override suspend fun handle(data: String?, message: Message, current: UserSettings, context: BotContext) {
+    override suspend fun handle(data: String?, message: Message, current: UserSettings, context: BotContext): String? {
         val output = createOutputWithKeyboard(current, context.json)
         if (data == null) {
             context.sender.sendChatMessage(message.chat.id.toString(), output)
+            return null
         } else {
-            super.handle(data, message, current, context)
+            return super.handle(data, message, current, context)
         }
     }
 }
